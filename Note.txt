@@ -1,0 +1,7 @@
+npm init -y
+
+npm i express
+
+npm i dotenv cors
+
+app.use(cors());//accepting from all websites
