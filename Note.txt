@@ -8,3 +8,13 @@ app.use(cors());//accepting from all websites
 
 
 express validatior = when registering user to validate data
+
+
+
+------docs
+user register route
+-usercontroller
+-usermodel
+-user service
+-user route  
+create a readme.md file to docs the /users/register endpoint with description and status code,also write the how the data is required in the endpoint,create md file in the backend folder.add example of response user get from endpoint
