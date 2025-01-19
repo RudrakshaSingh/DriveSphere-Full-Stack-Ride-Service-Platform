@@ -1,7 +1,10 @@
 npm init -y
-
 npm i express
-
 npm i dotenv cors
+npm i bcrypt jsonwebtoken
+npm i express-validator
 
 app.use(cors());//accepting from all websites
+
+
+express validatior = when registering user to validate data
