@@ -1,7 +1,7 @@
 const userModel = require("../models/user.model");
 const userService = require("../services/user.service");
 const { validationResult } = require("express-validator"); //the validation in route,if it lead to to wrong value and need to perform action on it
-const blackListTokenModel = require("../models/blacklistToken.model");
+const blackListTokenModel = require("../models/blackListToken.model");
 
 module.exports.registerUser = async (req, res, next) => {
   const errors = validationResult(req);
@@ -12,6 +12,11 @@ module.exports.registerUser = async (req, res, next) => {
   }
 
   const { fullname, email, password } = req.body;
+
+  const isUserAlreadyExists = await userModel.findOne({ email });
+  if (isUserAlreadyExists) {
+      return res.status(400).json({ error: "User already exists" });
+  }
 
   const hashedPassword = await userModel.hashPassword(password);
 
