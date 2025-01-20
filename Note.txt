@@ -3,6 +3,7 @@ npm i express
 npm i dotenv cors
 npm i bcrypt jsonwebtoken
 npm i express-validator
+npm i cookie-parser
 
 app.use(cors());//accepting from all websites
 
