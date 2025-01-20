@@ -1,6 +1,7 @@
 const userModel = require("../models/user.model");
 const userService = require("../services/user.service");
 const { validationResult } = require("express-validator"); //the validation in route,if it lead to to wrong value and need to perform action on it
+const blackListTokenModel = require("../models/blacklistToken.model");
 
 module.exports.registerUser = async (req, res, next) => {
   const errors = validationResult(req);
@@ -52,14 +53,15 @@ module.exports.loginUser = async (req, res, next) => {
 };
 
 module.exports.getUserProfile = async (req, res, next) => {
-  res.status(200).json(req.user);
+  res.status(200).json(req.user);//taken from token in middleware
 };
 
+//logout user
 module.exports.logoutUser = async (req, res, next) => {
   res.clearCookie("token");
   const token = req.cookies.token || req.headers.authorization.split(" ")[1];
 
-  await blackListTokenModel.create({ token });
-
-  res.status(200).json({ message: "Logged out" });
+  await blackListTokenModel.create({ token });//dont need to send createdat
+  
+  res.status(200).json({ message: "Logged out successfull" });
 };
