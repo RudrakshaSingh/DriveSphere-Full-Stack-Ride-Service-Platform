@@ -1,8 +1,10 @@
-# BACKEND Documentation
+#  BACKEND Documentation 
 
 ## User Endpoints
 
 #### User Registration Endpoint Documentation
+---
+---
 
 ##### Endpoint : `/users/register`
 
@@ -69,6 +71,9 @@ The request body must be a JSON object containing the following fields:
 - Ensure that the `Content-Type` header is set to `application/json` when making requests to this endpoint.
 
 ### User Login Endpoint Documentation
+---
+---
+
 
 ### Endpoint : `/users/login`
 
@@ -137,6 +142,8 @@ The request body must be a JSON object containing the following fields:
 - Ensure that the `Content-Type` header is set to `application/json` when making requests to this endpoint.
 
 ### User Profile Endpoint Documentation
+---
+---
 
 ### Endpoint : `/users/profile`
 
@@ -174,6 +181,8 @@ This endpoint is used to get the profile of the logged-in user.
 - Ensure that the `Authorization` header is set to `Bearer <token>` when making requests to this endpoint.
 
 ### User Logout Endpoint Documentation
+---
+---
 
 ### Endpoint : `/users/logout`
 
@@ -208,6 +217,8 @@ This endpoint is used to log out the currently logged-in user.
 ## Captain Endpoints
 
 ### Captain Registration Endpoint Documentation
+---
+---
 
 ### Endpoint : `/captains/register`
 
@@ -291,6 +302,9 @@ The request body must be a JSON object containing the following fields:
 - Ensure that the `Content-Type` header is set to `application/json` when making requests to this endpoint.
 
 ### Captain Login Endpoint Documentation
+---
+---
+
 
 ### Endpoint : `/captains/login`
 
@@ -365,6 +379,8 @@ The request body must be a JSON object containing the following fields:
 - Ensure that the `Content-Type` header is set to `application/json` when making requests to this endpoint.
 
 ### Get Captain Profile Endpoint Documentation
+---
+---
 
 ### Endpoint : `/captains/profile`
 
@@ -408,6 +424,8 @@ This endpoint is used to get the profile of the logged-in captain.
 - Ensure that the `Authorization` header is set to `Bearer <token>` when making requests to this endpoint.
 
 ### Captain Logout Endpoint Documentation
+---
+---
 
 ### Endpoint : `/captains/logout`
 

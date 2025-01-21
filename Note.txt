@@ -24,3 +24,7 @@ create a readme.md file to docs the /users/register endpoint with description an
 jo bhi logout krdenge unke token blacklist collection me daal denge
 and agar check krenge in authuser 
 it will become full therefore we need a ttl-time to live it make the document deleted automatically in mongodb
+
+
+===============================================
+npm create vite@latest
