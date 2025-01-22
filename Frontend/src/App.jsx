@@ -12,8 +12,8 @@ export default function App() {
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<UserLogin />} />
         <Route path="/signup" element={<UserSignup />} />
-        <Route path="/caption-login" element={<CaptainLogin />} />
-        <Route path="/caption-signup" element={<CaptainSignup />} />
+        <Route path="/captain-login" element={<CaptainLogin />} />
+        <Route path="/captain-signup" element={<CaptainSignup />} />
       </Routes>
     </div>
   );
