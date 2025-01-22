@@ -1,16 +1,25 @@
-import  { createContext } from 'react'
+import React, { createContext, useState } from 'react'
 
-//context jisse data age age pas ho ske
+export const UserDataContext = createContext()
 
-export const UserDataContext = createContext({})
 
-function UserContext({children}) {
+const UserContext = ({ children }) => {
 
-    const user="sar"
+    const [ user, setUser ] = useState({
+        email: '',
+        fullName: {
+            firstName: '',
+            lastName: ''
+        }
+    })
 
-  return (
-    <div><UserDataContext.Provider value={{user}}>{children}</UserDataContext.Provider></div>
-  )
+    return (
+        <div>
+            <UserDataContext.Provider value={{ user, setUser }}>
+                {children}
+            </UserDataContext.Provider>
+        </div>
+    )
 }
 
 export default UserContext

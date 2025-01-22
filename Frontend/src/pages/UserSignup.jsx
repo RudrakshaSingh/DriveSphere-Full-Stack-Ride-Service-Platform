@@ -11,7 +11,7 @@ function UserSignup() {
     e.preventDefault(); //stops the page from reloading
 
     setUserData({
-      username: {
+      fullName: {
         firstName: firstName,
         lastName: lastName,
       },

@@ -11,7 +11,7 @@ function CaptainSignup() {
     e.preventDefault(); //stops the page from reloading
 
     setUserData({
-      username: {
+      fullName: {
         firstName: firstName,
         lastName: lastName,
       },
@@ -39,7 +39,7 @@ function CaptainSignup() {
             submitHandler(e);
           }}
         >
-          <h3 className="text-lg font-medium mb-2">What&apos;s your name</h3>
+          <h3 className="text-lg w-full font-medium mb-2">What&apos;s our Captain&apos;s  name</h3>
           <div className="flex gap-4 mb-6">
             <input
               required
@@ -62,7 +62,7 @@ function CaptainSignup() {
               }}
             />
           </div>
-          <h3 className="text-lg font-medium mb-2">What&apos;s your email</h3>
+          <h3 className="text-lg font-medium mb-2">What&apos;s our Captain&apos;s email</h3>
           <input
             required
             className="bg-[#eeeeee] mb-5 rounded px-4 py-2 border w-full text-lg placeholder:text-base"
