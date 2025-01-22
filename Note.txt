@@ -29,3 +29,4 @@ it will become full therefore we need a ttl-time to live it make the document de
 ===============================================
 npm create vite@latest
 npm i react-router-dom
+npm i axios
