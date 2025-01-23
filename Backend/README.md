@@ -2,7 +2,7 @@
 
 ## User Endpoints
 
-#### User Registration Endpoint Documentation
+### User Registration Endpoint Documentation
 ---
 ---
 
@@ -75,19 +75,19 @@ The request body must be a JSON object containing the following fields:
 ---
 
 
-### Endpoint : `/users/login`
+#### Endpoint : `/users/login`
 
-### HTTP Method: POST
+#### HTTP Method: POST
 
-### Description:
+#### Description:
 This endpoint is used to log in an existing user. It validates the input data and checks the user's credentials.
 
-### Request Body:
+#### Request Body:
 The request body must be a JSON object containing the following fields:
 - `email`: A valid email address (required)
 - `password`: A string with a minimum length of 6 characters (required)
 
-### Example Request Body:
+#### Example Request Body:
 ```json
 {
   "email": "john.doe@example.com",
@@ -95,7 +95,7 @@ The request body must be a JSON object containing the following fields:
 }
 ```
 
-### Responses:
+#### Responses:
 
 #### Success (200 OK):
 - **Description**: User successfully logged in.
@@ -138,21 +138,21 @@ The request body must be a JSON object containing the following fields:
   }
   ```
 
-### Notes:
+#### Notes:
 - Ensure that the `Content-Type` header is set to `application/json` when making requests to this endpoint.
 
 ### User Profile Endpoint Documentation
 ---
 ---
 
-### Endpoint : `/users/profile`
+#### Endpoint : `/users/profile`
 
-### HTTP Method: GET
+#### HTTP Method: GET
 
-### Description:
+#### Description:
 This endpoint is used to get the profile of the logged-in user.
 
-### Responses:
+#### Responses:
 
 #### Success (200 OK):
 - **Description**: User profile retrieved successfully.
@@ -177,21 +177,21 @@ This endpoint is used to get the profile of the logged-in user.
   }
   ```
 
-### Notes:
+#### Notes:
 - Ensure that the `Authorization` header is set to `Bearer <token>` when making requests to this endpoint.
 
 ### User Logout Endpoint Documentation
 ---
 ---
 
-### Endpoint : `/users/logout`
+#### Endpoint : `/users/logout`
 
-### HTTP Method: GET
+#### HTTP Method: GET
 
-### Description:
+#### Description:
 This endpoint is used to log out the currently logged-in user.
 
-### Responses:
+#### Responses:
 
 #### Success (200 OK):
 - **Description**: User successfully logged out and blacklist token provided in cookie or header.
@@ -211,7 +211,7 @@ This endpoint is used to log out the currently logged-in user.
   }
   ```
 
-### Notes:
+#### Notes:
 - Ensure that the `Authorization` header is set to `Bearer <token>` when making requests to this endpoint or in cookie.
 
 ## Captain Endpoints
