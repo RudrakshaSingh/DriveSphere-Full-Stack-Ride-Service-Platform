@@ -162,7 +162,7 @@ function CaptainSignup() {
         <p className='text-center'>Already have a account? <Link to='/captain-login' className='text-blue-600'>Login here</Link></p>
       </div>
       <div>
-        <p className='text-[10px] leading-tight'>This site is protected by reCAPTCHA and the <span className='underline'>Google Privacy
+        <p className='text-[10px] mt-6 leading-tight'>This site is protected by reCAPTCHA and the <span className='underline'>Google Privacy
           Policy</span> and <span className='underline'>Terms of Service apply</span>.</p>
       </div>
     </div>

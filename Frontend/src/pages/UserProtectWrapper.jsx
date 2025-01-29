@@ -7,7 +7,7 @@ import { UserDataContext } from "../context/UserContext";
 
 const UserProtectWrapper = ({ children }) => {
   //in inspect-application
-  //we are using it below as user ne login krne ke baad page relod krdiya toh context ka data chle jata hai
+  //we are using it below as user ne login krne ke baad page relod krdiya toh context ka data chle jata hai therefore we set in local
   const token = localStorage.getItem("token");
   const navigate = useNavigate();
 
