@@ -25,6 +25,10 @@ const userSchema = new mongoose.Schema({
         required: true,
         select: false,//so that it does not go when we find user by default does not go
     },
+    profileImage: {
+        type: String,
+        required: true,
+     },
     socketId: {//for live tracking to share location of uber to user live
         type: String,
     },

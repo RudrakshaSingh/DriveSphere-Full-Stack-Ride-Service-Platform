@@ -6,7 +6,7 @@ const authMiddleware = require("../middlewares/auth.middleware");
 const upload = require("../middlewares/multer.middleware");
 
 router.post(
-	"/register",upload.none(),
+	"/register",upload.single("profileImage"),
 	[
 		body("email").isEmail().withMessage("Invalid Email"),
 		body("firstname").isLength({ min: 3 }).withMessage("First name must be at least 3 characters long"),
