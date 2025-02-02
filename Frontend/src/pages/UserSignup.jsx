@@ -5,6 +5,7 @@ import { UserDataContext } from "../context/UserContext";
 import Webcam from "react-webcam";
 import { FilePlus, Camera } from "lucide-react";
 
+
 function UserSignup() {
   // User and image states
   const [email, setEmail] = useState("");
@@ -16,7 +17,7 @@ function UserSignup() {
 
   // Webcam-related states
   const [showCamera, setShowCamera] = useState(false);
-  const [facingMode, setFacingMode] = useState("user");
+  const [facingMode, setFacingMode] = useState("user");//"user" typically refers to the front-facing camera (for selfies), while "environment" refers to the rear camera.
 
   const navigate = useNavigate();
   const { setUser } = useContext(UserDataContext);
@@ -43,9 +44,9 @@ function UserSignup() {
     fileInputRef.current.click();
   };
 
-  // Open the camera panel modal
+//When the user clicks the camera icon (the Camera icon imported from lucide-react), the function openCameraPanel is called:
   const openCameraPanel = () => {
-    setShowCamera(true);
+    setShowCamera(true);  
   };
 
   // Capture photo from the webcam, convert the Base64 image to a Blob (and File)
@@ -57,7 +58,7 @@ function UserSignup() {
       // Create a File from the Blob
       const file = new File([blob], "captured-image.jpg", { type: blob.type });
       setProfileImage(file);
-      setPreviewURL(imageSrc);
+      setPreviewURL(imageSrc);//The file is saved in the state using setProfileImage(file) and the preview is updated with setPreviewURL(imageSrc). 
     }
     setShowCamera(false);
   };
@@ -98,6 +99,7 @@ function UserSignup() {
         navigate("/login");
       }
     } catch (error) {
+		alert("Error in signup ");
       console.log("Error in signup page:", error);
     }
 
