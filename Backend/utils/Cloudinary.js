@@ -19,7 +19,7 @@ const uploadOnCloudinary = async (localFilePath) => {
     
     // Upload the file to Cloudinary
     const response = await cloudinary.uploader.upload(localFilePath, {
-      folder: 'sandesh',
+      folder: 'uber',
       resource_type: 'auto',
       width: 250,
       height: 250,
