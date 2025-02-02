@@ -151,7 +151,7 @@ function CaptainSignup() {
               <option value="" disabled>Select Vehicle Type</option>
               <option value="car">Car</option>
               <option value="auto">Auto</option>
-              <option value="moto">Motorcycle</option>
+              <option value="moto">Moto</option>
             </select>
           </div>
           <button

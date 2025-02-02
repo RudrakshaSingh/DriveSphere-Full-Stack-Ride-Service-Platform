@@ -11,23 +11,17 @@ function UserSignup() {
 
 	const navigate = useNavigate();
 
-	const { user, setUser } = useContext(UserDataContext);
+	const { setUser } = useContext(UserDataContext);
 
 	const submitHandler = async (e) => {
     e.preventDefault(); // Stops the page from reloading
   
     const formData = new FormData();
   
-    // Append fields
     formData.append("email", email);
     formData.append("password", password);
     formData.append("firstname", firstName);
     formData.append("lastname", lastName);
-  
-    // Log FormData for debugging
-    for (let [key, value] of formData.entries()) {
-      console.log(`${key}: ${value}`);
-    }
   
     try {
       const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/users/register`, formData, {
