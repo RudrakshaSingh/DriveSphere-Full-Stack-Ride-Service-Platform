@@ -16,13 +16,16 @@ module.exports.registerUser = asyncHandler(async (req, res) => {
 			console.log("fff");
 
 			return res.status(400).json({ errors: errors.array() });
+			// throw new ApiError(400, "error in register controller", errors.array());
 		}
 
 		const { firstname, lastname, email, password } = req.body;
 
 		const isUserAlreadyExists = await userModel.findOne({ email });
 		if (isUserAlreadyExists) {
-			return res.status(400).json({ error: "User already exists" });
+			console.log("hi");
+			
+			throw new ApiError(400, "User email already exists");
 		}
 
 		const hashedPassword = await userModel.hashPassword(password);
