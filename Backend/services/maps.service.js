@@ -60,8 +60,8 @@ module.exports.getAutoCompleteSuggestions = async (address) => {
 		}
 
 		const nameArray = features.map((feature) => feature.properties.name);
-        console.log(nameArray);
-        
+		console.log(nameArray);
+
 		return nameArray;
 	} catch (error) {
 		console.log("suggestin service error");
@@ -74,5 +74,51 @@ module.exports.getAutoCompleteSuggestions = async (address) => {
 			console.error("Error Message:", error.message);
 		}
 		throw new Error("Unable to fetch address suggestions");
+	}
+};
+
+module.exports.getDistanceTime = async (origin, destination) => {
+	const apiKey = process.env.OPEN_ROUTE_SERVICE_API_KEY;
+	const url = `https://api.openrouteservice.org/v2/matrix/driving-car`;
+
+	try {
+		const coordinates = [
+			origin, // [longitude, latitude] of origin
+			destination, // [longitude, latitude] of destination
+		];
+
+		// Make API request
+		const response = await axios.post(
+			url,
+			{
+				locations: coordinates,
+				metrics: ["distance", "duration"],
+				units: "km",
+			},
+			{
+				headers: {
+					Authorization: apiKey, // Set the API key in headers
+					"Content-Type": "application/json", // Specify content type as JSON
+				},
+			}
+		);
+		const duration = response.data.durations[0][1]; // duration between origin and destination
+		const durationInHours=duration/3600;
+
+		const distance = response.data.distances[0][1]; // distance between origin and destination
+
+		// Return the extracted duration and distance
+		return {
+			duration:durationInHours,
+			distance,
+		};
+	} catch (error) {
+		// Enhanced error logging
+		if (error.response) {
+			console.error("API Response Error:", error.response.data);
+		} else {
+			console.error("Error Message:", error.message);
+		}
+		throw new Error("Unable to fetch distance and time.");
 	}
 };
