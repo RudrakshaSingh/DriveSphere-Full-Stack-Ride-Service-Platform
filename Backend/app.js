@@ -9,6 +9,7 @@ const cookieParser = require('cookie-parser');
 const captionRoutes = require('./routes/captain.routes');
 const mapsRoutes = require('./routes/maps.routes');
 const errorHandler = require('./middlewares/errorHandler');
+const rideRoutes = require('./routes/ride.routes');
 
 connectToDb();
 
@@ -28,6 +29,7 @@ app.use(cookieParser());
 app.use('/users', userRoutes);
 app.use('/captains', captionRoutes);
 app.use('/maps', mapsRoutes);
+app.use('/rides', rideRoutes);
 
 // Use the error handling middleware
 app.use(errorHandler);

@@ -78,6 +78,19 @@ module.exports.getAutoCompleteSuggestions = async (address) => {
 };
 
 module.exports.getDistanceTime = async (origin, destination) => {
+	if (
+		!Array.isArray(origin) ||
+		origin.length !== 2 ||
+		!Array.isArray(destination) ||
+		destination.length !== 2 ||
+		!origin.every((coord) => typeof coord === "number") ||
+		!destination.every((coord) => typeof coord === "number")
+	) {
+		throw new Error(
+			"Invalid input: Origin and destination must be arrays with two numeric coordinates [longitude, latitude]."
+		);
+	}
+
 	const apiKey = process.env.OPEN_ROUTE_SERVICE_API_KEY;
 	const url = `https://api.openrouteservice.org/v2/matrix/driving-car`;
 
@@ -103,13 +116,13 @@ module.exports.getDistanceTime = async (origin, destination) => {
 			}
 		);
 		const duration = response.data.durations[0][1]; // duration between origin and destination
-		const durationInHours=duration/3600;
+		const durationInHours = (duration / 60).toFixed(2);
 
-		const distance = response.data.distances[0][1]; // distance between origin and destination
+		const distance = response.data.distances[0][1].toFixed(2); // distance between origin and destination
 
 		// Return the extracted duration and distance
 		return {
-			duration:durationInHours,
+			duration: durationInHours,
 			distance,
 		};
 	} catch (error) {

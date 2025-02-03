@@ -13,10 +13,7 @@ module.exports.registerUser = asyncHandler(async (req, res) => {
 
 		//if something if wrong the give error in routes comes in errors.array
 		if (!errors.isEmpty()) {
-			console.log("fff");
-
-			return res.status(400).json({ errors: errors.array() });
-			// throw new ApiError(400, "error in register controller", errors.array());
+			throw new ApiError(400, "error in register controller", errors.array());
 		}
 
 		const { firstname, lastname, email, password } = req.body;
@@ -51,8 +48,6 @@ module.exports.registerUser = asyncHandler(async (req, res) => {
 		});
 
 		const token = user.generateAuthToken(); //give id of user
-
-		// res.status(201).json({ token, user });
 		return res.status(201).json(new ApiResponse(201, "User created successfully", { token, user }));
 	} catch (error) {
 		throw new ApiError(400, "error in register controller", error.message);
