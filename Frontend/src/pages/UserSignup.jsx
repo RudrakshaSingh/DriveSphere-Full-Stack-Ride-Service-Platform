@@ -4,6 +4,7 @@ import axios from "axios";
 import { UserDataContext } from "../context/UserContext";
 import Webcam from "react-webcam";
 import { FilePlus, Camera } from "lucide-react";
+import {toast} from "react-hot-toast";
 
 function UserSignup() {
 	// User and image states
@@ -85,16 +86,22 @@ function UserSignup() {
 		if (profileImage) formData.append("profileImage", profileImage);
 
 		try {
-			const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/users/register`, formData, {
+			await toast.promise(
+			  axios.post(`${import.meta.env.VITE_BASE_URL}/users/register`, formData, {
 				headers: { "Content-Type": "multipart/form-data" },
-			});
-
-			if (response.status === 201) {
+			  }),
+			  {
+				loading: "Signing up...",
+				success: "Signup successful! Redirecting...",
+				error: "Error during signup",
+			  }
+			).then((response) => {
+			  if (response.status === 201) {
 				const data = response.data;
-
+		  
 				setUser(data.message.user);
 				localStorage.setItem("token", data.message.token);
-
+		  
 				// Reset form states
 				setEmail("");
 				setPassword("");
@@ -102,13 +109,15 @@ function UserSignup() {
 				setLastName("");
 				setProfileImage(null);
 				setPreviewURL(null);
-
+		  
 				navigate("/login");
-			}
-		} catch (error) {
-			alert("Error in signup ");
-			console.log("Error in signup page:", error);
-		}
+			  }
+			});
+		  } catch (error) {
+			// Handle error toast separately
+			console.error("Error in signup page:", error);
+		  }
+		  
 	};
 
 	return (

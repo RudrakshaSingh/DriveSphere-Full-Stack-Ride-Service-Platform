@@ -5,15 +5,17 @@ import App from "./App.jsx";
 import { BrowserRouter } from "react-router-dom";
 import UserContext from "./context/UserContext.jsx";
 import CaptainContext from "./context/CapatainContext.jsx";
+import { Toaster } from "react-hot-toast";
 
 createRoot(document.getElementById("root")).render(
-  <StrictMode>
-    <CaptainContext>
-      <UserContext>
-        <BrowserRouter>
-          <App />
-        </BrowserRouter>
-      </UserContext>
-    </CaptainContext>
-  </StrictMode>
+	<StrictMode>
+		<CaptainContext>
+			<UserContext>
+				<BrowserRouter>
+						<App />
+            <Toaster/>
+				</BrowserRouter>
+			</UserContext>
+		</CaptainContext>
+	</StrictMode>
 );
