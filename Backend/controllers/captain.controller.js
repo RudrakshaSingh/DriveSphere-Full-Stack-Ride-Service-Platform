@@ -2,92 +2,116 @@ const captainModel = require("../models/captain.model");
 const captainService = require("../services/captain.service");
 const { validationResult } = require("express-validator");
 const blackListTokenModel = require("../models/blackListToken.model");
+const asyncHandler = require("../utils/AsyncHandler");
+const ApiError = require("../utils/ApiError");
+const { ApiResponse } = require("../utils/ApiResponse");
+const uploadOnCloudinary = require("../utils/Cloudinary");
 
-module.exports.registerCaptain = async (req, res, next) => {
-  try {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
-    }
+module.exports.registerCaptain = asyncHandler(async (req, res, next) => {
+	try {
+		const errors = validationResult(req);
+		if (!errors.isEmpty()) {
+			throw new ApiError(400, "error in register controller captain", errors.array());
+		}
 
-    const { fullname, email, password, vehicle } = req.body;
+		const { firstname, lastname, email, password, color, plate, capacity, vehicleType, model, mobileNumber } =
+			req.body;
 
-    const isCaptainAlreadyExist = await captainModel.findOne({ email });
+		const isCaptainAlreadyExist = await captainModel.findOne({ email });
 
-    if (isCaptainAlreadyExist) {
-      return res.status(400).json({ message: "Captain already exist with given email" });
-    }
+		if (isCaptainAlreadyExist) {
+			throw new ApiError(400, "Captain already exist with given email");
+		}
 
-    const hashedPassword = await captainModel.hashPassword(password);
+		const hashedPassword = await captainModel.hashPassword(password);
 
-    const captain = await captainService.createCaptain({
-      firstname: fullname.firstname,
-      lastname: fullname.lastname,
-      email,
-      password: hashedPassword,
-      color: vehicle.color,
-      plate: vehicle.plate,
-      capacity: vehicle.capacity,
-      vehicleType: vehicle.vehicleType,
-    });
+		// Correct ProfileImage path (use req.file)
+		const ProfilePictureLocalPath = req.file?.path;
+		let profileImageUrl = process.env.DEFAULT_PROFILE_IMAGE_CAPTAIN_URL;
+		if (ProfilePictureLocalPath) {
+			// Upload to Cloudinary
+			const profileImage = await uploadOnCloudinary(ProfilePictureLocalPath);
+			if (!profileImage) {
+				throw new ApiError(400, "Error uploading profile picture");
+			}
+			profileImageUrl = profileImage.url;
+		}
 
-    const token = captain.generateAuthToken();
+		const captain = await captainService.createCaptain({
+			firstname,
+			lastname,
+			email,
+			password: hashedPassword,
+			color,
+			plate,
+			capacity,
+			vehicleType,
+			model,
+			mobileNumber,
+			profileImage: profileImageUrl,
+		});
 
-    res.status(201).json({ token, captain });
-  } catch (error) {
-    res.status(500).json({ error: "Server error,Error registering captain" });
-  }
-};
+		const token = captain.generateAuthToken();
 
-module.exports.loginCaptain = async (req, res, next) => {
-  try {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
-    }
+		return res.status(201).json(new ApiResponse(201, "Captain registered successfully", { token, captain }));
+	} catch (error) {
+		throw new ApiError(500, "Server error,Error registering captain", error.message);
+	}
+});
 
-    const { email, password } = req.body;
+module.exports.loginCaptain = asyncHandler(async (req, res, next) => {
+	try {
+		const errors = validationResult(req);
+		if (!errors.isEmpty()) {
+			throw new ApiError(400, "error in login controller", errors.array());
+		}
 
-    const captain = await captainModel.findOne({ email }).select("+password");
+		const { email, password } = req.body;
 
-    if (!captain) {
-      return res.status(401).json({ message: "Invalid email or password" });
-    }
+		const captain = await captainModel.findOne({ email }).select("+password");
 
-    const isMatch = await captain.comparePassword(password);
+		if (!captain) {
+			throw new ApiError(401, "Invalid email or password");
+		}
 
-    if (!isMatch) {
-      return res.status(401).json({ message: "Invalid email or password" });
-    }
+		const isMatch = await captain.comparePassword(password);
 
-    const token = captain.generateAuthToken();
+		if (!isMatch) {
+			throw new ApiError(401, "Invalid email or password");
+		}
 
-    res.cookie("token", token);
+		const token = captain.generateAuthToken();
 
-    res.status(200).json({ token, captain });
-  } catch (error) {
-    res.status(500).json({ error: "Server error,Error logging in captain" });
-  }
-};
+		res.cookie("token", token, {
+			httpOnly: true,
+			secure: false, // Set to true if using HTTPS
+			sameSite: "Lax", // Adjust as needed: 'Strict', 'Lax', or 'None'
+		});
 
-module.exports.getCaptainProfile = async (req, res, next) => {
-  try {
-    res.status(200).json({ captain: req.captain });
-  } catch (error) {
-    res.status(500).json({ error: "Server error,Error getting captain profile" });
-  }
-};
+		return res.status(200).json(new ApiResponse(200, "Captain logged in successfully", { token, captain }));
+	} catch (error) {
+		throw new ApiError(500, "Server error,Error logging in captain", error.message);
+	}
+});
 
-module.exports.logoutCaptain = async (req, res, next) => {
-  try {
-    const token = req.cookies.token || req.headers.authorization?.split(" ")[1];
+module.exports.getCaptainProfile = asyncHandler(async (req, res, next) => {
+	try {
+		return res.status(200).json(new ApiResponse(200, "Captain profile fetched successfully", req.captain));
+	} catch (error) {
+		throw new ApiError(500, "Server error,Error getting captain profile", error.message);
+	}
+});
 
-    const blacklisted =await blackListTokenModel.create({ token });
+module.exports.logoutCaptain = asyncHandler(async (req, res, next) => {
+	try {
+		const token = req.cookies.token || req.headers.authorization?.split(" ")[1];
 
-    res.clearCookie("token");
+		const blacklisted = await blackListTokenModel.create({ token });
 
-    res.status(200).json({ message: "Logout successfully" });
-  } catch (error) {
-    res.status(500).json({ error: "Server error,Error logging out captain" });
-  }
-};
+		res.clearCookie("token");
+
+		return res.status(200).json(new ApiResponse(200, "Captain logged out successfully"));
+	} catch (error) {
+		throw new ApiError(500, "Server error,Error logging out captain", error.message);
+	}
+});

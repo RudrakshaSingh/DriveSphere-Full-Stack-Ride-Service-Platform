@@ -20,8 +20,6 @@ module.exports.registerUser = asyncHandler(async (req, res) => {
 
 		const isUserAlreadyExists = await userModel.findOne({ email });
 		if (isUserAlreadyExists) {
-			console.log("hi");
-
 			throw new ApiError(400, "User email already exists");
 		}
 
