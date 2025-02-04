@@ -32,10 +32,12 @@ const rideSchema = new mongoose.Schema(
 		},
 		originText: {
 			type: String,
+			required: true,
 		},
 
 		destinationText: {
 			type: String,
+			required: true,
 		},
 		fare: {
 			type: Number,

@@ -20,7 +20,7 @@ function UserSignup() {
 	const [facingMode, setFacingMode] = useState("user"); //"user" typically refers to the front-facing camera (for selfies), while "environment" refers to the rear camera.
 
 	const navigate = useNavigate();
-	const { setUser } = useContext(UserDataContext);
+	const { user,setUser } = useContext(UserDataContext);
 	const webcamRef = useRef(null);
 
 	// File input ref to trigger file selection
@@ -98,8 +98,8 @@ function UserSignup() {
 			).then((response) => {
 			  if (response.status === 201) {
 				const data = response.data;
-		  
 				setUser(data.message.user);
+				
 				localStorage.setItem("token", data.message.token);
 		  
 				// Reset form states

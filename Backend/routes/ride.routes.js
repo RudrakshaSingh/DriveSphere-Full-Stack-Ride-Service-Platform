@@ -5,7 +5,8 @@ const rideController = require("../controllers/ride.controller");
 const authMiddleware = require("../middlewares/auth.middleware");
 
 router.post(
-	"/create",authMiddleware.authUser,
+	"/create",
+	authMiddleware.authUser,
 	body("origin")
 		.isArray({ min: 2, max: 2 })
 		.withMessage("Origin must be an array with exactly two coordinates [longitude, latitude]")
@@ -22,6 +23,18 @@ router.post(
 		.isString()
 		.isIn(["auto", "car", "moto"])
 		.withMessage("Invalid vehicle type. Allowed types: auto, car, moto"),
+	body("originText")
+		.isString()
+		.withMessage("Origin text must be a valid string")
+		.notEmpty()
+		.withMessage("Origin text is required"),
+
+	// Destination Text Validation
+	body("destinationText")
+		.isString()
+		.withMessage("Destination text must be a valid string")
+		.notEmpty()
+		.withMessage("Destination text is required"),
 
 	rideController.createRide
 );

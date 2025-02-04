@@ -48,7 +48,7 @@ function getOtp(num) {
 	return generateOtp(num);
 }
 
-module.exports.createRide = async ({ user, origin, destination, vehicleType }) => {
+module.exports.createRide = async ({ user, origin, destination, vehicleType,originText,destinationText }) => {
 	try {
 		if (!user || !origin || !destination || !vehicleType) {
 			throw new ApiError(400, "All fields are required");
@@ -62,6 +62,9 @@ module.exports.createRide = async ({ user, origin, destination, vehicleType }) =
 			destination,
 			otp: getOtp(6),
 			fare: fare[vehicleType],
+			originText,
+			destinationText
+
 		});
 
 		return ride;

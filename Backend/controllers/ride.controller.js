@@ -9,9 +9,10 @@ module.exports.createRide = asyncHandler(async (req, res) => {
 	if (!errors.isEmpty()) {
         throw new ApiError(400, "error in register controller", errors.array());
 	}
-	const { userId, origin, destination, vehicleType } = req.body;
+
+	const {  origin, destination, vehicleType,originText, destinationText } = req.body;
 	try {
-		const ride = await rideService.createRide({ user: req.user._id, origin, destination, vehicleType });
+		const ride = await rideService.createRide({ user: req.user._id, origin, destination, vehicleType,originText, destinationText });
 
         return res.status(201).json(new ApiResponse(201, "Ride created successfully", ride));
 	} catch (err) {

@@ -19,13 +19,16 @@ function UserLogin() {
       email: email,
       password: password,
     };
+    
     const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/users/login`, userData,{
       withCredentials: true
     });
     if (response.status === 200) {
       const data = response.data;
-      setUser(data.user);
-      localStorage.setItem("token", data.token);
+      
+      
+      setUser(data.message.user);
+      localStorage.setItem("token", data.message.token);
 
       // const token = Cookies.get('token');
 			// console.log(token);//did not work because of httponly:true when setting cookie

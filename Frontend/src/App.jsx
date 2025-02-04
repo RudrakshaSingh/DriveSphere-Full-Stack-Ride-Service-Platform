@@ -1,6 +1,5 @@
 import { Route, Routes } from "react-router-dom";
 import Start from "./pages/Start";
-import UserLogin from "./pages/UserLogin";
 import UserSignup from "./pages/UserSignup";
 import CaptainLogin from "./pages/CaptainLogin";
 import CaptainSignup from "./pages/CaptainSignup";
@@ -12,6 +11,7 @@ import CaptainProtectWrapper from "./pages/CaptainProtectWrapper";
 import CaptainLogout from "./pages/CaptainLogout";
 import Riding from "./pages/riding";
 import CaptainRiding from "./pages/CaptainRiding";
+import UserLogin from "./pages/UserLogin";
 
 export default function App() {
   return (
