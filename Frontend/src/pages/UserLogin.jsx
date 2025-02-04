@@ -65,13 +65,17 @@ function UserLogin() {
 					/>
 				</div>
 
-				<form onSubmit={submitHandler}  className="space-y-6">
+				<form onSubmit={submitHandler} className="space-y-6">
 					{/* Email Input */}
 					<div>
-						<label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+						<label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+							Email
+						</label>
 						<div className="relative">
 							<input
-							id="email"
+								id="email"
+								name="email"
+								autoComplete="username"
 								required
 								className="w-full px-4 py-2 pl-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
 								type="email"
@@ -85,10 +89,14 @@ function UserLogin() {
 
 					{/* Password Input */}
 					<div>
-						<label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+						<label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+							Password
+						</label>
 						<div className="relative">
 							<input
-							id="password"
+								id="password"
+								name="password"
+								autoComplete="current-password"
 								required
 								className="w-full px-4 py-2 pl-10 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
 								type={showPassword ? "text" : "password"}

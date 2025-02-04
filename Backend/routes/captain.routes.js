@@ -10,7 +10,7 @@ router.post(
   [
     body("email").isEmail().withMessage("Invalid Email"),
     body("firstname").isLength({ min: 3 }).withMessage("First name must be at least 3 characters long"),
-		body("lastname").isLength({ min: 3 }).withMessage("Last name must be at least 3 characters long"),
+    body("lastname").isLength({ min: 3 }).withMessage("Last name must be at least 3 characters long"),
     body("password").isLength({ min: 6 }).withMessage("Password must be at least 6 characters long"),
     body("color").isLength({ min: 3 }).withMessage("Color must be at least 3 characters long"),
     body("plate").isLength({ min: 3 }).withMessage("Plate must be at least 3 characters long"),
