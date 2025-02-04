@@ -2,36 +2,36 @@ const axios = require("axios");
 const asyncHandler = require("../utils/AsyncHandler");
 const ApiError = require("../utils/ApiError");
 
-module.exports.getAddressCoordinate = asyncHandler(async (address) => {
+module.exports.getAddressCoordinate = async (address) => {
 	try {
-		const response = await axios.get("https://api.openrouteservice.org/geocode/search", {
-			params: {
-				api_key: process.env.OPEN_ROUTE_SERVICE_API_KEY,
-				text: address,
-			},
-		});
-
-		// Extracting coordinates from the response
-		if (response.data && response.data.features && response.data.features.length > 0) {
-			const coordinates = response.data.features[0].geometry.coordinates; // [longitude, latitude]
-
-			const coordinatesObject = {
-				longitude: coordinates[0],
-				latitude: coordinates[1],
-			};
-
-			// Returning the coordinates
-			return coordinatesObject;
-		} else {
-			console.log("No coordinates found for the address");
-			return null;
-		}
+	  const response = await axios.get("https://api.openrouteservice.org/geocode/search", {
+		params: {
+		  api_key: process.env.OPEN_ROUTE_SERVICE_API_KEY,
+		  text: address,
+		},
+	  });
+  
+	  if (response.data && response.data.features && response.data.features.length > 0) {
+		const coordinates = response.data.features[0].geometry.coordinates; // [longitude, latitude]
+		const coordinatesObject = {
+		  longitude: coordinates[0],
+		  latitude: coordinates[1],
+		};
+  
+		console.log("Returning coordinates from service:", coordinatesObject); // Log to verify
+		return coordinatesObject;
+	  } else {
+		console.log("No coordinates found for address:", address);
+		return null; // Return null if coordinates are not found
+	  }
 	} catch (error) {
-		throw new ApiError(500, "Unable to fetch coordinates", error.message);
+	  console.error("Error in getAddressCoordinate:", error.message);
+	  throw new ApiError(500, "Unable to fetch coordinates", error.message);
 	}
-});
+  };
+  
 
-module.exports.getAutoCompleteSuggestions = asyncHandler(async (address) => {
+module.exports.getAutoCompleteSuggestions = async (address) => {
 	if (!address) {
 		throw new ApiError(400, "Missing required in map service fields");
 	}
@@ -58,9 +58,9 @@ module.exports.getAutoCompleteSuggestions = asyncHandler(async (address) => {
 	} catch (error) {
 		throw new ApiError(500, "Unable to fetch address suggestions", error.message);
 	}
-});
+};
 
-module.exports.getDistanceTime = asyncHandler(async (origin, destination) => {
+module.exports.getDistanceTime = async (origin, destination) => {
 	if (
 		!Array.isArray(origin) ||
 		origin.length !== 2 ||
@@ -109,4 +109,4 @@ module.exports.getDistanceTime = asyncHandler(async (origin, destination) => {
 	} catch (error) {
 		throw new ApiError(500, "Unable to fetch distance and time", error.message);
 	}
-});
+};

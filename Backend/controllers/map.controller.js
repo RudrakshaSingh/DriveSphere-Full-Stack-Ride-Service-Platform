@@ -1,20 +1,37 @@
-const mapsService = require('../services/maps.service');
+const mapsService=require("../services/maps.service");
 const { validationResult } = require('express-validator');
 const asyncHandler = require('../utils/AsyncHandler');
+const ApiError = require('../utils/ApiError');
+const { ApiResponse } = require('../utils/ApiResponse');
 
-module.exports.getCoordinates = asyncHandler(async (req, res, next) => {
+module.exports.getCoordinates = asyncHandler(async (req, res) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
+    return res.status(400).json({ errors: errors.array() });
   }
+
   const { address } = req.query;
+
   try {
-      const coordinates = await mapsService.getAddressCoordinate(address);
-      return res.status(200).json(new ApiResponse(200, "Coordinates fetched successfully", coordinates));
+    console.log("Received address query:", address);
+
+    // Call service to get coordinates
+    const coordinates = await mapsService.getAddressCoordinate(address);
+    console.log("Coordinates returned from service:", coordinates); // Log the coordinates returned from service
+
+    if (!coordinates) {
+      console.log("No coordinates found for the address.");
+      throw new ApiError(404, "Coordinates not found for the given address");
+    }
+
+    return res.status(200).json(new ApiResponse(200, "Coordinates fetched successfully", coordinates));
   } catch (error) {
-      throw new ApiError(404, "Coordinates not found",error.message);
+    console.error("Error in getCoordinates controller:", error.message);
+    throw new ApiError(error.status || 500, "Coordinates fetch error", error.message);
   }
-})
+});
+
+
 
 module.exports.getAutoCompleteSuggestions = asyncHandler(async (req, res) => {
   const errors = validationResult(req);
