@@ -16,7 +16,7 @@ module.exports.registerUser = asyncHandler(async (req, res) => {
 			throw new ApiError(400, "error in register controller", errors.array());
 		}
 
-		const { firstname, lastname, email, password } = req.body;
+		const { firstname, lastname, email, password,mobileNumber } = req.body;
 
 		const isUserAlreadyExists = await userModel.findOne({ email });
 		if (isUserAlreadyExists) {
@@ -38,13 +38,14 @@ module.exports.registerUser = asyncHandler(async (req, res) => {
 			}
 			profileImageUrl = profileImage.url;
 		}
-
+		
 		const user = await userService.createUser({
 			firstname: firstname,
 			lastname: lastname,
 			email,
 			password: hashedPassword,
 			profileImage: profileImageUrl,
+			mobileNumber
 		});
 
 		const token = user.generateAuthToken(); //give id of user

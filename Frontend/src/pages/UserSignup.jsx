@@ -4,7 +4,7 @@ import axios from "axios";
 import { UserDataContext } from "../context/UserContext";
 import Webcam from "react-webcam";
 import { FilePlus, Camera } from "lucide-react";
-import {toast} from "react-hot-toast";
+import { toast } from "react-hot-toast";
 
 function UserSignup() {
 	// User and image states
@@ -14,13 +14,14 @@ function UserSignup() {
 	const [lastName, setLastName] = useState("");
 	const [profileImage, setProfileImage] = useState(null);
 	const [previewURL, setPreviewURL] = useState(null);
+	const [mobileNumber, setMobileNumber] = useState("");
 
 	// Webcam-related states
 	const [showCamera, setShowCamera] = useState(false);
 	const [facingMode, setFacingMode] = useState("user"); //"user" typically refers to the front-facing camera (for selfies), while "environment" refers to the rear camera.
 
 	const navigate = useNavigate();
-	const { user,setUser } = useContext(UserDataContext);
+	const {  setUser } = useContext(UserDataContext);
 	const webcamRef = useRef(null);
 
 	// File input ref to trigger file selection
@@ -83,41 +84,44 @@ function UserSignup() {
 		formData.append("password", password);
 		formData.append("firstname", firstName);
 		formData.append("lastname", lastName);
+		formData.append("mobileNumber", mobileNumber);
 		if (profileImage) formData.append("profileImage", profileImage);
 
 		try {
-			await toast.promise(
-			  axios.post(`${import.meta.env.VITE_BASE_URL}/users/register`, formData, {
-				headers: { "Content-Type": "multipart/form-data" },
-			  }),
-			  {
-				loading: "Signing up...",
-				success: "Signup successful! Redirecting...",
-				error: "Error during signup",
-			  }
-			).then((response) => {
-			  if (response.status === 201) {
-				const data = response.data;
-				setUser(data.message.user);
-				
-				localStorage.setItem("token", data.message.token);
-		  
-				// Reset form states
-				setEmail("");
-				setPassword("");
-				setFirstName("");
-				setLastName("");
-				setProfileImage(null);
-				setPreviewURL(null);
-		  
-				navigate("/login");
-			  }
-			});
-		  } catch (error) {
+			await toast
+				.promise(
+					axios.post(`${import.meta.env.VITE_BASE_URL}/users/register`, formData, {
+						headers: { "Content-Type": "multipart/form-data" },
+					}),
+					{
+						loading: "Signing up...",
+						success: "Signup successful! Redirecting...",
+						error: "Error during signup",
+					}
+				)
+				.then((response) => {
+					if (response.status === 201) {
+						const data = response.data;
+						setUser(data.message.user);
+
+						localStorage.setItem("token", data.message.token);
+
+						// Reset form states
+						setEmail("");
+						setPassword("");
+						setFirstName("");
+						setMobileNumber("");
+						setLastName("");
+						setProfileImage(null);
+						setPreviewURL(null);
+
+						navigate("/login");
+					}
+				});
+		} catch (error) {
 			// Handle error toast separately
 			console.error("Error in signup page:", error);
-		  }
-		  
+		}
 	};
 
 	return (
@@ -203,6 +207,15 @@ function UserSignup() {
 						placeholder="email@example.com"
 						value={email}
 						onChange={(e) => setEmail(e.target.value)}
+					/>
+					<h3 className="text-lg font-medium mb-2">Enter your mobile number</h3>
+					<input
+						required
+						className="bg-gray-50 mb-6 rounded-lg px-4 py-3 border w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+						type="text"
+						placeholder="9234567890"
+						value={mobileNumber}
+						onChange={(e) => setMobileNumber(e.target.value)}
 					/>
 
 					<h3 className="text-lg font-medium mb-2">Enter your password</h3>

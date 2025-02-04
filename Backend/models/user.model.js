@@ -29,6 +29,11 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: true,
      },
+     mobileNumber: {
+        type: Number,
+        required: true,
+        unique: true,
+     },
     socketId: {//for live tracking to share location of uber to user live
         type: String,
     },
