@@ -7,7 +7,7 @@ function CaptainLogin() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
  
-  const { captain, setCaptain } = useContext(CaptainDataContext)
+  const {  setCaptain } = useContext(CaptainDataContext)
   const navigate = useNavigate()
 
   const submitHandler = async (e) => {
@@ -20,8 +20,8 @@ function CaptainLogin() {
     const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/captains/login`, captain)
     if (response.status === 200) {
       const data = response.data
-      setCaptain(data.captain)
-      localStorage.setItem('token', data.token)
+      setCaptain(data.message.captain)
+      localStorage.setItem('token', data.message.token)
       navigate('/captain-home')
     }
     

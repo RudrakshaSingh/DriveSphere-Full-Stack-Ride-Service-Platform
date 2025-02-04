@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { UserDataContext } from "../context/UserContext";
 import Webcam from "react-webcam";
-import { FilePlus, Camera } from "lucide-react";
+import { FilePlus, Camera, RefreshCw, Eye, EyeOff } from "lucide-react";
 import { toast } from "react-hot-toast";
 
 function UserSignup() {
@@ -15,13 +15,16 @@ function UserSignup() {
 	const [profileImage, setProfileImage] = useState(null);
 	const [previewURL, setPreviewURL] = useState(null);
 	const [mobileNumber, setMobileNumber] = useState("");
+	const [showPassword, setShowPassword] = useState(false);
+	const [confirmShowPassword, setConfirmShowPassword] = useState(false);
+	const [confirmPassword, setConfirmPassword] = useState("");
 
 	// Webcam-related states
 	const [showCamera, setShowCamera] = useState(false);
 	const [facingMode, setFacingMode] = useState("user"); //"user" typically refers to the front-facing camera (for selfies), while "environment" refers to the rear camera.
 
 	const navigate = useNavigate();
-	const {  setUser } = useContext(UserDataContext);
+	const { setUser } = useContext(UserDataContext);
 	const webcamRef = useRef(null);
 
 	// File input ref to trigger file selection
@@ -75,19 +78,80 @@ function UserSignup() {
 		setPreviewURL(null);
 	};
 
+	const validateName = (name) => {
+		const nameRegex = /^[A-Za-z\s'-]{3,50}$/;
+		return nameRegex.test(name);
+	};
+
+	const validatePassword = (password) => {
+		const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,20}$/;
+		return passwordRegex.test(password);
+	};
+
+	const validateEmail = (email) => {
+		const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+		return emailRegex.test(email);
+	};
+
+	const validateMobile = (mobile) => {
+		const mobileRegex = /^\d{10}$/;
+		return mobileRegex.test(mobile);
+	};
+
 	// Handle form submission
 	const submitHandler = async (e) => {
 		e.preventDefault();
-
-		const formData = new FormData();
-		formData.append("email", email);
-		formData.append("password", password);
-		formData.append("firstname", firstName);
-		formData.append("lastname", lastName);
-		formData.append("mobileNumber", mobileNumber);
-		if (profileImage) formData.append("profileImage", profileImage);
-
 		try {
+			// Password match validation
+			if (password !== confirmPassword) {
+				toast.error("Passwords do not match");
+				return;
+			}
+
+			// First name validation
+			if (!validateName(firstName)) {
+				toast.error(
+					"First name must be 3-50 characters and contain only letters, spaces, apostrophes, or hyphens"
+				);
+				return;
+			}
+
+			// Last name validation
+			if (!validateName(lastName)) {
+				toast.error(
+					"Last name must be 3-50 characters and contain only letters, spaces, apostrophes, or hyphens"
+				);
+				return;
+			}
+
+			// Email validation
+			if (!validateEmail(email)) {
+				toast.error("Please enter a valid email address");
+				return;
+			}
+
+			// Password complexity validation
+			if (!validatePassword(password)) {
+				toast.error(
+					"Password must be 6-20 characters with at least one uppercase, one lowercase, one number, and one special character"
+				);
+				return;
+			}
+
+			// Mobile number validation
+			if (!validateMobile(mobileNumber)) {
+				toast.error("Mobile number must be exactly 10 digits");
+				return;
+			}
+
+			const formData = new FormData();
+			formData.append("email", email);
+			formData.append("password", password);
+			formData.append("firstname", firstName);
+			formData.append("lastname", lastName);
+			formData.append("mobileNumber", mobileNumber);
+			if (profileImage) formData.append("profileImage", profileImage);
+
 			await toast
 				.promise(
 					axios.post(`${import.meta.env.VITE_BASE_URL}/users/register`, formData, {
@@ -125,133 +189,189 @@ function UserSignup() {
 	};
 
 	return (
-		<div className="p-7 flex flex-col justify-between h-screen">
-			<div>
-				<img
-					className="w-16 mb-10"
-					src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQYQy-OIkA6In0fTvVwZADPmFFibjmszu2A0g&s"
-					alt="Logo"
-				/>
+		<div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
+			<div className="max-w-md mx-auto bg-white rounded-2xl shadow-lg p-8">
+				<div className="flex justify-center mb-8">
+					<img
+						className="w-20 "
+						src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQYQy-OIkA6In0fTvVwZADPmFFibjmszu2A0g&s"
+						alt="Logo"
+					/>
+				</div>
 
-				<form onSubmit={submitHandler}>
-					<div className="mb-6">
-						<h3 className="text-lg font-medium mb-2">Profile Image</h3>
-						<div className="flex flex-col items-center gap-2">
+				<form onSubmit={submitHandler} className="space-y-6">
+					{/* Profile Image Section */}
+					<div className="space-y-2">
+						<label className="block text-sm font-medium text-gray-700">Profile Image</label>
+						<div className="flex flex-col items-center space-y-3">
 							{previewURL ? (
-								<div className="relative">
+								<div className="relative group">
 									<img
 										src={previewURL}
 										alt="Preview"
-										className="w-20 h-20 rounded-full object-cover border-2 border-gray-300"
+										className="w-24 h-24 rounded-full object-cover border-4 border-white shadow-lg hover:border-blue-100 transition-all duration-200"
 									/>
 									<button
 										type="button"
 										onClick={removeImage}
-										className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600">
+										className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600 shadow-sm">
 										×
 									</button>
 								</div>
 							) : (
-								<>
-									{/* File selection icon */}
-									<button type="button" onClick={openFileSelect} className="focus:outline-none">
-										<div className="w-20 h-20 rounded-full bg-gray-100 flex items-center justify-center border-2 border-dashed border-gray-300 hover:border-gray-400 transition-colors">
-											<FilePlus className="w-6 h-6 text-gray-400" />
-										</div>
+								<div className="flex space-x-4">
+									<button
+										type="button"
+										onClick={openFileSelect}
+										className="p-3 bg-white rounded-full shadow-md hover:shadow-lg transition-shadow duration-200">
+										<FilePlus className="w-8 h-8 text-blue-500" />
 									</button>
-									<input
-										ref={fileInputRef}
-										type="file"
-										accept="image/*"
-										onChange={handleFileChange}
-										className="hidden"
-									/>
-									{/* Capture image icon placed under the file select icon */}
 									<button
 										type="button"
 										onClick={openCameraPanel}
-										className="mt-2 p-2 bg-blue-500 rounded-full hover:bg-blue-600"
-										title="Capture Image">
-										<Camera className="w-5 h-5 text-white" />
+										className="p-3 bg-white rounded-full shadow-md hover:shadow-lg transition-shadow duration-200">
+										<Camera className="w-8 h-8 text-blue-500" />
 									</button>
-								</>
+								</div>
 							)}
+							<input
+								ref={fileInputRef}
+								type="file"
+								accept="image/*"
+								onChange={handleFileChange}
+								className="hidden"
+							/>
 						</div>
 					</div>
 
-					<h3 className="text-lg font-medium mb-2">What&apos;s your name</h3>
-					<div className="flex gap-4 mb-6">
+					{/* Name Inputs */}
+					<div className="grid grid-cols-2 gap-4">
+						<div>
+							<label className="block text-sm font-medium text-gray-700 mb-1">First Name</label>
+							<input
+								required
+								className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+								type="text"
+								placeholder="John"
+								value={firstName}
+								onChange={(e) => setFirstName(e.target.value)}
+							/>
+						</div>
+						<div>
+							<label className="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
+							<input
+								required
+								className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+								type="text"
+								placeholder="Doe"
+								value={lastName}
+								onChange={(e) => setLastName(e.target.value)}
+							/>
+						</div>
+					</div>
+
+					{/* Email Input */}
+					<div>
+						<label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
 						<input
 							required
-							className="bg-gray-50 w-1/2 rounded-lg px-4 py-3 border focus:outline-none focus:ring-2 focus:ring-blue-500"
-							type="text"
-							placeholder="First name"
-							value={firstName}
-							onChange={(e) => setFirstName(e.target.value)}
-						/>
-						<input
-							required
-							className="bg-gray-50 w-1/2 rounded-lg px-4 py-3 border focus:outline-none focus:ring-2 focus:ring-blue-500"
-							type="text"
-							placeholder="Last name"
-							value={lastName}
-							onChange={(e) => setLastName(e.target.value)}
+							className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+							type="email"
+							placeholder="john.doe@example.com"
+							value={email}
+							onChange={(e) => setEmail(e.target.value)}
 						/>
 					</div>
 
-					<h3 className="text-lg font-medium mb-2">What&apos;s your email</h3>
-					<input
-						required
-						className="bg-gray-50 mb-6 rounded-lg px-4 py-3 border w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-						type="email"
-						placeholder="email@example.com"
-						value={email}
-						onChange={(e) => setEmail(e.target.value)}
-					/>
-					<h3 className="text-lg font-medium mb-2">Enter your mobile number</h3>
-					<input
-						required
-						className="bg-gray-50 mb-6 rounded-lg px-4 py-3 border w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-						type="text"
-						placeholder="9234567890"
-						value={mobileNumber}
-						onChange={(e) => setMobileNumber(e.target.value)}
-					/>
+					{/* Mobile Number Input */}
+					<div>
+						<label className="block text-sm font-medium text-gray-700 mb-1">Mobile Number</label>
+						<input
+							required
+							className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+							type="text"
+							placeholder="9234567890"
+							value={mobileNumber}
+							onChange={(e) => setMobileNumber(e.target.value)}
+						/>
+					</div>
 
-					<h3 className="text-lg font-medium mb-2">Enter your password</h3>
-					<input
-						required
-						className="bg-[#eeeeee] mb-6 rounded px-4 py-2 border w-full text-lg placeholder:text-base"
-						type="password"
-						placeholder="password"
-						value={password}
-						onChange={(e) => setPassword(e.target.value)}
-					/>
-
-					<button className="bg-[#111] text-white font-semibold mb-3 rounded px-4 py-2 border w-full text-lg">
-						Create account
-					</button>
-				</form>
-				<p className="text-center">
-					Already have an account?{" "}
-					<Link to="/login" className="text-blue-600">
-						Login here
-					</Link>
-				</p>
-			</div>
-
-			<div>
-				<p className="text-[10px] leading-tight">
-					This site is protected by reCAPTCHA and the <span className="underline">Google Privacy Policy</span>{" "}
-					and <span className="underline">Terms of Service apply</span>.
-				</p>
-			</div>
-
-			{/* Webcam capture modal */}
-			{showCamera && (
-				<div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-					<div className="bg-white rounded-lg p-4">
+					{/* Password Input */}
+					<div>
+						<label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
 						<div className="relative">
+							<input
+								required
+								className="w-full px-4 py-2 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+								type={showPassword ? "text" : "password"}
+								placeholder="••••••••"
+								value={password}
+								onChange={(e) => setPassword(e.target.value)}
+							/>
+							<button
+								type="button"
+								onClick={() => setShowPassword(!showPassword)}
+								className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-500 focus:outline-none">
+								{showPassword ? <Eye className="w-5 h-5" /> : <EyeOff className="w-5 h-5" />}
+							</button>
+						</div>
+					</div>
+
+					{/* Confirm Password Input */}
+					<div>
+						<label className="block text-sm font-medium text-gray-700 mb-1">Confirm Password</label>
+						<div className="relative">
+							<input
+								required
+								className="w-full px-4 py-2 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+								type={confirmShowPassword ? "text" : "password"}
+								placeholder="••••••••"
+								value={confirmPassword}
+								onChange={(e) => setConfirmPassword(e.target.value)}
+							/>
+							<button
+								type="button"
+								onClick={() => setConfirmShowPassword(!confirmShowPassword)}
+								className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-500 focus:outline-none">
+								{confirmShowPassword ? <Eye className="w-5 h-5" /> : <EyeOff className="w-5 h-5" />}
+							</button>
+						</div>
+					</div>
+
+					{/* Submit Button */}
+					<button
+						type="submit"
+						className="w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white py-3 px-4 rounded-lg font-semibold hover:from-blue-600 hover:to-blue-700 transition-all shadow-md hover:shadow-lg">
+						Create Account
+					</button>
+
+					<p className="text-center text-sm text-gray-600">
+						Already have an account?{" "}
+						<Link to="/login" className="text-blue-600 hover:text-blue-700 font-medium">
+							Login here
+						</Link>
+					</p>
+				</form>
+
+				{/* Terms Text */}
+				<p className="mt-8 text-xs text-gray-500 text-center leading-relaxed">
+					This site is protected by reCAPTCHA and the{" "}
+					<a href="#" className="text-blue-600 hover:text-blue-700">
+						Google Privacy Policy
+					</a>{" "}
+					and{" "}
+					<a href="#" className="text-blue-600 hover:text-blue-700">
+						Terms of Service
+					</a>{" "}
+					apply.
+				</p>
+			</div>
+
+			{/* Webcam Modal */}
+			{showCamera && (
+				<div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 backdrop-blur-sm">
+					<div className="bg-white rounded-xl shadow-2xl p-6 w-full max-w-lg">
+						<div className="relative aspect-video bg-gray-800 rounded-lg overflow-hidden">
 							<Webcam
 								audio={false}
 								ref={webcamRef}
@@ -261,22 +381,25 @@ function UserSignup() {
 									height: 720,
 									facingMode: facingMode,
 								}}
-								className="rounded"
+								className="w-full h-full object-cover"
 							/>
 							<button
 								onClick={toggleFacingMode}
-								className="absolute top-2 right-2 bg-gray-700 text-white p-2 rounded">
-								Flip Camera
+								className="absolute top-3 right-3 p-2 bg-white/90 rounded-full shadow-md hover:bg-white transition-colors">
+								<RefreshCw className="w-5 h-5 text-gray-800" />
 							</button>
 						</div>
-						<div className="flex justify-between mt-4">
+						<div className="flex justify-center gap-4 mt-6">
 							<button
 								onClick={() => setShowCamera(false)}
-								className="bg-gray-500 text-white py-2 px-4 rounded">
+								className="px-6 py-2 text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
 								Cancel
 							</button>
-							<button onClick={capturePhoto} className="bg-blue-500 text-white py-2 px-4 rounded">
-								Capture
+							<button
+								onClick={capturePhoto}
+								className="px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors flex items-center gap-2">
+								<Camera className="w-5 h-5" />
+								Capture Photo
 							</button>
 						</div>
 					</div>

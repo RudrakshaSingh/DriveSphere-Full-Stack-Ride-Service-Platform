@@ -37,8 +37,8 @@ function CaptainSignup() {
     const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/captains/register`, captainData);
     if (response.status === 201) {
       const data = response.data;
-      setCaptain(data.captain);
-      localStorage.setItem("token", data.token);
+      setCaptain(data.message.captain);
+      localStorage.setItem("token", data.message.token);
       navigate("/captain-login");
     }
 
