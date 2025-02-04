@@ -1,6 +1,8 @@
 const axios = require("axios");
+const asyncHandler = require("../utils/AsyncHandler");
+const ApiError = require("../utils/ApiError");
 
-module.exports.getAddressCoordinate = async (address) => {
+module.exports.getAddressCoordinate = asyncHandler(async (address) => {
 	try {
 		const response = await axios.get("https://api.openrouteservice.org/geocode/search", {
 			params: {
@@ -17,7 +19,6 @@ module.exports.getAddressCoordinate = async (address) => {
 				longitude: coordinates[0],
 				latitude: coordinates[1],
 			};
-			console.log(coordinatesObject);
 
 			// Returning the coordinates
 			return coordinatesObject;
@@ -26,21 +27,13 @@ module.exports.getAddressCoordinate = async (address) => {
 			return null;
 		}
 	} catch (error) {
-		if (error.response) {
-			console.error("API Error Status:", error.response.status);
-			console.error("API Error Data:", error.response.data);
-		} else {
-			console.error("Error Message:", error.message);
-		}
-		throw new Error("Unable to fetch coordinates");
+		throw new ApiError(500, "Unable to fetch coordinates", error.message);
 	}
-};
+});
 
-module.exports.getAutoCompleteSuggestions = async (address) => {
-	console.log(address);
-
+module.exports.getAutoCompleteSuggestions = asyncHandler(async (address) => {
 	if (!address) {
-		throw new Error("Missing required fields");
+		throw new ApiError(400, "Missing required in map service fields");
 	}
 
 	try {
@@ -60,24 +53,14 @@ module.exports.getAutoCompleteSuggestions = async (address) => {
 		}
 
 		const nameArray = features.map((feature) => feature.properties.name);
-		console.log(nameArray);
 
 		return nameArray;
 	} catch (error) {
-		console.log("suggestin service error");
-
-		// Enhanced error handling for debugging
-		if (error.response) {
-			console.error("API Error Status:", error.response.status);
-			console.error("API Error Data:", error.response.data);
-		} else {
-			console.error("Error Message:", error.message);
-		}
-		throw new Error("Unable to fetch address suggestions");
+		throw new ApiError(500, "Unable to fetch address suggestions", error.message);
 	}
-};
+});
 
-module.exports.getDistanceTime = async (origin, destination) => {
+module.exports.getDistanceTime = asyncHandler(async (origin, destination) => {
 	if (
 		!Array.isArray(origin) ||
 		origin.length !== 2 ||
@@ -86,9 +69,7 @@ module.exports.getDistanceTime = async (origin, destination) => {
 		!origin.every((coord) => typeof coord === "number") ||
 		!destination.every((coord) => typeof coord === "number")
 	) {
-		throw new Error(
-			"Invalid input: Origin and destination must be arrays with two numeric coordinates [longitude, latitude]."
-		);
+		throw new ApiError(400, "Invalid input: Origin and destination must be arrays with two numeric coordinates [longitude, latitude].");
 	}
 
 	const apiKey = process.env.OPEN_ROUTE_SERVICE_API_KEY;
@@ -126,12 +107,6 @@ module.exports.getDistanceTime = async (origin, destination) => {
 			distance,
 		};
 	} catch (error) {
-		// Enhanced error logging
-		if (error.response) {
-			console.error("API Response Error:", error.response.data);
-		} else {
-			console.error("Error Message:", error.message);
-		}
-		throw new Error("Unable to fetch distance and time.");
+		throw new ApiError(500, "Unable to fetch distance and time", error.message);
 	}
-};
+});

@@ -50,26 +50,22 @@ function getOtp(num) {
 
 module.exports.createRide = asyncHandler(async ({ user, origin, destination, vehicleType }) => {
 	try {
-        if (!user || !origin || !destination || !vehicleType) {
-            throw new ApiError(400, "All fields are required");
-        }
-    
-        const fare = await getFare(origin, destination);
-    
-        console.log("fare",fare);
-        
-    
-        const ride = rideModel.create({
-            user,
-            origin,
-            destination,
-            otp: getOtp(6),
-            fare: fare[vehicleType],
-        });
-        console.log("ride",ride);
-        
-        return ride;
-    } catch (error) {
-        throw new ApiError(500,"error in createride service", error.message);
-    }
+		if (!user || !origin || !destination || !vehicleType) {
+			throw new ApiError(400, "All fields are required");
+		}
+
+		const fare = await getFare(origin, destination);
+
+		const ride = rideModel.create({
+			user,
+			origin,
+			destination,
+			otp: getOtp(6),
+			fare: fare[vehicleType],
+		});
+
+		return ride;
+	} catch (error) {
+		throw new ApiError(500, "error in createride service", error.message);
+	}
 });

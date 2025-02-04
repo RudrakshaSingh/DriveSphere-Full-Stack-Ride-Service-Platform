@@ -21,7 +21,7 @@ module.exports.registerUser = asyncHandler(async (req, res) => {
 		const isUserAlreadyExists = await userModel.findOne({ email });
 		if (isUserAlreadyExists) {
 			console.log("hi");
-			
+
 			throw new ApiError(400, "User email already exists");
 		}
 
@@ -34,7 +34,7 @@ module.exports.registerUser = asyncHandler(async (req, res) => {
 			// Upload to Cloudinary
 			const profileImage = await uploadOnCloudinary(ProfilePictureLocalPath);
 			if (!profileImage) {
-				return res.status(400).json({ error: "Error uploading profile picture" });
+				throw new ApiError(400, "Error uploading profile picture");
 			}
 			profileImageUrl = profileImage.url;
 		}
@@ -54,45 +54,58 @@ module.exports.registerUser = asyncHandler(async (req, res) => {
 	}
 });
 
-module.exports.loginUser = async (req, res, next) => {
-	const errors = validationResult(req);
-	if (!errors.isEmpty()) {
-		return res.status(400).json({ errors: errors.array() });
+module.exports.loginUser = asyncHandler(async (req, res, next) => {
+	try {
+		const errors = validationResult(req);
+		if (!errors.isEmpty()) {
+			throw new ApiError(400, "error in login controller", errors.array());
+		}
+
+		const { email, password } = req.body;
+
+		const user = await userModel.findOne({ email }).select("+password");
+		if (!user) {
+			// return res.status(401).json({ message: "Invalid email or password" });
+			throw new ApiError(401, "Invalid email or password");
+		}
+
+		const isMatch = await user.comparePassword(password);
+		if (!isMatch) {
+			throw new ApiError(401, "Invalid email or password");
+		}
+
+		const token = user.generateAuthToken();
+
+		res.cookie("token", token, {
+			httpOnly: true,
+			secure: false, // Set to true if using HTTPS
+			sameSite: "Lax", // Adjust as needed: 'Strict', 'Lax', or 'None'
+		});
+
+		return res.status(200).json(new ApiResponse(200, "User logged in successfully", { token, user }));
+	} catch (error) {
+		throw new ApiError(400, "error in login controller", error.message);
 	}
+});
 
-	const { email, password } = req.body;
-
-	const user = await userModel.findOne({ email }).select("+password");
-	if (!user) {
-		return res.status(401).json({ message: "Invalid email or password" });
+module.exports.getUserProfile = asyncHandler(async (req, res, next) => {
+	try {
+		return res.status(200).json(new ApiResponse(200, "User profile fetched successfully", req.user));
+	} catch (error) {
+		throw new ApiError(400, "error in getuserprofile controller", error.message);
 	}
-
-	const isMatch = await user.comparePassword(password);
-	if (!isMatch) {
-		return res.status(401).json({ message: "Invalid email or password" });
-	}
-
-	const token = user.generateAuthToken();
-
-	res.cookie('token', token, {
-    httpOnly: true,
-    secure: false, // Set to true if using HTTPS
-    sameSite: 'Lax' // Adjust as needed: 'Strict', 'Lax', or 'None'
-  });
-
-	res.status(200).json({ token, user });
-};
-
-module.exports.getUserProfile = async (req, res, next) => {
-	res.status(200).json(req.user); //taken from token in middleware
-};
+});
 
 //logout user
-module.exports.logoutUser = async (req, res, next) => {
-	res.clearCookie("token");
-	const token = req.cookies.token || req.headers.authorization.split(" ")[1];
+module.exports.logoutUser = asyncHandler(async (req, res, next) => {
+	try {
+		res.clearCookie("token");
+		const token = req.cookies.token || req.headers.authorization.split(" ")[1];
 
-	await blackListTokenModel.create({ token }); //dont need to send createdat
+		await blackListTokenModel.create({ token }); //dont need to send createdat
 
-	res.status(200).json({ message: "Logged out successfull" });
-};
+		return res.status(200).json(new ApiResponse(200, "User logged out successfully"));
+	} catch (error) {
+		throw new ApiError(400, "error in logoutuser controller", error.message);
+	}
+});
