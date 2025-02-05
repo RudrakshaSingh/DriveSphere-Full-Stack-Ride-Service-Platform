@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { UserDataContext } from "../context/UserContext";
 import Webcam from "react-webcam";
-import { FilePlus, Camera, RefreshCw, Eye, EyeOff } from "lucide-react";
+import { FilePlus, Camera, RefreshCw, Eye, EyeOff, User } from "lucide-react";
 import { toast } from "react-hot-toast";
 
 function UserSignup() {
@@ -192,11 +192,7 @@ function UserSignup() {
 		<div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
 			<div className="max-w-md mx-auto bg-white rounded-2xl shadow-lg p-8">
 				<div className="flex justify-center mb-8">
-					<img
-						className="w-20 "
-						src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQYQy-OIkA6In0fTvVwZADPmFFibjmszu2A0g&s"
-						alt="Logo"
-					/>
+				<User className="w-20 h-20 text-blue-500" />
 				</div>
 
 				<form onSubmit={submitHandler} className="space-y-6">
