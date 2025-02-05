@@ -21,10 +21,13 @@ const perMinuteRate = {
 	moto: 1.5,
 };
 
-async function getFare(origin, destination) {
+module.exports.getFare=async  (origin, destination)=> {
 	if (!origin || !destination) {
 		throw new Error("origin and destination are required");
 	}
+	console.log("o",origin);
+	console.log("d",destination);
+	
 
 	const distanceTime = await mapService.getDistanceTime(origin, destination);
 
@@ -53,8 +56,9 @@ module.exports.createRide = async ({ user, origin, destination, vehicleType, ori
 		if (!user || !origin || !destination || !vehicleType || !originText || !destinationText) {
 			throw new ApiError(400, "All fields are required");
 		}
+		
+		const fare = await module.exports.getFare(origin, destination);
 
-		const fare = await getFare(origin, destination);
 
 		const ride = await rideModel.create({
 			user,

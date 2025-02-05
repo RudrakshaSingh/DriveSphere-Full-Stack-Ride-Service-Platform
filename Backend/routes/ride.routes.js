@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const { body } = require("express-validator");
+const { body, query } = require("express-validator");
 const rideController = require("../controllers/ride.controller");
 const authMiddleware = require("../middlewares/auth.middleware");
 
@@ -37,6 +37,25 @@ router.post(
 		.withMessage("Destination text is required"),
 
 	rideController.createRide
+);
+
+router.get('/get-fare',
+    authMiddleware.authUser,
+    [
+        query('originLatitute')
+            .isFloat()
+            .withMessage('Origin latitude must be a valid number'),
+        query('originLongitude')
+            .isFloat()
+            .withMessage('Origin longitude must be a valid number'),
+        query('destinationLatitude')
+            .isFloat()
+            .withMessage('Destination latitude must be a valid number'),
+        query('destinationLongitude')
+            .isFloat()
+            .withMessage('Destination longitude must be a valid number'),
+    ],
+    rideController.getFareController
 );
 
 module.exports = router;

@@ -40,7 +40,7 @@ const rideSchema = new mongoose.Schema(
 			required: true,
 		},
 		fare: {
-			type: Number,
+			type: String,
 			required: true,
 		},
 		status: {
@@ -49,11 +49,11 @@ const rideSchema = new mongoose.Schema(
 			default: "pending",
 		},
 		duration: {
-			type: Number,
+			type: String,
 			required: true
 		}, // in min
 		distance: {
-			type: Number,
+			type: String,
 			required: true
 		}, // in km
 		paymentID: {

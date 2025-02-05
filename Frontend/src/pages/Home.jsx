@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import "remixicon/fonts/remixicon.css";
@@ -8,6 +8,8 @@ import ConfirmRide from "../components/ConfirmRide";
 import { ChevronDown } from "lucide-react";
 import LookingForDriver from "../components/LookingForDriver";
 import WaitingForDriver from "../components/WaitingForDriver";
+import axios from "axios";
+import toast from "react-hot-toast";
 
 const Home = () => {
 	const [pickup, setPickup] = useState("");
@@ -19,12 +21,92 @@ const Home = () => {
 	const [vehicleFound, setVehicleFound] = useState(false);
 	const [waitingForDriver, setWaitingForDriver] = useState(false);
 
+	const [pickupSuggestions, setPickupSuggestions] = useState([]);
+	const [destinationSuggestions, setDestinationSuggestions] = useState([]);
+	const [activeField, setActiveField] = useState(null);
+	const [fare, setFare] = useState({});
+	const [vehicleType, setVehicleType] = useState(null);
+	const [ride, setRide] = useState(null);
+
 	const vehiclePanelRef = useRef(null);
 	const confirmRidePanelRef = useRef(null);
 	const panelRef = useRef(null); //used to pick one div by adding ref={panelRef} in that div
 	const panelCloseRef = useRef(null);
 	const vehicleFoundRef = useRef(null); //foor when pressed looking for a driver
 	const waitingForDriverRef = useRef(null);
+
+	const handlePickupChange = (e) => {
+		const inputValue = e.target.value;
+		setPickup(inputValue);
+
+		// Only trigger API call if input length is at least 3 characters
+		if (inputValue.length >= 3) {
+			fetchSuggestions(inputValue);
+		} else {
+			setPickupSuggestions([]); // Clear suggestions when input is less than 3
+		}
+	};
+
+	const fetchSuggestions = async (inputValue) => {
+		await toast.promise(
+			axios.get(`${import.meta.env.VITE_BASE_URL}/maps/get-suggestions`, {
+				params: { address: inputValue },
+				headers: {
+					Authorization: `Bearer ${localStorage.getItem("token")}`,
+				},
+			}),
+			{
+				loading: "Fetching suggestions...",
+				success: (response) => {
+					setPickupSuggestions(response.data.message);
+
+					return "Suggestions fetched successfully!";
+				},
+				error: "Failed to fetch suggestions. Please check your input.",
+			}
+		);
+	};
+
+	const handlePickupFocus = () => {
+		setActiveField('pickup');
+	};
+	
+	const handleDestinationFocus = () => {
+		setActiveField('destination');
+	};
+
+	const handleDestinationChange = (e) => {
+		const inputValue = e.target.value;
+		setDestination(inputValue);
+	
+		// Only trigger API call if input length is at least 3 characters
+		if (inputValue.length >= 3) {
+			fetchDestinationSuggestions(inputValue);
+		} else {
+			setDestinationSuggestions([]); // Clear suggestions when input is less than 3
+		}
+	};
+
+	const fetchDestinationSuggestions = async (inputValue) => {
+		await toast.promise(
+			axios.get(`${import.meta.env.VITE_BASE_URL}/maps/get-suggestions`, {
+				params: { address: inputValue },
+				headers: {
+					Authorization: `Bearer ${localStorage.getItem('token')}`
+				}
+			}),
+			{
+				loading: "Fetching suggestions...",
+				success: (response) => {
+					setDestinationSuggestions(response.data.message);
+					return "Suggestions fetched successfully!";
+				},
+				error: "Failed to fetch suggestions. Please check your input.",
+			}
+		);
+	};
+
+	
 
 	const submitHandler = (e) => {
 		e.preventDefault();
@@ -148,25 +230,23 @@ const Home = () => {
 						}}>
 						<div className="line absolute h-16 w-1 top-[50%] -translate-y-1/2 left-5 bg-gray-700 rounded-full"></div>
 						<input
+						onFocus={handlePickupFocus}
 							onClick={() => {
 								setPanelOpen(true);
 							}}
 							value={pickup}
-							onChange={(e) => {
-								setPickup(e.target.value);
-							}}
+							onChange={handlePickupChange}
 							className="bg-[#eee] px-12 py-2 text-lg rounded-lg w-full"
 							type="text"
 							placeholder="Add a pick-up location"
 						/>
 						<input
+						onFocus={handleDestinationFocus}
 							onClick={() => {
 								setPanelOpen(true);
 							}}
 							value={destination}
-							onChange={(e) => {
-								setDestination(e.target.value);
-							}}
+							onChange={handleDestinationChange}
 							className="bg-[#eee] px-12 py-2 text-lg rounded-lg w-full  mt-3"
 							type="text"
 							placeholder="Enter your destination"
@@ -174,7 +254,15 @@ const Home = () => {
 					</form>
 				</div>
 				<div ref={panelRef} className="bg-white h-0">
-					<LocationSearchPanel setPanelOpen={setPanelOpen} setVehiclePanel={setVehiclePanel} />
+					<LocationSearchPanel
+						setPanelOpen={setPanelOpen}
+						setVehiclePanel={setVehiclePanel}
+						pickupSuggestions={pickupSuggestions}
+						setPickup={setPickup}
+						setDestination={setDestination}
+						activeField={activeField}
+						destinationSuggestions={destinationSuggestions}
+					/>
 				</div>
 			</div>
 			<div
