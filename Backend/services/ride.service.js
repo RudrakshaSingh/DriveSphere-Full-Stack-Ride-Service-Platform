@@ -21,13 +21,10 @@ const perMinuteRate = {
 	moto: 1.5,
 };
 
-module.exports.getFare=async  (origin, destination)=> {
+module.exports.getFare = async (origin, destination) => {
 	if (!origin || !destination) {
 		throw new Error("origin and destination are required");
 	}
-	console.log("o",origin);
-	console.log("d",destination);
-	
 
 	const distanceTime = await mapService.getDistanceTime(origin, destination);
 
@@ -35,13 +32,13 @@ module.exports.getFare=async  (origin, destination)=> {
 	const time = distanceTime.distance; //in km
 
 	const fare = {
-		auto: Math.round((BASE_FARE.auto + distance * FARE_PER_KM.auto + time * perMinuteRate.auto)),
-		car: Math.round((BASE_FARE.car + distance * FARE_PER_KM.car + time * perMinuteRate.car)),
-		moto: Math.round((BASE_FARE.moto + distance * FARE_PER_KM.moto + time * perMinuteRate.moto)),
+		auto: Math.round(BASE_FARE.auto + distance * FARE_PER_KM.auto + time * perMinuteRate.auto),
+		car: Math.round(BASE_FARE.car + distance * FARE_PER_KM.car + time * perMinuteRate.car),
+		moto: Math.round(BASE_FARE.moto + distance * FARE_PER_KM.moto + time * perMinuteRate.moto),
 	};
 
 	return { fare, distance, time };
-}
+};
 
 function getOtp(num) {
 	function generateOtp(num) {
@@ -56,9 +53,8 @@ module.exports.createRide = async ({ user, origin, destination, vehicleType, ori
 		if (!user || !origin || !destination || !vehicleType || !originText || !destinationText) {
 			throw new ApiError(400, "All fields are required");
 		}
-		
-		const fare = await module.exports.getFare(origin, destination);
 
+		const fare = await module.exports.getFare(origin, destination);
 
 		const ride = await rideModel.create({
 			user,

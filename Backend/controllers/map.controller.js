@@ -13,20 +13,16 @@ module.exports.getCoordinates = asyncHandler(async (req, res) => {
   const { address } = req.query;
 
   try {
-    console.log("Received address query:", address);
 
     // Call service to get coordinates
     const coordinates = await mapsService.getAddressCoordinate(address);
-    console.log("Coordinates returned from service:", coordinates); // Log the coordinates returned from service
 
     if (!coordinates) {
-      console.log("No coordinates found for the address.");
       throw new ApiError(404, "Coordinates not found for the given address");
     }
 
     return res.status(200).json(new ApiResponse(200, "Coordinates fetched successfully", coordinates));
   } catch (error) {
-    console.error("Error in getCoordinates controller:", error.message);
     throw new ApiError(error.status || 500, "Coordinates fetch error", error.message);
   }
 });

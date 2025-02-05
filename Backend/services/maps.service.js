@@ -18,14 +18,11 @@ module.exports.getAddressCoordinate = async (address) => {
 		  latitude: coordinates[1],
 		};
   
-		console.log("Returning coordinates from service:", coordinatesObject); // Log to verify
 		return coordinatesObject;
 	  } else {
-		console.log("No coordinates found for address:", address);
 		return null; // Return null if coordinates are not found
 	  }
 	} catch (error) {
-	  console.error("Error in getAddressCoordinate:", error.message);
 	  throw new ApiError(500, "Unable to fetch coordinates", error.message);
 	}
   };

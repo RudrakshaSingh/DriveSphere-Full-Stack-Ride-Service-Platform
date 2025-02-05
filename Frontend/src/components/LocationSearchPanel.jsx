@@ -4,21 +4,32 @@ import { MapPin, Clock, Compass, XCircle } from "lucide-react";
 const LocationSearchPanel = (props) => {
     const { 
         pickupSuggestions, 
-        setVehiclePanel, 
         setPanelOpen, 
         setPickup, 
         setDestination, 
         activeField, 
-        destinationSuggestions 
+        destinationSuggestions, 
+        pickup,  
+        destination  
     } = props;
 
     const handleSuggestionClick = (suggestion) => {
-        activeField === 'pickup' ? setPickup(suggestion) : setDestination(suggestion);
-        setVehiclePanel(true);
-        setPanelOpen(false);
+        if (activeField === 'pickup') {
+            setPickup(suggestion);  // Set the pickup location
+        } else {
+            setDestination(suggestion);  // Set the destination location
+        }
+
+        // Check if both pickup and destination are set before showing the vehicle panel
+        if (pickup && destination) {
+            setPanelOpen(false);
+        }
     };
 
+    // Determine which suggestions to display based on activeField
     const suggestionsToRender = activeField === 'pickup' ? pickupSuggestions : destinationSuggestions;
+
+    // Remove duplicates by converting the array to a Set and then back to an array
     const uniqueSuggestions = [...new Set(suggestionsToRender)];
 
     return (
@@ -40,7 +51,7 @@ const LocationSearchPanel = (props) => {
                     {uniqueSuggestions.map((elem, idx) => (
                         <button
                             key={idx}
-                            onClick={() => handleSuggestionClick(elem)}
+                            onClick={() => handleSuggestionClick(elem)} // Handle suggestion click
                             className="w-full flex items-center p-4 space-x-4 text-left
                                 bg-white hover:bg-blue-50 border border-gray-200 rounded-xl
                                 transition-all duration-200 ease-in-out

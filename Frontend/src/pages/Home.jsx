@@ -68,17 +68,17 @@ const Home = () => {
 	};
 
 	const handlePickupFocus = () => {
-		setActiveField('pickup');
+		setActiveField("pickup");
 	};
-	
+
 	const handleDestinationFocus = () => {
-		setActiveField('destination');
+		setActiveField("destination");
 	};
 
 	const handleDestinationChange = (e) => {
 		const inputValue = e.target.value;
 		setDestination(inputValue);
-	
+
 		// Only trigger API call if input length is at least 3 characters
 		if (inputValue.length >= 3) {
 			fetchDestinationSuggestions(inputValue);
@@ -92,8 +92,8 @@ const Home = () => {
 			axios.get(`${import.meta.env.VITE_BASE_URL}/maps/get-suggestions`, {
 				params: { address: inputValue },
 				headers: {
-					Authorization: `Bearer ${localStorage.getItem('token')}`
-				}
+					Authorization: `Bearer ${localStorage.getItem("token")}`,
+				},
 			}),
 			{
 				loading: "Fetching suggestions...",
@@ -106,7 +106,88 @@ const Home = () => {
 		);
 	};
 
+	async function findTrip() {
+		// Close the main panel before proceeding.
+		setPanelOpen(false);
 	
+		try {
+			// Wrap the asynchronous logic inside toast.promise.
+			const fareRes = await toast.promise(
+				(async () => {
+					// Get coordinates for both locations in parallel.
+					const [originRes, destRes] = await Promise.all([
+						axios.get(`${import.meta.env.VITE_BASE_URL}/maps/get-coordinates`, {
+							params: { address: pickup },
+							headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+						}),
+						axios.get(`${import.meta.env.VITE_BASE_URL}/maps/get-coordinates`, {
+							params: { address: destination },
+							headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+						}),
+					]);
+	
+					// Check if origin and destination are the same.
+					if (
+						originRes.data.message.latitude === destRes.data.message.latitude &&
+						originRes.data.message.longitude === destRes.data.message.longitude
+					) {
+						throw new Error("SAME_COORDINATES");
+					}
+	
+					// Get fare estimate using the coordinates.
+					const fareRes = await axios.get(`${import.meta.env.VITE_BASE_URL}/rides/get-fare`, {
+						params: {
+							originLatitute: originRes.data.message.latitude,
+							originLongitude: originRes.data.message.longitude,
+							destinationLatitude: destRes.data.message.latitude,
+							destinationLongitude: destRes.data.message.longitude,
+						},
+						headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+					});
+	
+					// Check the distance limit.
+					if (fareRes.data.message.distance > 200) {
+						throw new Error("DISTANCE_LIMIT_EXCEEDED");
+					}
+	
+					return fareRes;
+				})(),
+				{
+					loading: "Calculating your fare...",
+					success: "Fare calculated successfully!",
+					error: (err) => {
+						if (err.message === "DISTANCE_LIMIT_EXCEEDED") {
+							return "Rides above 100km are not available";
+						}
+						if (err.message === "SAME_COORDINATES") {
+							return "Origin and destination cannot be of same coordinates";
+						}
+						return err.response?.data?.message || "Failed to calculate fare";
+					},
+				}
+			);
+	
+			// If no error, set the fare and open the vehicle panel.
+			setFare(fareRes.data.message.fare);
+			setVehiclePanel(true);
+		} catch (error) {
+			toast.error(error.response?.data?.message || "Failed to calculate fare");
+			setVehiclePanel(false);
+		}
+	}
+	
+	// async function createRide() {
+	//     const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/rides/create`, {
+	//         pickup,
+	//         destination,
+	//         vehicleType
+	//     }, {
+	//         headers: {
+	//             Authorization: `Bearer ${localStorage.getItem('token')}`
+	//         }
+	//     })
+	//     console.log("ride",response.data.message)
+	// }
 
 	const submitHandler = (e) => {
 		e.preventDefault();
@@ -213,7 +294,7 @@ const Home = () => {
 				/>
 			</div>
 			<div className=" flex flex-col justify-end h-screen absolute top-0 w-full">
-				<div className="h-[30%] p-6 bg-white relative">
+				<div className="min-h-[180px] p-6 bg-white relative flex flex-col">
 					<h5
 						ref={panelCloseRef}
 						onClick={() => {
@@ -223,52 +304,59 @@ const Home = () => {
 						<ChevronDown size={35} strokeWidth={2.1} />
 					</h5>
 					<h4 className="text-2xl font-semibold">Find a trip</h4>
-					<form
-						className="relative py-3"
-						onSubmit={(e) => {
-							submitHandler(e);
-						}}>
-						<div className="line absolute h-16 w-1 top-[50%] -translate-y-1/2 left-5 bg-gray-700 rounded-full"></div>
-						<input
-						onFocus={handlePickupFocus}
-							onClick={() => {
-								setPanelOpen(true);
-							}}
-							value={pickup}
-							onChange={handlePickupChange}
-							className="bg-[#eee] px-12 py-2 text-lg rounded-lg w-full"
-							type="text"
-							placeholder="Add a pick-up location"
-						/>
-						<input
-						onFocus={handleDestinationFocus}
-							onClick={() => {
-								setPanelOpen(true);
-							}}
-							value={destination}
-							onChange={handleDestinationChange}
-							className="bg-[#eee] px-12 py-2 text-lg rounded-lg w-full  mt-3"
-							type="text"
-							placeholder="Enter your destination"
-						/>
-					</form>
+					<div className="flex-1 ">
+						<form
+							className="relative py-3"
+							onSubmit={(e) => {
+								submitHandler(e);
+							}}>
+							<div className="line absolute h-16 w-1 top-[50%] -translate-y-1/2 left-5 bg-gray-700 rounded-full"></div>
+							<input
+								onFocus={handlePickupFocus}
+								onClick={() => {
+									setPanelOpen(true);
+								}}
+								value={pickup}
+								onChange={handlePickupChange}
+								className="bg-[#eee] px-12 py-2 text-lg rounded-lg w-full"
+								type="text"
+								placeholder="Add a pick-up location"
+							/>
+							<input
+								onFocus={handleDestinationFocus}
+								onClick={() => {
+									setPanelOpen(true);
+								}}
+								value={destination}
+								onChange={handleDestinationChange}
+								className="bg-[#eee] px-12 py-2 text-lg rounded-lg w-full  mt-3"
+								type="text"
+								placeholder="Enter your destination"
+							/>
+						</form>
+					</div>
+					<button onClick={findTrip} className="bg-black text-white px-4 py-2 rounded-lg mt-3 w-full">
+						Find Trip
+					</button>
 				</div>
+
 				<div ref={panelRef} className="bg-white h-0">
 					<LocationSearchPanel
 						setPanelOpen={setPanelOpen}
-						setVehiclePanel={setVehiclePanel}
 						pickupSuggestions={pickupSuggestions}
 						setPickup={setPickup}
 						setDestination={setDestination}
 						activeField={activeField}
 						destinationSuggestions={destinationSuggestions}
+						pickup={pickup}
+						destination={destination}
 					/>
 				</div>
 			</div>
 			<div
 				ref={vehiclePanelRef}
 				className="fixed w-full z-10 bottom-0 translate-y-full bg-white px-3 py-10 pt-12">
-				<VehiclePanel setConfirmRidePanel={setConfirmRidePanel} setVehiclePanel={setVehiclePanel} />
+				<VehiclePanel fare={fare} setConfirmRidePanel={setConfirmRidePanel} setVehiclePanel={setVehiclePanel} />
 			</div>
 			<div
 				ref={confirmRidePanelRef}
