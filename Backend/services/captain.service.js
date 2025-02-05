@@ -9,7 +9,7 @@ module.exports.createCaptain =
 			throw new ApiError(400, "All fields are required");
 		}
 		
-		const captain = captainModel.create({
+		const captain = await captainModel.create({
 			fullname: { firstname, lastname },
 			email,
 			password,

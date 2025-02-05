@@ -32,12 +32,12 @@ async function getFare(origin, destination) {
 	const time = distanceTime.distance; //in km
 
 	const fare = {
-		auto: (BASE_FARE.auto + distance * FARE_PER_KM.auto + time * perMinuteRate.auto).toFixed(2),
-		car: (BASE_FARE.car + distance * FARE_PER_KM.car + time * perMinuteRate.car).toFixed(2),
-		moto: (BASE_FARE.moto + distance * FARE_PER_KM.moto + time * perMinuteRate.moto).toFixed(2),
+		auto: Math.round((BASE_FARE.auto + distance * FARE_PER_KM.auto + time * perMinuteRate.auto)),
+		car: Math.round((BASE_FARE.car + distance * FARE_PER_KM.car + time * perMinuteRate.car)),
+		moto: Math.round((BASE_FARE.moto + distance * FARE_PER_KM.moto + time * perMinuteRate.moto)),
 	};
 
-	return fare;
+	return { fare, distance, time };
 }
 
 function getOtp(num) {
@@ -48,23 +48,25 @@ function getOtp(num) {
 	return generateOtp(num);
 }
 
-module.exports.createRide = async ({ user, origin, destination, vehicleType,originText,destinationText }) => {
+module.exports.createRide = async ({ user, origin, destination, vehicleType, originText, destinationText }) => {
 	try {
-		if (!user || !origin || !destination || !vehicleType) {
+		if (!user || !origin || !destination || !vehicleType || !originText || !destinationText) {
 			throw new ApiError(400, "All fields are required");
 		}
 
 		const fare = await getFare(origin, destination);
 
-		const ride = rideModel.create({
+		const ride = await rideModel.create({
 			user,
 			origin,
 			destination,
 			otp: getOtp(6),
-			fare: fare[vehicleType],
+			fare: fare.fare[vehicleType],
 			originText,
-			destinationText
-
+			destinationText,
+			distance: fare.distance,
+			duration: fare.time,
+			status: "pending",
 		});
 
 		return ride;
