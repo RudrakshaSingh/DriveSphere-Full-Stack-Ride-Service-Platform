@@ -52,6 +52,8 @@ module.exports.registerCaptain = asyncHandler(async (req, res, next) => {
 		});
 
 		const token = captain.generateAuthToken();
+		captain.password = undefined;
+
 
 		return res.status(201).json(new ApiResponse(201, "Captain registered successfully", { token, captain }));
 	} catch (error) {
@@ -87,6 +89,7 @@ module.exports.loginCaptain = asyncHandler(async (req, res) => {
 			secure: false, // Set to true if using HTTPS
 			sameSite: "Lax", // Adjust as needed: 'Strict', 'Lax', or 'None'
 		});
+		captain.password = undefined;
 
 		return res.status(200).json(new ApiResponse(200, "Captain logged in successfully", { token, captain }));
 	} catch (error) {

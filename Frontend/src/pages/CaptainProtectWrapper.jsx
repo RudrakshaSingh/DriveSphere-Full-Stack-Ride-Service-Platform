@@ -26,11 +26,12 @@ const CaptainProtectWrapper = ({ children }) => {
       })
       .then((response) => {
         if (response.status === 200) {
-          setCaptain(response.data.captain);
+          setCaptain(response.data.message);
           setIsLoading(false);
         }
       })
       .catch((err) => {
+        console.log(err);
         localStorage.removeItem("token");
         navigate("/captain-login");
       });

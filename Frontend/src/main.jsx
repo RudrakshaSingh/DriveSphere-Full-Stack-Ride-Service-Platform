@@ -8,14 +8,12 @@ import CaptainContext from "./context/CapatainContext.jsx";
 import { Toaster } from "react-hot-toast";
 
 createRoot(document.getElementById("root")).render(
-	<StrictMode>
-		<CaptainContext>
-			<UserContext>
-				<BrowserRouter>
-					<App />
-					<Toaster />
-				</BrowserRouter>
-			</UserContext>
-		</CaptainContext>
-	</StrictMode>
+	<CaptainContext>
+		<UserContext>
+			<BrowserRouter>
+				<App />
+				<Toaster />
+			</BrowserRouter>
+		</UserContext>
+	</CaptainContext>
 );

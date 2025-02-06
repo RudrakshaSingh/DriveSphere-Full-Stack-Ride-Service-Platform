@@ -47,6 +47,9 @@ module.exports.registerUser = asyncHandler(async (req, res) => {
 		});
 
 		const token = user.generateAuthToken(); //give id of user
+
+		user.password = undefined;
+
 		return res.status(201).json(new ApiResponse(201, "User created successfully", { token, user }));
 	} catch (error) {
 		throw new ApiError(400, "error in register controller", error.message);
@@ -80,6 +83,8 @@ module.exports.loginUser = asyncHandler(async (req, res, next) => {
 			secure: false, // Set to true if using HTTPS
 			sameSite: "Lax", // Adjust as needed: 'Strict', 'Lax', or 'None'
 		});
+
+		user.password = undefined;
 
 		return res.status(200).json(new ApiResponse(200, "User logged in successfully", { token, user }));
 	} catch (error) {
