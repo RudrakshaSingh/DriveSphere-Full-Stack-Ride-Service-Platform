@@ -53,26 +53,35 @@ const Home = () => {
   };
 
   const fetchSuggestions = async (inputValue) => {
-    await toast.promise(
-      axios.get(`${import.meta.env.VITE_BASE_URL}/maps/get-suggestions`, {
-        params: { address: inputValue },
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      }),
-      {
-        loading: "Fetching suggestions...",
-        success: (response) => {
-          setPickupSuggestions(response.data.message);
-          return "Suggestions fetched successfully!";
-        },
-        error: "Failed to fetch suggestions. Please check your input.",
-      },
+	await toast.promise(
+	  axios
+		.get(`${import.meta.env.VITE_BASE_URL}/maps/get-suggestions`, {
+		  params: { address: inputValue },
+		  headers: {
+			Authorization: `Bearer ${localStorage.getItem("token")}`,
+		  },
+		})
+		.then((response) => {
+		  const suggestions = response.data.message;
+		  if (suggestions.length === 0) {
+			setPickupSuggestions([]);
+			throw new Error("No matched suggestions found.");
+		  } else {
+			setPickupSuggestions(suggestions);
+			return "Suggestions fetched successfully!";
+		  }
+		}),
 	  {
-		id: 'fetch-suggestions-toast', // Unique ID to prevent duplicates
+		loading: "Fetching suggestions...",
+		success: (message) => message,
+		error: (err) => err.message || "Failed to fetch suggestions. Please check your input.",
+	  },
+	  {
+		id: "fetch-suggestions-toast", // Unique ID to prevent duplicates
 	  }
-    );
+	);
   };
+  
 
   const handlePickupFocus = () => {
     setActiveField("pickup");
@@ -95,25 +104,33 @@ const Home = () => {
   };
 
   const fetchDestinationSuggestions = async (inputValue) => {
-    await toast.promise(
-      axios.get(`${import.meta.env.VITE_BASE_URL}/maps/get-suggestions`, {
-        params: { address: inputValue },
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      }),
-      {
-        loading: "Fetching suggestions...",
-        success: (response) => {
-          setDestinationSuggestions(response.data.message);
-          return "Suggestions fetched successfully!";
-        },
-        error: "Failed to fetch suggestions. Please check your input.",
-      },
+	await toast.promise(
+	  axios
+		.get(`${import.meta.env.VITE_BASE_URL}/maps/get-suggestions`, {
+		  params: { address: inputValue },
+		  headers: {
+			Authorization: `Bearer ${localStorage.getItem("token")}`,
+		  },
+		})
+		.then((response) => {
+		  const suggestions = response.data.message;
+		  if (suggestions.length === 0) {
+			setDestinationSuggestions([]);
+			throw new Error("No matched suggestions found.");
+		  } else {
+			setDestinationSuggestions(suggestions);
+			return "Suggestions fetched successfully!";
+		  }
+		}),
 	  {
-		id: 'fetch-suggestions-toast', // Unique ID to prevent duplicates
+		loading: "Fetching suggestions...",
+		success: (message) => message,
+		error: (err) => err.message || "Failed to fetch suggestions. Please check your input.",
+	  },
+	  {
+		id: "fetch-suggestions-toast", // Unique ID to prevent duplicates
 	  }
-    );
+	);
   };
 
   // Function to calculate fare and get coordinates
@@ -158,7 +175,6 @@ const Home = () => {
             },
             headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
           });
-          console.log("fare", fareRes.data);
 
           // Check the distance limit.
           if (fareRes.data.message.distance > 200) {
