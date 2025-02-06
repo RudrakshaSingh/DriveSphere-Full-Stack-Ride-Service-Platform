@@ -5,7 +5,6 @@ const captainModel = require("./models/captain.model");
 let io;
 
 function initializeSocket(server) {
-	console.log("socket1");
 
 	io = socketIo(server, {
 		cors: {
@@ -18,9 +17,10 @@ function initializeSocket(server) {
 		console.log(`Client connected: ${socket.id}`);
 
 		socket.on("join", async (data) => {
-			console.log("socket2");
 
 			const { userId, userType } = data;
+            console.log("userid",userId,"usertype",userType);
+            
 
 			if (userType === "user") {
 				await userModel.findByIdAndUpdate(userId, { socketId: socket.id });
@@ -29,17 +29,29 @@ function initializeSocket(server) {
 			}
 		});
 
+        socket.on('update-location-captain', async (data) => {
+            const { userId, location } = data;
+            if (!location || !location.longitude || !location.latitude) {
+                return socket.emit('error', { message: 'Invalid location data' });
+            }
+            await captainModel.findByIdAndUpdate(userId, {
+                location: {
+                    longitude: location.longitude,
+                    latitude: location.latitude,
+                }
+            });
+            
+        });
+
 		socket.on("disconnect", () => {
 			console.log(`Client disconnected: ${socket.id}`);
 		});
 	});
 }
 
-function sendMessageToSocketId(socketId, message) {
+function sendMessageToSocketId(socketId, messageObject) {
 	if (io) {
-		console.log("socket3");
-
-		io.to(socketId).emit("message", message);
+		io.to(socketId).emit(messageObject.event, messageObject.data);
 	} else {
 		console.log("Socket.io not initialized.");
 	}

@@ -1,6 +1,7 @@
 const axios = require("axios");
 const asyncHandler = require("../utils/AsyncHandler");
 const ApiError = require("../utils/ApiError");
+const captainModel = require("../models/captain.model");
 
 module.exports.getAddressCoordinate = async (address) => {
 	try {
@@ -107,3 +108,49 @@ module.exports.getDistanceTime = async (origin, destination) => {
 		throw new ApiError(500, "Unable to fetch distance and time", error.message);
 	}
 };
+
+module.exports.getCaptainsInRadius = async (longitude,latitude,radius) => {
+	
+    // Using $geoWithin with coordinates in the current schema format
+    const captains = await captainModel.find({
+        'location.latitude': { $exists: true },
+        'location.longitude': { $exists: true },
+        status: 'online'  // Only find online captains
+    });
+	
+    // Manual filtering for captains within radius
+    const nearbyCaptains = captains.filter(captain => {
+        if (!captain.location.latitude || !captain.location.longitude) return false;
+
+        // Calculate distance using Haversine formula
+        const distance = calculateDistance(
+            latitude,
+            longitude,
+            captain.location.latitude,
+            captain.location.longitude
+        );
+
+        return distance <= radius;
+    });
+	
+    return nearbyCaptains;
+}
+
+function calculateDistance(lat1, lon1, lat2, lon2) {
+    const R = 6371; // Earth's radius in kilometers
+    const dLat = toRad(lat2 - lat1);
+    const dLon = toRad(lon2 - lon1);
+
+    const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+              Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *
+              Math.sin(dLon/2) * Math.sin(dLon/2);
+
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    const distance = R * c;
+
+    return distance; // Returns distance in kilometers
+}
+
+function toRad(degrees) {
+    return degrees * (Math.PI / 180);
+}

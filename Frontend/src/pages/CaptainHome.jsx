@@ -4,10 +4,44 @@ import RidePopUp from '../components/RidePopUp'
 import ConfirmRidePopUp from '../components/ConfirmRidePopUp'
 import { useState } from 'react'
 import { motion, AnimatePresence } from "framer-motion"
+import { SocketContext } from '../context/SocketContext'
+import { useContext, useEffect } from 'react'
+import { CaptainDataContext } from '../context/CapatainContext'
 
 const CaptainHome = () => {
     const [ridePopupPanel, setRidePopupPanel] = useState(true)
     const [confirmRidePopupPanel, setConfirmRidePopupPanel] = useState(false)
+
+    const { socket } = useContext(SocketContext)
+    const { captain } = useContext(CaptainDataContext)
+    useEffect(() => {
+        socket.emit('join', {
+            userId: captain._id,
+            userType: 'captain'
+        })
+        const updateLocation = () => {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(position => {
+
+                    socket.emit('update-location-captain', {
+                        userId: captain._id,
+                        location: {
+                            longitude: position.coords.longitude,
+                            latitude: position.coords.latitude
+                        }
+                    })
+                })
+            }
+        }
+        const locationInterval = setInterval(updateLocation, 10000)
+        updateLocation()
+        // return () => clearInterval(locationInterval)
+    }, [ socket, captain ])
+
+    //this data is from server
+    socket.on('new-ride', (data) => {
+        console.log("hi",data)
+    })
 
     // Define animation variants for sliding panels from the bottom.
     const slideUpVariants = {

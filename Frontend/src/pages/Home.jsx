@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState,useContext,useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import LocationSearchPanel from "../components/LocationSearchPanel";
 import VehiclePanel from "../components/VehiclePanel";
@@ -7,6 +7,8 @@ import LookingForDriver from "../components/LookingForDriver";
 import WaitingForDriver from "../components/WaitingForDriver";
 import axios from "axios";
 import toast from "react-hot-toast";
+import { SocketContext } from "../context/SocketContext";
+import { UserDataContext } from "../context/UserContext";
 
 const Home = () => {
   const [pickup, setPickup] = useState("");
@@ -26,6 +28,12 @@ const Home = () => {
 
   const [originCoordinates, setOriginCoordinates] = useState([]);
   const [destinationCoordinates, setDestinationCoordinates] = useState([]);
+
+  const { socket } = useContext(SocketContext)
+  const { user } = useContext(UserDataContext)
+  useEffect(() => {
+	  socket.emit("join", { userType: "user", userId: user._id })
+  }, [ user, socket])
 
   // Animation variants for the search panel (expanding/collapsing)
   const searchPanelVariants = {
