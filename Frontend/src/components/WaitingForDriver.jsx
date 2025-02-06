@@ -1,11 +1,13 @@
 /* eslint-disable react/prop-types */
 
+import { ChevronDown } from "lucide-react"
+
 const WaitingForDriver = (props) => {
   return (
     <div>
-      <h5 className='p-1 text-center w-[93%] absolute top-0' onClick={() => {
+      <h5 className='p-1 text-center w-[93%] absolute top-0 items-center flex justify-center' onClick={() => {
         props.waitingForDriver(false)
-      }}><i className="text-3xl text-gray-200 ri-arrow-down-wide-line"></i></h5>
+      }}><ChevronDown size={35} strokeWidth={2.1} /></h5>
       <div className='flex items-center justify-between'>
         <img className='h-12' src="https://swyft.pl/wp-content/uploads/2023/05/how-many-people-can-a-uberx-take.jpg" alt="" />
         <div className='text-right'>

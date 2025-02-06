@@ -1,5 +1,7 @@
 /* eslint-disable react/prop-types */
 
+import { ChevronDown } from "lucide-react";
+
 const ConfirmRide = (props) => {
 	// Determine the image based on vehicleType
 	let vehicleImg = "";
@@ -16,11 +18,11 @@ const ConfirmRide = (props) => {
 	return (
 		<div>
 			<h5
-				className="p-1 text-center w-[93%] absolute top-0"
+				className="p-1 text-center w-[93%] absolute top-0 items-center flex justify-center"
 				onClick={() => {
 					props.setConfirmRidePanel(false);
 				}}>
-				<i className="text-3xl text-gray-200 ri-arrow-down-wide-line"></i>
+				<ChevronDown size={35} strokeWidth={2.1} />
 			</h5>
 			<h3 className="text-2xl font-semibold mb-5">Confirm your Ride</h3>
 

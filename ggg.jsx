@@ -1,94 +1,410 @@
-/* eslint-disable react/prop-types */
-import { MapPin, Clock, Compass, XCircle } from "lucide-react";
+import { useRef, useState } from "react";
+import { useGSAP } from "@gsap/react";
+import gsap from "gsap";
+import "remixicon/fonts/remixicon.css";
+import LocationSearchPanel from "../components/LocationSearchPanel";
+import VehiclePanel from "../components/VehiclePanel";
+import ConfirmRide from "../components/ConfirmRide";
+import { ChevronDown } from "lucide-react";
+import LookingForDriver from "../components/LookingForDriver";
+import WaitingForDriver from "../components/WaitingForDriver";
+import axios from "axios";
+import toast from "react-hot-toast";
 
-const LocationSearchPanel = (props) => {
-    const { 
-        pickupSuggestions, 
-        setPanelOpen, 
-        setPickup, 
-        setDestination, 
-        activeField, 
-        destinationSuggestions, 
-        pickup,  
-        destination  
-    } = props;
+const Home = () => {
+	const [pickup, setPickup] = useState("");
+	const [destination, setDestination] = useState("");
 
-    const handleSuggestionClick = (suggestion) => {
-        if (activeField === 'pickup') {
-            setPickup(suggestion);  // Set the pickup location
-        } else {
-            setDestination(suggestion);  // Set the destination location
-        }
+	const [panelOpen, setPanelOpen] = useState(false); //goes up and down
+	const [vehiclePanel, setVehiclePanel] = useState(false); //when user clicks on location to select vechile
+	const [confirmRidePanel, setConfirmRidePanel] = useState(false);
+	const [vehicleFound, setVehicleFound] = useState(false);
+	const [waitingForDriver, setWaitingForDriver] = useState(false);
 
-        // Check if both pickup and destination are set before showing the vehicle panel
-        if (pickup && destination) {
-            setPanelOpen(false);
-        }
-    };
+	const [pickupSuggestions, setPickupSuggestions] = useState([]);
+	const [destinationSuggestions, setDestinationSuggestions] = useState([]);
+	const [activeField, setActiveField] = useState(null);
+	const [fare, setFare] = useState({});
+	const [vehicleType, setVehicleType] = useState("");
 
-    // Determine which suggestions to display based on activeField
-    const suggestionsToRender = activeField === 'pickup' ? pickupSuggestions : destinationSuggestions;
+	const vehiclePanelRef = useRef(null);
+	const confirmRidePanelRef = useRef(null);
+	const panelRef = useRef(null); //used to pick one div by adding ref={panelRef} in that div
+	const panelCloseRef = useRef(null);
+	const vehicleFoundRef = useRef(null); //foor when pressed looking for a driver
+	const waitingForDriverRef = useRef(null);
 
-    // Remove duplicates by converting the array to a Set and then back to an array
-    const uniqueSuggestions = [...new Set(suggestionsToRender)];
+	const [originCoordinates, setOriginCoordinates] = useState([]);
+	const [destinationCoordinates, setDestinationCoordinates] = useState([]);
 
-    return (
-        <div className="h-[60vh] overflow-y-auto p-4">
-            <div className="flex items-center justify-between mb-6">
-                <h2 className="text-lg font-semibold text-gray-900">
-                    {activeField === 'pickup' ? 'Pickup Locations' : 'Destination Locations'}
-                </h2>
-                <button 
-                    onClick={() => setPanelOpen(false)}
-                    className="p-2 hover:bg-gray-100 rounded-full transition-colors"
-                >
-                    <XCircle className="w-5 h-5 text-gray-500" />
-                </button>
-            </div>
+	const handlePickupChange = (e) => {
+		const inputValue = e.target.value;
+		setPickup(inputValue);
 
-            {uniqueSuggestions.length > 0 ? (
-                <div className="space-y-2">
-                    {uniqueSuggestions.map((elem, idx) => (
-                        <button
-                            key={idx}
-                            onClick={() => handleSuggestionClick(elem)} // Handle suggestion click
-                            className="w-full flex items-center p-4 space-x-4 text-left
-                                bg-white hover:bg-blue-50 border border-gray-200 rounded-xl
-                                transition-all duration-200 ease-in-out
-                                hover:border-blue-300 focus:outline-none focus:ring-2
-                                focus:ring-blue-500 focus:border-blue-500"
-                        >
-                            <div className="flex-shrink-0">
-                                {activeField === 'pickup' ? (
-                                    <Compass className="w-6 h-6 text-blue-600" />
-                                ) : (
-                                    <Clock className="w-6 h-6 text-green-600" />
-                                )}
-                            </div>
-                            <div>
-                                <h4 className="font-medium text-gray-900">{elem}</h4>
-                                <p className="text-sm text-gray-500 mt-1">
-                                    {activeField === 'pickup' 
-                                        ? 'Suggested pickup point' 
-                                        : 'Popular destination'}
-                                </p>
-                            </div>
-                        </button>
-                    ))}
-                </div>
-            ) : (
-                <div className="flex flex-col items-center justify-center h-full text-center py-12">
-                    <MapPin className="w-12 h-12 text-gray-400 mb-4" />
-                    <h3 className="text-lg font-medium text-gray-900 mb-2">
-                        No locations found
-                    </h3>
-                    <p className="text-gray-500 max-w-xs">
-                        Try searching for a different address or landmark
-                    </p>
-                </div>
-            )}
-        </div>
-    );
+		// Only trigger API call if input length is at least 3 characters
+		if (inputValue.length >= 3) {
+			fetchSuggestions(inputValue);
+		} else {
+			setPickupSuggestions([]); // Clear suggestions when input is less than 3
+		}
+	};
+
+	const fetchSuggestions = async (inputValue) => {
+		await toast.promise(
+			axios.get(`${import.meta.env.VITE_BASE_URL}/maps/get-suggestions`, {
+				params: { address: inputValue },
+				headers: {
+					Authorization: `Bearer ${localStorage.getItem("token")}`,
+				},
+			}),
+			{
+				loading: "Fetching suggestions...",
+				success: (response) => {
+					setPickupSuggestions(response.data.message);
+
+					return "Suggestions fetched successfully!";
+				},
+				error: "Failed to fetch suggestions. Please check your input.",
+			}
+		);
+	};
+
+	const handlePickupFocus = () => {
+		setActiveField("pickup");
+	};
+
+	const handleDestinationFocus = () => {
+		setActiveField("destination");
+	};
+
+	const handleDestinationChange = (e) => {
+		const inputValue = e.target.value;
+		setDestination(inputValue);
+
+
+		// Only trigger API call if input length is at least 3 characters
+		if (inputValue.length >= 3) {
+			fetchDestinationSuggestions(inputValue);
+		} else {
+			setDestinationSuggestions([]); // Clear suggestions when input is less than 3
+		}
+	};
+
+	const fetchDestinationSuggestions = async (inputValue) => {
+		await toast.promise(
+			axios.get(`${import.meta.env.VITE_BASE_URL}/maps/get-suggestions`, {
+				params: { address: inputValue },
+				headers: {
+					Authorization: `Bearer ${localStorage.getItem("token")}`,
+				},
+			}),
+			{
+				loading: "Fetching suggestions...",
+				success: (response) => {
+					setDestinationSuggestions(response.data.message);
+					return "Suggestions fetched successfully!";
+				},
+				error: "Failed to fetch suggestions. Please check your input.",
+			}
+		);
+	};
+
+	async function findTrip() {
+		// Close the main panel before proceeding.
+		setPanelOpen(false);
+
+		try {
+			// Wrap the asynchronous logic inside toast.promise.
+			const fareRes = await toast.promise(
+				(async () => {
+					// Get coordinates for both locations in parallel.
+					const [originRes, destRes] = await Promise.all([
+						axios.get(`${import.meta.env.VITE_BASE_URL}/maps/get-coordinates`, {
+							params: { address: pickup },
+							headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+						}),
+						axios.get(`${import.meta.env.VITE_BASE_URL}/maps/get-coordinates`, {
+							params: { address: destination },
+							headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+						}),
+					]);
+
+					// Check if origin and destination are the same.
+					if (
+						originRes.data.message.latitude === destRes.data.message.latitude &&
+						originRes.data.message.longitude === destRes.data.message.longitude
+					) {
+						throw new Error("SAME_COORDINATES");
+					}
+
+					// Save the fetched coordinates to state.
+					setOriginCoordinates([originRes.data.message.longitude, originRes.data.message.latitude]);
+					setDestinationCoordinates([destRes.data.message.longitude, destRes.data.message.latitude]);
+
+					// Get fare estimate using the coordinates.
+					const fareRes = await axios.get(`${import.meta.env.VITE_BASE_URL}/rides/get-fare`, {
+						params: {
+							originLatitute: originRes.data.message.latitude,
+							originLongitude: originRes.data.message.longitude,
+							destinationLatitude: destRes.data.message.latitude,
+							destinationLongitude: destRes.data.message.longitude,
+						},
+						headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+					});
+					console.log("fare", fareRes.data);
+
+					// Check the distance limit.
+					if (fareRes.data.message.distance > 200) {
+						throw new Error("DISTANCE_LIMIT_EXCEEDED");
+					}
+
+					return fareRes;
+				})(),
+				{
+					loading: "Calculating your fare...",
+					success: "Fare calculated successfully!",
+					error: (err) => {
+						if (err.message === "DISTANCE_LIMIT_EXCEEDED") {
+							return "Rides above 100km are not available";
+						}
+						if (err.message === "SAME_COORDINATES") {
+							return "Origin and destination cannot be of same coordinates";
+						}
+						return err.response?.data?.message || "Failed to calculate fare";
+					},
+				}
+			);
+
+			// If no error, set the fare and open the vehicle panel.
+			setFare(fareRes.data.message.fare);
+			setVehiclePanel(true);
+		} catch (error) {
+			toast.error(error.response?.data?.message || "Failed to calculate fare");
+			setVehiclePanel(false);
+		}
+	}
+
+	async function createRide() {
+		console.log("ride", originCoordinates, "d", destinationCoordinates, vehicleType, pickup, destination);
+		const response = await axios.post(
+			`${import.meta.env.VITE_BASE_URL}/rides/create`,
+			{
+				origin: originCoordinates,
+				destination: destinationCoordinates,
+				vehicleType,
+				originText: pickup,
+				destinationText: destination,
+			},
+			{
+				headers: {
+					Authorization: `Bearer ${localStorage.getItem("token")}`,
+				},
+			}
+		);
+	}
+
+	const submitHandler = (e) => {
+		e.preventDefault();
+	};
+
+	useGSAP(
+		function () {
+			if (panelOpen) {
+				gsap.to(panelRef.current, {
+					height: "70%",
+					padding: 24, // opacity:1
+				});
+				gsap.to(panelCloseRef.current, {
+					//to show arrow down when panel is up
+					opacity: 1,
+				});
+			} else {
+				gsap.to(panelRef.current, {
+					height: "0%",
+					padding: 0,
+					// opacity:0
+				});
+				gsap.to(panelCloseRef.current, {
+					opacity: 0,
+				});
+			}
+		},
+		[panelOpen]
+	);
+
+	useGSAP(
+		function () {
+			if (vehiclePanel) {
+				gsap.to(vehiclePanelRef.current, {
+					transform: "translateY(0)",
+				});
+			} else {
+				gsap.to(vehiclePanelRef.current, {
+					transform: "translateY(100%)",
+				});
+			}
+		},
+		[vehiclePanel]
+	);
+
+	useGSAP(
+		function () {
+			if (confirmRidePanel) {
+				gsap.to(confirmRidePanelRef.current, {
+					transform: "translateY(0)",
+				});
+			} else {
+				gsap.to(confirmRidePanelRef.current, {
+					transform: "translateY(100%)",
+				});
+			}
+		},
+		[confirmRidePanel]
+	);
+
+	useGSAP(
+		function () {
+			if (vehicleFound) {
+				gsap.to(vehicleFoundRef.current, {
+					transform: "translateY(0)",
+				});
+			} else {
+				gsap.to(vehicleFoundRef.current, {
+					transform: "translateY(100%)",
+				});
+			}
+		},
+		[vehicleFound]
+	);
+
+	useGSAP(
+		function () {
+			if (waitingForDriver) {
+				gsap.to(waitingForDriverRef.current, {
+					transform: "translateY(0)",
+				});
+			} else {
+				gsap.to(waitingForDriverRef.current, {
+					transform: "translateY(100%)",
+				});
+			}
+		},
+		[waitingForDriver]
+	);
+
+	return (
+		<div className="h-screen relative overflow-hidden">
+			<img
+				className="w-16 absolute left-5 top-5"
+				src="https://upload.wikimedia.org/wikipedia/commons/c/cc/Uber_logo_2018.png"
+				alt=""
+			/>
+			<div className="h-screen w-screen">
+				{/* image for temporary use  */}
+				<img
+					className="h-full w-full object-cover"
+					src="https://miro.medium.com/v2/resize:fit:1400/0*gwMx05pqII5hbfmX.gif"
+					alt=""
+				/>
+			</div>
+			<div className=" flex flex-col justify-end h-screen absolute top-0 w-full">
+				<div className="min-h-[180px] p-6 bg-white relative flex flex-col">
+					<h5
+						ref={panelCloseRef}
+						onClick={() => {
+							setPanelOpen(false);
+						}}
+						className="absolute opacity-0 right-6 top-6 text-2xl">
+						<ChevronDown size={35} strokeWidth={2.1} />
+					</h5>
+					<h4 className="text-2xl font-semibold">Find a trip</h4>
+					<div className="flex-1 ">
+						<form
+							className="relative py-3"
+							onSubmit={(e) => {
+								submitHandler(e);
+							}}>
+							<div className="line absolute h-16 w-1 top-[50%] -translate-y-1/2 left-5 bg-gray-700 rounded-full"></div>
+							<input
+								onFocus={handlePickupFocus}
+								onClick={() => {
+									setPanelOpen(true);
+								}}
+								value={pickup}
+								onChange={handlePickupChange}
+								className="bg-[#eee] px-12 py-2 text-lg rounded-lg w-full"
+								type="text"
+								placeholder="Add a pick-up location"
+							/>
+							<input
+								onFocus={handleDestinationFocus}
+								onClick={() => {
+									setPanelOpen(true);
+								}}
+								value={destination}
+								onChange={handleDestinationChange}
+								className="bg-[#eee] px-12 py-2 text-lg rounded-lg w-full  mt-3"
+								type="text"
+								placeholder="Enter your destination"
+							/>
+						</form>
+					</div>
+					<button onClick={findTrip} className="bg-black text-white px-4 py-2 rounded-lg mt-3 w-full">
+						Find Trip
+					</button>
+				</div>
+
+				<div ref={panelRef} className="bg-white h-0">
+					<LocationSearchPanel
+						setPanelOpen={setPanelOpen}
+						pickupSuggestions={pickupSuggestions}
+						setPickup={setPickup}
+						setDestination={setDestination}
+						activeField={activeField}
+						destinationSuggestions={destinationSuggestions}
+						pickup={pickup}
+						destination={destination}
+					/>
+				</div>
+			</div>
+			<div
+				ref={vehiclePanelRef}
+				className="fixed w-full z-10 bottom-0 translate-y-full bg-white px-3 py-10 pt-12">
+				<VehiclePanel
+					setVehicleType={setVehicleType}
+					fare={fare}
+					setConfirmRidePanel={setConfirmRidePanel}
+					setVehiclePanel={setVehiclePanel}
+				/>
+			</div>
+			<div
+				ref={confirmRidePanelRef}
+				className="fixed w-full z-10 bottom-0 translate-y-full bg-white px-3 py-6 pt-12">
+				<ConfirmRide
+					createRide={createRide}
+					setConfirmRidePanel={setConfirmRidePanel}
+					pickup={pickup}
+					destination={destination}
+					fare={fare}
+					vehicleType={vehicleType}
+					setVehicleFound={setVehicleFound}
+				/>
+			</div>
+			<div ref={vehicleFoundRef} className="fixed w-full z-10 bottom-0 translate-y-full bg-white px-3 py-6 pt-12">
+				<LookingForDriver
+					createRide={createRide}
+					pickup={pickup}
+					destination={destination}
+					fare={fare}
+					vehicleType={vehicleType}
+					setVehicleFound={setVehicleFound}
+				/>
+			</div>
+			<div ref={waitingForDriverRef} className="fixed w-full  z-10 bottom-0  bg-white px-3 py-6 pt-12">
+				<WaitingForDriver waitingForDriver={waitingForDriver} />
+			</div>
+		</div>
+	);
 };
 
-export default LocationSearchPanel;
+export default Home;

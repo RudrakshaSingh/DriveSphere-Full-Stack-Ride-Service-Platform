@@ -1,3 +1,5 @@
+import { ChevronDown } from "lucide-react";
+
 /* eslint-disable react/prop-types */
 const LookingForDriver = (props) => {
 
@@ -16,11 +18,11 @@ const LookingForDriver = (props) => {
 	return (
 		<div >
 			<h5
-				className="p-1 text-center w-[93%] absolute top-0"
+				className="p-1 text-center w-[93%] absolute top-0 items-center flex justify-center"
 				onClick={() => {
 					props.setVehicleFound(false);
 				}}>
-				<i className="text-3xl text-black-200 ri-arrow-down-wide-line"></i>
+				<ChevronDown size={35} strokeWidth={2.1} />
 			</h5>
 			<h3 className="text-2xl font-semibold mb-5">Looking for a Driver</h3>
 			<div className="flex gap-2 justify-between flex-col items-center">
