@@ -9,7 +9,6 @@ import axios from "axios";
 import toast from "react-hot-toast";
 
 const Home = () => {
-  // State variables for pickup, destination, suggestions, panels and more.
   const [pickup, setPickup] = useState("");
   const [destination, setDestination] = useState("");
 
@@ -68,7 +67,10 @@ const Home = () => {
           return "Suggestions fetched successfully!";
         },
         error: "Failed to fetch suggestions. Please check your input.",
-      }
+      },
+	  {
+		id: 'fetch-suggestions-toast', // Unique ID to prevent duplicates
+	  }
     );
   };
 
@@ -107,7 +109,10 @@ const Home = () => {
           return "Suggestions fetched successfully!";
         },
         error: "Failed to fetch suggestions. Please check your input.",
-      }
+      },
+	  {
+		id: 'fetch-suggestions-toast', // Unique ID to prevent duplicates
+	  }
     );
   };
 
@@ -188,23 +193,40 @@ const Home = () => {
 
   // Function to create a ride request
   async function createRide() {
-    console.log("ride", originCoordinates, "d", destinationCoordinates, vehicleType, pickup, destination);
-    await axios.post(
-      `${import.meta.env.VITE_BASE_URL}/rides/create`,
-      {
-        origin: originCoordinates,
-        destination: destinationCoordinates,
-        vehicleType,
-        originText: pickup,
-        destinationText: destination,
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      }
-    );
+	try {
+	  await toast.promise(
+		axios.post(
+		  `${import.meta.env.VITE_BASE_URL}/rides/create`,
+		  {
+			origin: originCoordinates,
+			destination: destinationCoordinates,
+			vehicleType,
+			originText: pickup,
+			destinationText: destination,
+		  },
+		  {
+			headers: {
+			  Authorization: `Bearer ${localStorage.getItem("token")}`,
+			},
+		  }
+		),
+		{
+		  loading: "Creating your ride...",
+		  success: () => {
+			// Only show LookingForDriver panel after successful creation
+			setVehicleFound(true);
+			setConfirmRidePanel(false);
+			return "Ride created successfully!";
+		  },
+		  error: "Failed to create ride.",
+		}
+	  );
+	} catch (error) {
+	  toast.error(error.response?.data?.message || "Failed to create ride in backend");
+	  setVehicleFound(false);
+	}
   }
+  
 
   // Prevent form submission from reloading the page.
   const submitHandler = (e) => {
@@ -321,7 +343,6 @@ const Home = () => {
               destination={destination}
               fare={fare}
               vehicleType={vehicleType}
-              setVehicleFound={setVehicleFound}
             />
           </motion.div>
         )}

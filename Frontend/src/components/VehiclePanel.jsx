@@ -30,7 +30,7 @@ const VehiclePanel = (props) => {
 						Car
 						<span>
 							&nbsp;
-							<i className="ri-user-3-fill"></i>4
+							<i className="ri-user-3-fill"></i>
 						</span>
 					</h4>
 					<h5 className="font-medium text-sm">3 mins away </h5>
@@ -54,7 +54,7 @@ const VehiclePanel = (props) => {
 					<h4 className="font-medium text-base">
 						Motorcycle
 						<span>
-							<i className="ri-user-3-fill"></i>1
+							<i className="ri-user-3-fill"></i>
 						</span>
 					</h4>
 					<h5 className="font-medium text-sm">2 mins away </h5>
@@ -78,7 +78,7 @@ const VehiclePanel = (props) => {
 					<h4 className="font-medium text-base">
 						Auto
 						<span>
-							<i className="ri-user-3-fill"></i>3
+							<i className="ri-user-3-fill"></i>
 						</span>
 					</h4>
 					<h5 className="font-medium text-sm">1 mins away </h5>

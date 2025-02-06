@@ -12,8 +12,8 @@ createRoot(document.getElementById("root")).render(
 		<CaptainContext>
 			<UserContext>
 				<BrowserRouter>
-						<App />
-            <Toaster/>
+					<App />
+					<Toaster />
 				</BrowserRouter>
 			</UserContext>
 		</CaptainContext>
