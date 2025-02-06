@@ -177,7 +177,7 @@ const Home = () => {
           });
 
           // Check the distance limit.
-          if (fareRes.data.message.distance > 200) {
+          if (fareRes.data.message.distance > 1000) {
             throw new Error("DISTANCE_LIMIT_EXCEEDED");
           }
 
@@ -188,7 +188,7 @@ const Home = () => {
           success: "Fare calculated successfully!",
           error: (err) => {
             if (err.message === "DISTANCE_LIMIT_EXCEEDED") {
-              return "Rides above 100km are not available";
+              return "Rides above 1000km are not available";
             }
             if (err.message === "SAME_COORDINATES") {
               return "Origin and destination cannot be of same coordinates";
