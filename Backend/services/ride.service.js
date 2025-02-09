@@ -74,3 +74,29 @@ module.exports.createRide = async ({ user, origin, destination, vehicleType, ori
 		throw new ApiError(500, "error in createride service", error.message);
 	}
 };
+
+module.exports.confirmRide = async ({ rideId, captain }) => {
+	if (!rideId) {
+		throw new ApiError(400, "Ride id is required");
+	}
+	await rideModel.findOneAndUpdate(
+		{
+			_id: rideId,
+		},
+		{
+			status: "accepted",
+			captain: captain._id,
+		}
+	);
+	const ride = await rideModel
+		.findOne({
+			_id: rideId,
+		})
+		.populate("user")
+		.populate("captain")
+		.select("+otp");
+	if (!ride) {
+		throw new ApiError(404, "Ride not found");
+	}
+	return ride;
+};

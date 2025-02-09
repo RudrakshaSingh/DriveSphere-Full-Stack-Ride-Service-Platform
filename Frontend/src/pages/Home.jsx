@@ -34,6 +34,11 @@ const Home = () => {
   useEffect(() => {
 	  socket.emit("join", { userType: "user", userId: user._id })
   }, [ user, socket])
+  socket.on("ride-confirmed", ride => {
+    console.log('ride-confirmed',ride);
+    setVehicleFound(false);
+    setWaitingForDriver(true);
+  })
 
   // Animation variants for the search panel (expanding/collapsing)
   const searchPanelVariants = {
@@ -404,7 +409,7 @@ const Home = () => {
             variants={slideUpVariants}
             className="fixed w-full z-10 bottom-0 bg-white px-3 py-6 pt-12"
           >
-            <WaitingForDriver waitingForDriver={waitingForDriver} />
+            <WaitingForDriver setWaitingForDriver={setWaitingForDriver} />
           </motion.div>
         )}
       </AnimatePresence>
