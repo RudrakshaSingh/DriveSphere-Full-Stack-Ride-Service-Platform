@@ -39,29 +39,30 @@ router.post(
 	rideController.createRide
 );
 
-router.get('/get-fare',
-    authMiddleware.authUser,
-    [
-        query('originLatitute')
-            .isFloat()
-            .withMessage('Origin latitude must be a valid number'),
-        query('originLongitude')
-            .isFloat()
-            .withMessage('Origin longitude must be a valid number'),
-        query('destinationLatitude')
-            .isFloat()
-            .withMessage('Destination latitude must be a valid number'),
-        query('destinationLongitude')
-            .isFloat()
-            .withMessage('Destination longitude must be a valid number'),
-    ],
-    rideController.getFareController
+router.get(
+	"/get-fare",
+	authMiddleware.authUser,
+	[
+		query("originLatitute").isFloat().withMessage("Origin latitude must be a valid number"),
+		query("originLongitude").isFloat().withMessage("Origin longitude must be a valid number"),
+		query("destinationLatitude").isFloat().withMessage("Destination latitude must be a valid number"),
+		query("destinationLongitude").isFloat().withMessage("Destination longitude must be a valid number"),
+	],
+	rideController.getFareController
 );
 
-router.post('/confirm',
+router.post(
+	"/confirm",
+	authMiddleware.authCaptain,
+	body("rideId").isMongoId().withMessage("Invalid ride id"),
+	rideController.confirmRide
+);
+
+router.get('/start-ride',
     authMiddleware.authCaptain,
-    body('rideId').isMongoId().withMessage('Invalid ride id'),
-    rideController.confirmRide
+    query('rideId').isMongoId().withMessage('Invalid ride id'),
+    query('otp').isString().isLength({ min: 6, max: 6 }).withMessage('Invalid OTP'),
+    rideController.startRide
 )
 
 module.exports = router;

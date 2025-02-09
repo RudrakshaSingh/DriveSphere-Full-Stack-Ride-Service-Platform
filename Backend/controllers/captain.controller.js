@@ -82,6 +82,10 @@ module.exports.loginCaptain = asyncHandler(async (req, res) => {
 			throw new ApiError(401, "Invalid email or password");
 		}
 
+		// Update the captain's status to active on login.
+		captain.status = "active";
+		await captain.save();
+
 		const token = captain.generateAuthToken();
 
 		res.cookie("token", token, {

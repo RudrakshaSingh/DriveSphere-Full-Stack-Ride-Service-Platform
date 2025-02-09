@@ -93,3 +93,22 @@ module.exports.confirmRide = asyncHandler(async (req, res) => {
 		throw new ApiError(500, "error in confirmRide controller", err.message);
 	}
 });
+
+module.exports.startRide = asyncHandler(async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+		throw new ApiError(400, "error in startRide controller", errors.array());
+    }
+    const { rideId, otp } = req.query;
+    try {
+        const ride = await rideService.startRide({ rideId, otp, captain: req.captain });
+        console.log(ride);
+        sendMessageToSocketId(ride.user.socketId, {
+            event: 'ride-started',
+            data: ride
+        })
+        return res.status(200).json(ride);
+    } catch (err) {
+		throw new ApiError(500, "error in startRide controller", err.message);
+    }
+})

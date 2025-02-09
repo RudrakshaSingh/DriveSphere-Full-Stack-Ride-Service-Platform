@@ -1,10 +1,15 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import FinishRide from "../components/FinishRide";
 import {  useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import {  ChevronUp } from "lucide-react";
 
 const CaptainRiding = () => {
     const [finishRidePanel, setFinishRidePanel] = useState(false);
+
+    const location = useLocation()
+    const rideData = location.state?.ride
+
 
     // Animation variants matching CaptainHome
     const slideUpVariants = {
@@ -32,15 +37,12 @@ const CaptainRiding = () => {
                 />
             </div>
             <div
-                className="h-1/5 p-6 flex items-center justify-between relative bg-yellow-400 pt-10"
-                onClick={() => {
+                className="h-1/5 p-6 flex items-center justify-between relative bg-yellow-400 pt-10  "
+                >
+                <div className="flex flex-col items-center gap-1 justify-center"><h4 className="text-lg font-semibold">{rideData ? `Ride ID: ${rideData._id}` : '4 KM away'}</h4>
+                <button onClick={() => {
                     setFinishRidePanel(true);
-                }}>
-                <h5 className="p-1 text-center w-[90%] absolute top-0">
-                    <i className="text-3xl text-gray-800 ri-arrow-up-wide-line"></i>
-                </h5>
-                <h4 className="text-xl font-semibold">4 KM away</h4>
-                <button className=" bg-green-600 text-white font-semibold p-3 px-10 rounded-lg">Complete Ride</button>
+                }} className=" bg-green-600 text-white font-semibold p-3 px-10 rounded-lg">Complete Ride</button></div>
             </div>
 
             <AnimatePresence>
@@ -53,7 +55,7 @@ const CaptainRiding = () => {
                         variants={slideUpVariants}
                         className="fixed w-full z-10 bottom-0 bg-white px-3 py-10 pt-12"
                     >
-                        <FinishRide setFinishRidePanel={setFinishRidePanel} />
+                        <FinishRide ride={rideData} setFinishRidePanel={setFinishRidePanel} />
                     </motion.div>
                 )}
             </AnimatePresence>

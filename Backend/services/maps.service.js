@@ -115,7 +115,7 @@ module.exports.getCaptainsInRadius = async (longitude,latitude,radius) => {
     const captains = await captainModel.find({
         'location.latitude': { $exists: true },
         'location.longitude': { $exists: true },
-        status: 'online'  // Only find online captains
+        status: 'active'  // Only find online captains
     });
 	
     // Manual filtering for captains within radius
