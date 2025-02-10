@@ -81,6 +81,8 @@ const CaptainHome = () => {
                 Authorization: `Bearer ${localStorage.getItem('token')}`
             }
         })
+        console.log(response);
+        
         setRidePopupPanel(false)
         setConfirmRidePopupPanel(true)
     }
