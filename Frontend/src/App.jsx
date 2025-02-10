@@ -12,6 +12,7 @@ import CaptainLogout from "./pages/CaptainLogout";
 import Riding from "./pages/riding";
 import CaptainRiding from "./pages/CaptainRiding";
 import UserLogin from "./pages/UserLogin";
+import ChatComponent from "./components/Chat/ChatComponent";
 
 export default function App() {
   return (
@@ -50,6 +51,8 @@ export default function App() {
             <CaptainLogout />
           </CaptainProtectWrapper>
         } />
+
+        <Route path="/chat" element={<ChatComponent />} />
       </Routes>
     </div>
   );

@@ -1,27 +1,29 @@
 /* eslint-disable react/prop-types */
 import axios from "axios";
+import { MessageCircleMore } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import ChatComponent from "./Chat/ChatComponent";
 const ConfirmRidePopUp = (props) => {
+	const [isChatOpen, setIsChatOpen] = useState(false);
 	const [otp, setOtp] = useState("");
-    const navigate = useNavigate()
+	const navigate = useNavigate();
 	const submitHander = async (e) => {
 		e.preventDefault();
-        const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/rides/start-ride`, {
-            params: {
-                rideId: props.ride._id,
-                otp: otp
-            },
-            headers: {
-                Authorization: `Bearer ${localStorage.getItem('token')}`
-            }
-        })
-        if (response.status === 200) {
-            props.setConfirmRidePopupPanel(false)
-            props.setRidePopupPanel(false)
-            navigate('/captain-riding', { state: { ride: response.data } })
-        }
-        
+		const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/rides/start-ride`, {
+			params: {
+				rideId: props.ride._id,
+				otp: otp,
+			},
+			headers: {
+				Authorization: `Bearer ${localStorage.getItem("token")}`,
+			},
+		});
+		if (response.status === 200) {
+			props.setConfirmRidePopupPanel(false);
+			props.setRidePopupPanel(false);
+			navigate("/captain-riding", { state: { ride: response.data } });
+		}
 	};
 	return (
 		<div>
@@ -68,8 +70,7 @@ const ConfirmRidePopUp = (props) => {
 					</div>
 				</div>
 				<div className="mt-2 w-full">
-					<form
-						onSubmit={submitHander}>
+					<form onSubmit={submitHander}>
 						<input
 							value={otp}
 							onChange={(e) => setOtp(e.target.value)}
@@ -77,8 +78,7 @@ const ConfirmRidePopUp = (props) => {
 							className="bg-[#eee] px-6 py-4 font-mono text-lg rounded-lg w-full mt-3"
 							placeholder="Enter OTP"
 						/>
-						<button
-							className="w-full mt-5 text-lg flex justify-center bg-green-600 text-white font-semibold p-3 rounded-lg">
+						<button className="w-full mt-3 text-lg flex justify-center bg-green-600 text-white font-semibold p-1 rounded-lg">
 							Confirm
 						</button>
 						<button
@@ -86,12 +86,29 @@ const ConfirmRidePopUp = (props) => {
 								props.setConfirmRidePopupPanel(false);
 								props.setRidePopupPanel(false);
 							}}
-							className="w-full mt-2 bg-red-600 text-lg text-white font-semibold p-3 rounded-lg">
+							className="w-full mt-1 bg-red-600 text-lg text-white font-semibold p-1 rounded-lg">
 							Cancel
 						</button>
 					</form>
+
+					<div
+						className="p-2 border-2 w-auto  text-bold rounded-lg flex flex-row items-center mx-auto justify-center mt-2"
+						onClick={() => setIsChatOpen(true)}>
+						<MessageCircleMore className="w-6 h-6 mr-2 text-blue-700" />
+						<p>Message To Driver</p>
+					</div>
 				</div>
 			</div>
+			<ChatComponent
+				isOpen={isChatOpen}
+				onClose={() => setIsChatOpen(false)}
+				Name={`${props.ride?.user?.fullname?.firstname || "Driver"} ${
+					props.ride?.user?.fullname?.lastname || ""
+				}`}
+				Image={props.ride?.user?.profileImage || "default-profile.png"}
+				rideId={props.ride?._id}
+				recipientId={props.ride?.user?._id}
+			/>
 		</div>
 	);
 };

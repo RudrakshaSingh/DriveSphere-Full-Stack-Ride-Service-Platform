@@ -1,8 +1,11 @@
 /* eslint-disable react/prop-types */
 
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, MessageCircleMore } from "lucide-react";
+import ChatComponent from "./Chat/ChatComponent";
+import { useState } from "react";
 
 const WaitingForDriver = (props) => {
+	const [isChatOpen, setIsChatOpen] = useState(false);
 	return (
 		<div>
 			<h5
@@ -24,7 +27,7 @@ const WaitingForDriver = (props) => {
 					</h2>
 					<h4 className="text-lg font-semibold -mt-1 -mb-1">{props.ride?.captain.vehicle.plate}</h4>
 					<p className="text-lg text-gray-600">{props.ride?.captain.vehicle.model}</p>
-          <h1 className='text-lg font-semibold'>OTP:  {props.ride?.otp} </h1>
+					<h1 className="text-lg font-semibold">OTP: {props.ride?.otp} </h1>
 				</div>
 			</div>
 			<div className="flex gap-2 justify-between flex-col items-center">
@@ -52,6 +55,24 @@ const WaitingForDriver = (props) => {
 					</div>
 				</div>
 			</div>
+			{/* Chat div */}
+			
+			<div
+				className="p-2 border-2 w-auto  text-bold rounded-lg flex flex-row items-center mx-auto justify-center mt-4"
+				onClick={() => setIsChatOpen(true)}>
+				<MessageCircleMore className="w-6 h-6 mr-2 text-blue-700" />
+				<p>Message To Driver</p>
+			</div>
+			<ChatComponent
+				isOpen={isChatOpen}
+				onClose={() => setIsChatOpen(false)}
+				Name={`${props.ride?.captain?.fullname?.firstname || "Driver"} ${
+					props.ride?.captain?.fullname?.lastname || ""
+				}`}
+				Image={props.ride?.captain?.profileImage || "default-profile.png"}
+				rideId={props.ride?._id}
+				recipientId={props.ride?.captain._id}
+			/>
 		</div>
 	);
 };
