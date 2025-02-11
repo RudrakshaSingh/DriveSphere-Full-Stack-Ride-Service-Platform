@@ -1,40 +1,79 @@
-import { CaptainDataContext } from "../context/CapatainContext";
-import { useContext } from 'react'
+import React, { useContext } from 'react';
+import { Clock, Gauge, Route } from 'lucide-react';
+import { CaptainDataContext } from '../context/CapatainContext';
 
-const CaptainDetails = () => {
+function CaptainDetails() {
+    const { captain } = useContext(CaptainDataContext);
+    const capitalizeFirstLetter = (text) => {
+        return text.charAt(0).toUpperCase() + text.slice(1);
+    };
 
-    const {captain } = useContext(CaptainDataContext);
+    if (!captain) {
+        return (
+            <div className="h-2/5 p-4 flex items-center justify-center">
+                <div className="flex items-center space-x-2">
+                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-gray-900"></div>
+                    <p className="text-gray-600">Loading Captain Details...</p>
+                </div>
+            </div>
+        );
+    }
 
-  return (
-    <div>
-        <div className='flex items-center justify-between'>
-                    <div className='flex items-center justify-start gap-3'>
-                        <img className='h-10 w-10 rounded-full object-cover' src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRdlMd7stpWUCmjpfRjUsQ72xSWikidbgaI1w&s" alt="" />
-                        <h4 className='text-lg font-medium capitalize'>{captain.fullname.firstname} {captain.fullname.lastname ? " " + captain.fullname.lastname : ""} </h4>
+    return (
+        <div className="h-3/6 px-4 bg-white shadow-lg rounded-t-3xl">
+            {/* Captain Header */}
+            <div className="flex items-center justify-between gap-4 mb-6">
+                <div className="flex items-center gap-4">
+                    <div className="relative">
+                        <img
+                            className="h-14 w-14 rounded-full object-cover border-2 border-blue-500"
+                            src={captain?.profileImage}
+                            alt="Captain"
+                        />
+                        <span className="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-green-500 border-2 border-white"></span>
                     </div>
-                    <div>
-                        <h4 className='text-xl font-semibold'>₹295.20</h4>
-                        <p className='text-sm text-gray-600'>Earned</p>
+                    <div className='mb-2'>
+                        <h4 className="text-xl font-semibold">
+                            {captain?.fullname?.firstname} {captain?.fullname?.lastname}
+                        </h4>
+                        <p className="text-sm text-gray-600">
+                            {capitalizeFirstLetter(captain?.vehicle?.vehicleType)} Driver
+                        </p>
                     </div>
                 </div>
-                <div className='flex p-3 mt-8 bg-gray-100 rounded-xl justify-center gap-5 items-start'>
-                    <div className='text-center'>
-                        <i className="text-3xl mb-2 font-thin ri-timer-2-line"></i>
-                        <h5 className='text-lg font-medium'>10.2</h5>
-                        <p className='text-sm text-gray-600'>Hours Online</p>
+                <div className="text-center bg-green-50 px-4 py-2 rounded-lg">
+                    <h4 className="text-lg font-bold text-green-700">₹ {captain?.TotalEarnings}</h4>
+                    <p className="text-xs text-green-600">Today's Earning</p>
+                </div>
+            </div>
+
+            {/* Captain Stats */}
+            <div className="bg-gray-50 rounded-xl p-6 shadow-inner">
+                <div className="flex items-center justify-center gap-6 px-7">
+                    {/* Hours Online */}
+                    <div className="flex-1 text-center bg-white p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow">
+                        <Clock className="w-6 h-6 text-red-600 mb-2 mx-auto" />
+                        <h4 className="text-lg font-bold">{captain?.hoursWorked}</h4>
+                        <p className="text-sm text-gray-600">Hours Online</p>
                     </div>
-                    <div className='text-center'>
-                        <i className="text-3xl mb-2 font-thin ri-speed-up-line"></i>
-                        <h5 className='text-lg font-medium'>10.2</h5>
-                        <p className='text-sm text-gray-600'>Hours Online</p>
+
+                    {/* Distance Covered */}
+                    <div className="flex-1 text-center bg-white p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow">
+                        <Gauge className="w-6 h-6 text-green-600 mb-2 mx-auto" />
+                        <h4 className="text-lg font-bold">{captain?.distanceTravelled}</h4>
+                        <p className="text-sm text-gray-600">KM Covered</p>
                     </div>
-                    <div className='text-center'>
-                        <i className="text-3xl mb-2 font-thin ri-booklet-line"></i>
-                        <h5 className='text-lg font-medium'>10.2</h5>
-                        <p className='text-sm text-gray-600'>Hours Online</p>
+
+                    {/* Rides Completed */}
+                    <div className="flex-1 text-center bg-white p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow">
+                        <Route className="w-6 h-6 text-purple-600 mb-2 mx-auto" />
+                        <h4 className="text-lg font-bold">{captain?.RideDone}</h4>
+                        <p className="text-sm text-gray-600">Rides Done</p>
                     </div>
                 </div>
-    </div>
-  )
+            </div>
+        </div>
+    );
 }
-export default CaptainDetails
+
+export default CaptainDetails;

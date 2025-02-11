@@ -125,6 +125,8 @@ module.exports.endRide = async (req, res) => {
             event: 'ride-ended',
             data: ride
         })
+		console.log("dkkk",ride);
+		
         return res.status(200).json(ride);
     } catch (err) {
         return res.status(500).json({ message: err.message });

@@ -10,6 +10,7 @@ import toast from "react-hot-toast";
 import { SocketContext } from "../context/SocketContext";
 import { UserDataContext } from "../context/UserContext";
 import { useNavigate } from "react-router-dom";
+import MapBackground from "../components/MapBackground";
 
 const Home = () => {
 	const [pickup, setPickup] = useState("");
@@ -283,15 +284,17 @@ const Home = () => {
 				alt="Uber Logo"
 			/>
 			{/* Background image */}
-			<div className="h-screen w-screen">
-				<img
+			<div className="h-3/5 w-screen  ">
+				{/* <img
 					className="h-full w-full object-cover"
 					src="https://miro.medium.com/v2/resize:fit:1400/0*gwMx05pqII5hbfmX.gif"
 					alt="Background"
-				/>
+				/> */}
+				<MapBackground panelOpen={panelOpen}/>
 			</div>
-			<div className="flex flex-col justify-end h-screen absolute top-0 w-full">
-				<div className="min-h-[180px] p-6 bg-white relative flex flex-col">
+			
+			<div className={`flex flex-col justify-end  absolute  w-full  ${panelOpen ? 'h-screen top-0' : 'h-auto bottom-0'}`}>
+				<div className="min-h-[180px] p-6 bg-white relative flex flex-col  h-2/5  ">
 					<h4 className="text-2xl font-semibold">Find a trip</h4>
 					<div className="flex-1">
 						<form className="relative py-3" onSubmit={submitHandler}>
@@ -344,6 +347,7 @@ const Home = () => {
 					)}
 				</AnimatePresence>
 			</div>
+			
 			{/* Animate and render the VehiclePanel */}
 			<AnimatePresence>
 				{vehiclePanel && (

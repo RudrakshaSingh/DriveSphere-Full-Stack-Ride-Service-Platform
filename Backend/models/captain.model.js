@@ -84,6 +84,23 @@ const captainSchema = new mongoose.Schema(
 			type: String,
 			required: true,
 		},
+		hoursWorked: {
+			type:Number,
+			default:0,
+		},
+		distanceTravelled: {
+			type:Number,
+			default:0
+		
+		},
+		RideDone:{
+			type:Number,
+			default:0
+		},
+		TotalEarnings:{
+			type:Number,
+			default:0
+		}
 	},
 	{
 		timestamps: true,

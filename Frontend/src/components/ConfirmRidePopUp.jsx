@@ -10,6 +10,9 @@ const ConfirmRidePopUp = (props) => {
 	const navigate = useNavigate();
 	const submitHander = async (e) => {
 		e.preventDefault();
+		
+	};
+	const confirmRide=async()=>{
 		const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/rides/start-ride`, {
 			params: {
 				rideId: props.ride._id,
@@ -24,11 +27,11 @@ const ConfirmRidePopUp = (props) => {
 			props.setRidePopupPanel(false);
 			navigate("/captain-riding", { state: { ride: response.data } });
 		}
-	};
+	}
 	return (
 		<div>
 			<h5
-				className="p-1 text-center w-[93%] absolute top-0"
+				className=" p-1 text-center w-[93%] absolute top-0"
 				onClick={() => {
 					props.setRidePopupPanel(false);
 				}}>
@@ -78,7 +81,7 @@ const ConfirmRidePopUp = (props) => {
 							className="bg-[#eee] px-6 py-4 font-mono text-lg rounded-lg w-full mt-3"
 							placeholder="Enter OTP"
 						/>
-						<button className="w-full mt-3 text-lg flex justify-center bg-green-600 text-white font-semibold p-1 rounded-lg">
+						<button onClick={confirmRide} className="w-full mt-3 text-lg flex justify-center bg-green-600 text-white font-semibold p-1 rounded-lg">
 							Confirm
 						</button>
 						<button
