@@ -293,7 +293,7 @@ const Home = () => {
 				<MapBackground panelOpen={panelOpen}/>
 			</div>
 			
-			<div className={`flex flex-col justify-end  absolute  w-full  ${panelOpen ? 'h-screen top-0' : 'h-auto bottom-0'}`}>
+			<div className={`flex flex-col justify-end  absolute  w-full  ${panelOpen ? 'h-screen top-0' : 'h-auto '}`}>
 				<div className="min-h-[180px] p-6 bg-white relative flex flex-col  h-2/5  ">
 					<h4 className="text-2xl font-semibold">Find a trip</h4>
 					<div className="flex-1">

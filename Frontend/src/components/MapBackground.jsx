@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 import React, { useEffect, useState } from "react";
 
-const MapBackground = ({ panelOpen }) => {
+const MapBackground = () => {
   const [map, setMap] = useState(null); // Store map instance
   const [currentLocation, setCurrentLocation] = useState([28.6139, 77.209]); // Default to New Delhi
   const [zoomLevel, setZoomLevel] = useState(6); // Default zoom level to show a large region
@@ -89,9 +89,7 @@ const MapBackground = ({ panelOpen }) => {
 
   return (
     <div
-      className={`h-full w-full transition-opacity duration-300 ${
-        panelOpen ? "opacity-0" : "opacity-100"
-      }`}
+      className={`h-full w-full transition-opacity duration-300 `}
     >
       <div
         id="map-container"
