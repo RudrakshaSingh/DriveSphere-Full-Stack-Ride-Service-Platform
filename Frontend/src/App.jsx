@@ -13,6 +13,8 @@ import Riding from "./pages/riding";
 import CaptainRiding from "./pages/CaptainRiding";
 import UserLogin from "./pages/UserLogin";
 import ChatComponent from "./components/Chat/ChatComponent";
+import UserProfile from "./components/UserMenu/UserProfile";
+import RideHistory from "./components/UserMenu/RideHistory";
 
 export default function App() {
   return (
@@ -41,6 +43,24 @@ export default function App() {
             </UserProtectWrapper>
           }
         />
+        <Route
+          path="/user-profile"
+          element={
+            <UserProtectWrapper>
+              <UserProfile />
+            </UserProtectWrapper>
+          }
+        />
+        <Route
+          path="/user-rideHistory"
+          element={
+            <UserProtectWrapper>
+              <RideHistory />
+            </UserProtectWrapper>
+          }
+        />
+
+
          <Route path='/captain-home' element={
           <CaptainProtectWrapper>
             <CaptainHome />

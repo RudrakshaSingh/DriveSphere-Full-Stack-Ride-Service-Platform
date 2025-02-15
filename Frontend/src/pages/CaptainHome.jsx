@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+
 import CaptainDetails from "../components/CaptainDetails";
 import RidePopUp from "../components/RidePopUp";
 import ConfirmRidePopUp from "../components/ConfirmRidePopUp";
@@ -9,6 +9,9 @@ import { useContext, useEffect } from "react";
 import { CaptainDataContext } from "../context/CapatainContext";
 import axios from "axios";
 import MapBackground from "../components/MapBackground";
+import logo from "../assets/logo.png";
+import { Menu } from "lucide-react";
+
 const CaptainHome = () => {
 	const [ridePopupPanel, setRidePopupPanel] = useState(false);
 	const [confirmRidePopupPanel, setConfirmRidePopupPanel] = useState(false);
@@ -94,16 +97,13 @@ const CaptainHome = () => {
 
 	return (
 		<div className="h-screen">
-			<div className="fixed p-6 top-0 flex items-center justify-between w-screen">
-				<img
-					className="w-16"
-					src="https://upload.wikimedia.org/wikipedia/commons/c/cc/Uber_logo_2018.png"
-					alt="Uber Logo"
-				/>
-				<Link to="/captain-home" className="h-10 w-10 bg-white flex items-center justify-center rounded-full">
-					<i className="text-lg font-medium ri-logout-box-r-line"></i>
-				</Link>
+			<div className="absolute top-5 left-3 right-3 z-10  flex flex-row justify-between items-center">
+				<img height={80} width={150} src={logo} alt="Uber Logo" />
+				<button className="text-3xl font-semibold" >
+					<Menu size={35} strokeWidth={2} />
+				</button>
 			</div>
+
 			<div className="h-3/5">
 				<MapBackground />
 			</div>
@@ -119,7 +119,7 @@ const CaptainHome = () => {
 						animate="visible"
 						exit="hidden"
 						variants={slideUpVariants}
-						className="fixed w-full z-10 bottom-0 bg-white px-3 py-10 pt-12">
+						className="fixed w-full z-20 bottom-0 bg-white px-3 py-10 pt-12">
 						<RidePopUp
 							ride={ride}
 							setRidePopupPanel={setRidePopupPanel}
@@ -138,7 +138,7 @@ const CaptainHome = () => {
 						animate="visible"
 						exit="hidden"
 						variants={slideUpVariants}
-						className="fixed w-full h-screen z-10 bottom-0 bg-white px-3 py-10 pt-12">
+						className="fixed w-full h-screen z-20 bottom-0 bg-white px-3 py-10 pt-12">
 						<ConfirmRidePopUp
 							ride={ride}
 							setConfirmRidePopupPanel={setConfirmRidePopupPanel}

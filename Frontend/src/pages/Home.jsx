@@ -11,6 +11,9 @@ import { SocketContext } from "../context/SocketContext";
 import { UserDataContext } from "../context/UserContext";
 import { useNavigate } from "react-router-dom";
 import MapBackground from "../components/MapBackground";
+import { Menu } from "lucide-react";
+import logo from "../assets/logo.png";
+import UserMenuPanel from "../components/UserMenu/UserMenuPanel";
 
 const Home = () => {
 	const [pickup, setPickup] = useState("");
@@ -30,30 +33,33 @@ const Home = () => {
 
 	const [originCoordinates, setOriginCoordinates] = useState([]);
 	const [destinationCoordinates, setDestinationCoordinates] = useState([]);
+	const [openMenu, setOpenMenu] = useState(false);
 
 	const { socket } = useContext(SocketContext);
 	const { user } = useContext(UserDataContext);
 
 	const [ride, setRide] = useState(null);
 
-  const navigate = useNavigate()
+	const navigate = useNavigate();
 
 	useEffect(() => {
 		socket.emit("join", { userType: "user", userId: user._id });
 	}, [user, socket]);
 
-	useEffect(() => {socket.on("ride-confirmed", (ride) => {
-		// console.log("ride-confirmed", ride);
-		setRide(ride);
-		setVehicleFound(false);
-		setWaitingForDriver(true);
-	});}, [ride, socket]);
+	useEffect(() => {
+		socket.on("ride-confirmed", (ride) => {
+			// console.log("ride-confirmed", ride);
+			setRide(ride);
+			setVehicleFound(false);
+			setWaitingForDriver(true);
+		});
+	}, [ride, socket]);
 
-  socket.on('ride-started', ride => {
-    console.log("ride-started",ride);
-    setWaitingForDriver(false)
-    navigate('/riding', { state: { ride } }) // Updated navigate to include ride data)
-})
+	socket.on("ride-started", (ride) => {
+		console.log("ride-started", ride);
+		setWaitingForDriver(false);
+		navigate("/riding", { state: { ride } }); // Updated navigate to include ride data)
+	});
 
 	// Animation variants for the search panel (expanding/collapsing)
 	const searchPanelVariants = {
@@ -275,25 +281,39 @@ const Home = () => {
 		e.preventDefault();
 	};
 
+	const toggleMenu = () => {
+		
+		setOpenMenu(prevState => !prevState);
+	};
+
 	return (
 		<div className="h-screen relative overflow-hidden">
-			{/* Uber logo */}
-			<img
-				className="w-16 absolute left-5 top-5"
-				src="https://upload.wikimedia.org/wikipedia/commons/c/cc/Uber_logo_2018.png"
-				alt="Uber Logo"
-			/>
-			{/* Background image */}
-			<div className="h-3/5 w-screen  ">
-				{/* <img
-					className="h-full w-full object-cover"
-					src="https://miro.medium.com/v2/resize:fit:1400/0*gwMx05pqII5hbfmX.gif"
-					alt="Background"
-				/> */}
-				<MapBackground panelOpen={panelOpen}/>
+			<div className="absolute top-5 left-3 right-3 z-10  flex flex-row justify-between items-center">
+				<img height={80} width={150} src={logo} alt="Uber Logo" />
+				<button className="text-3xl font-semibold  rounded-full " onClick={() => toggleMenu()}>
+					{user.profileImage ? (
+						<img
+							src={user.profileImage}
+							alt="User Profile"
+							className="w-10 h-10 rounded-full object-cover border-solid border-1 border-black"
+						/>
+					) : (
+						<Menu size={35} strokeWidth={2} />
+					)}
+				</button>
 			</div>
-			
-			<div className={`flex flex-col justify-end  absolute  w-full  ${panelOpen ? 'h-screen top-0' : 'h-auto '}`}>
+
+			<UserMenuPanel openMenu={openMenu} toggleMenu={toggleMenu} user={user} />
+
+			{/* Background map */}
+			<div className="h-3/5 w-screen  ">
+				<MapBackground panelOpen={panelOpen} />
+			</div>
+
+			<div
+				className={`flex flex-col justify-end  absolute  w-full  ${
+					panelOpen ? "h-screen top-0 z-20" : "h-auto "
+				}`}>
 				<div className="min-h-[180px] p-6 bg-white relative flex flex-col  h-2/5  ">
 					<h4 className="text-2xl font-semibold">Find a trip</h4>
 					<div className="flex-1">
@@ -347,7 +367,7 @@ const Home = () => {
 					)}
 				</AnimatePresence>
 			</div>
-			
+
 			{/* Animate and render the VehiclePanel */}
 			<AnimatePresence>
 				{vehiclePanel && (
@@ -357,7 +377,7 @@ const Home = () => {
 						animate="visible"
 						exit="hidden"
 						variants={slideUpVariants}
-						className="fixed w-full z-10 bottom-0 bg-white px-3 py-10 pt-12">
+						className="fixed w-full z-20 bottom-0 bg-white px-3 py-10 pt-12">
 						<VehiclePanel
 							setVehicleType={setVehicleType}
 							fare={fare}
@@ -376,7 +396,7 @@ const Home = () => {
 						animate="visible"
 						exit="hidden"
 						variants={slideUpVariants}
-						className="fixed w-full z-10 bottom-0 bg-white px-3 py-6 pt-12">
+						className="fixed w-full z-20 bottom-0 bg-white px-3 py-6 pt-12">
 						<ConfirmRide
 							createRide={createRide}
 							setConfirmRidePanel={setConfirmRidePanel}
@@ -397,7 +417,7 @@ const Home = () => {
 						animate="visible"
 						exit="hidden"
 						variants={slideUpVariants}
-						className="fixed w-full z-10 bottom-0 bg-white px-3 py-6 pt-12">
+						className="fixed w-full z-20 bottom-0 bg-white px-3 py-6 pt-12">
 						<LookingForDriver
 							createRide={createRide}
 							pickup={pickup}
@@ -418,7 +438,7 @@ const Home = () => {
 						animate="visible"
 						exit="hidden"
 						variants={slideUpVariants}
-						className="fixed w-full z-10 bottom-0 bg-white px-3 py-6 pt-12">
+						className="fixed w-full z-20 bottom-0 bg-white px-3 py-6 pt-12">
 						<WaitingForDriver
 							ride={ride}
 							setVehicleFound={setVehicleFound}

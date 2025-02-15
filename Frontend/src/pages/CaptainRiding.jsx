@@ -53,7 +53,7 @@ const CaptainRiding = () => {
                         animate="visible"
                         exit="hidden"
                         variants={slideUpVariants}
-                        className="fixed w-full z-10 bottom-0 bg-white px-3 py-10 pt-12"
+                        className="fixed w-full z-20 bottom-0 bg-white px-3 py-10 pt-12"
                     >
                         <FinishRide ride={rideData} setFinishRidePanel={setFinishRidePanel} />
                     </motion.div>
