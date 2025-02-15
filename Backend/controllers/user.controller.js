@@ -1,4 +1,5 @@
 const userModel = require("../models/user.model");
+const rideModel = require("../models/ride.model");
 const userService = require("../services/user.service");
 const { validationResult } = require("express-validator"); //the validation in route,if it lead to to wrong value and need to perform action on it
 const blackListTokenModel = require("../models/blackListToken.model");
@@ -16,7 +17,7 @@ module.exports.registerUser = asyncHandler(async (req, res) => {
 			throw new ApiError(400, "error in register controller", errors.array());
 		}
 
-		const { firstname, lastname, email, password,mobileNumber } = req.body;
+		const { firstname, lastname, email, password, mobileNumber } = req.body;
 
 		const isUserAlreadyExists = await userModel.findOne({ email });
 		if (isUserAlreadyExists) {
@@ -36,14 +37,14 @@ module.exports.registerUser = asyncHandler(async (req, res) => {
 			}
 			profileImageUrl = profileImage.url;
 		}
-		
+
 		const user = await userService.createUser({
 			firstname: firstname,
 			lastname: lastname,
 			email,
 			password: hashedPassword,
 			profileImage: profileImageUrl,
-			mobileNumber
+			mobileNumber,
 		});
 
 		const token = user.generateAuthToken(); //give id of user
@@ -111,5 +112,24 @@ module.exports.logoutUser = asyncHandler(async (req, res, next) => {
 		return res.status(200).json(new ApiResponse(200, "User logged out successfully"));
 	} catch (error) {
 		throw new ApiError(400, "error in logoutuser controller", error.message);
+	}
+});
+
+module.exports.rideHistory = asyncHandler(async (req, res, next) => {
+	try {
+		const errors = validationResult(req);
+		if (!errors.isEmpty()) {
+			throw new ApiError(400, "error in login controller", errors.array());
+		}
+
+		const user = req.user;
+		const rides = await rideModel.find({ user: user._id }).populate("user").populate("captain").lean();
+
+        console.log('rideHistory',rides);
+
+
+		return res.status(200).json(new ApiResponse(200, "Ride history fetched successfully", rides));
+	} catch (error) {
+		throw new ApiError(400, "error in ridehistory controller", error.message);
 	}
 });

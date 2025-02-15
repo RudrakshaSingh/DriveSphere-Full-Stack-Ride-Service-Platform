@@ -39,6 +39,22 @@ const userSchema = new mongoose.Schema(
 			//for live tracking to share location of uber to user live
 			type: String,
 		},
+		ridesCompleted:{
+			type:Number,
+			default:0
+		},
+		totalMoneySpend:{
+			type:Number,
+			default:0
+		},
+		totalDistance:{
+			type:Number,
+			default:0
+		},
+		totalTime:{
+			type:Number,
+			default:0
+		},
 	},
 	{
 		timestamps: true,

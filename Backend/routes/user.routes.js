@@ -27,6 +27,7 @@ router.post(
 );
 
 router.get("/profile", authMiddleware.authUser, userController.getUserProfile);
+router.get("/ridehistory", authMiddleware.authUser, userController.rideHistory);
 
 router.get("/logout", authMiddleware.authUser, userController.logoutUser);
 

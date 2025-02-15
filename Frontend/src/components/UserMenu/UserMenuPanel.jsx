@@ -6,7 +6,7 @@ import axios from "axios";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 
-const UserMenuPanel = ({ openMenu, toggleMenu, user }) => {
+const UserMenuPanel = ({ openMenu, toggleMenu }) => {
 	const navigate = useNavigate();
 
 	const handleLogout = async () => {
@@ -36,7 +36,7 @@ const UserMenuPanel = ({ openMenu, toggleMenu, user }) => {
 			icon: <History size={20} />,
 			label: "Ride History",
 			action: () => {
-				console.log("History clicked");
+				navigate("/user-rideHistory");
 				toggleMenu();
 			},
 		},

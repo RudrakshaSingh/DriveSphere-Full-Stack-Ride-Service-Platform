@@ -58,6 +58,7 @@ const rideSchema = new mongoose.Schema(
 		}, // in km
 		paymentID: {
 			type: String,
+			default: "notyetpaid",
 		},
 		orderId: {
 			type: String,
