@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import "leaflet-routing-machine";
@@ -13,16 +13,12 @@ L.Icon.Default.mergeOptions({
 	shadowUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png",
 });
 
-const MapComponent = ({  pickup, drop, vehiclePanel }) => {
+const UserHistoryMap = ({ pickup, drop }) => {
 	const mapRef = useRef(null);
 	const routingRef = useRef(null);
 	const containerRef = useRef(null);
-	const currentLocationMarkerRef = useRef(null);
-	const [currentLocation, setCurrentLocation] = useState(null);
 
-	
-
-	// Initialize map and get current location
+	// Initialize map without geolocation
 	useEffect(() => {
 		if (!mapRef.current && containerRef.current) {
 			mapRef.current = L.map(containerRef.current, {
@@ -34,58 +30,20 @@ const MapComponent = ({  pickup, drop, vehiclePanel }) => {
 			L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
 				maxZoom: 19,
 			}).addTo(mapRef.current);
-
-			// Get current location
-			if ("geolocation" in navigator) {
-				navigator.geolocation.getCurrentPosition(
-					(position) => {
-						const { latitude, longitude } = position.coords;
-						setCurrentLocation([latitude, longitude]);
-
-						mapRef.current.setView([latitude, longitude], 15);
-
-						if (currentLocationMarkerRef.current) {
-							currentLocationMarkerRef.current.remove();
-						}
-
-						currentLocationMarkerRef.current = L.marker([latitude, longitude])
-							.addTo(mapRef.current)
-							.openPopup();
-
-						// Add accuracy circle
-						// L.circle([latitude, longitude], {
-						//   radius: position.coords.accuracy,
-						//   color: '#3b82f6',
-						//   fillColor: '#3b82f6',
-						//   fillOpacity: 0.15
-						// }).addTo(mapRef.current);
-					},
-					(error) => {
-						console.error("Error getting location:", error);
-					},
-					{
-						enableHighAccuracy: true,
-						timeout: 5000,
-						maximumAge: 0,
-					}
-				);
-			}
 		}
 
 		return () => {
 			if (mapRef.current) {
 				mapRef.current.remove();
 				mapRef.current = null;
-				currentLocationMarkerRef.current = null;
 			}
 		};
 	}, []);
 
-	// Handle routing when vehiclePanel becomes true
+	// Handle routing when pickup and drop props change
 	useEffect(() => {
-		
 		const createRoute = async () => {
-			if (!pickup || !drop || !vehiclePanel || !mapRef.current) {
+			if (!pickup || !drop || !mapRef.current) {
 				return;
 			}
 			const Dpickup = [pickup[1], pickup[0]];
@@ -115,7 +73,6 @@ const MapComponent = ({  pickup, drop, vehiclePanel }) => {
 
 				// Add simple markers
 				L.marker(Dpickup).addTo(mapRef.current).bindPopup("Pickup Location").openPopup();
-
 				L.marker(Ddrop).addTo(mapRef.current).bindPopup("Drop Location").openPopup();
 
 				// Fit bounds
@@ -126,16 +83,11 @@ const MapComponent = ({  pickup, drop, vehiclePanel }) => {
 			}
 		};
 
-		if (vehiclePanel) {
-      console.log("hi");
-      
-			createRoute();
-		}
-	}, [vehiclePanel, pickup, drop]);
+		createRoute();
+	}, [pickup, drop]);
 
 	return (
-		<div
-			className={`h-full w-full transition-opacity duration-300 `}>
+		<div className="h-full w-full transition-opacity duration-300">
 			<div ref={containerRef} className="w-full h-full" style={{ zIndex: 0 }} />
 			<style>
 				{`
@@ -148,4 +100,4 @@ const MapComponent = ({  pickup, drop, vehiclePanel }) => {
 	);
 };
 
-export default MapComponent;
+export default UserHistoryMap;

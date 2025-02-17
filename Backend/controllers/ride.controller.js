@@ -6,6 +6,7 @@ const { ApiResponse } = require("../utils/ApiResponse");
 const mapsService = require("../services/maps.service");
 const { sendMessageToSocketId } = require("../socket");
 const rideModel = require("../models/ride.model");
+const userModel = require("../models/user.model");
 
 module.exports.createRide = asyncHandler(async (req, res) => {
 	const errors = validationResult(req);
@@ -125,10 +126,27 @@ module.exports.endRide = async (req, res) => {
             event: 'ride-ended',
             data: ride
         })
-		console.log("dkkk",ride);
+
+		const updatedUser = await userModel.findByIdAndUpdate(
+			ride.user._id,
+			{
+			  // Increment the fields by the appropriate amounts.
+			  $inc: {
+				ridesCompleted: 1,
+				totalMoneySpend: ride.fare,    // ride.fare should contain the cost of the ride.
+				totalDistance: ride.distance,   // ride.distance should contain the ride distance.
+				totalTime: ride.duration            // ride.time should contain the ride duration.
+			  }
+			},
+			{ new: true } // Return the updated user document.
+		  );
+		  
+		  // Optionally log the updated user record.
+		  console.log("Updated user stats:", updatedUser);
+		
 		
         return res.status(200).json(ride);
     } catch (err) {
         return res.status(500).json({ message: err.message });
-    } s
+    } 
 }

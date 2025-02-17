@@ -2,6 +2,7 @@ import  { useState } from "react";
 import { Phone, Mail, MapPin, ArrowRight, ArrowLeft } from "lucide-react";
 import axios from "axios";
 import { toast } from "react-hot-toast";
+import {Link} from "react-router-dom";
 
 function Support() {
 	const [name, setname] = useState("");
@@ -205,16 +206,16 @@ function Support() {
 				</div>
 
 				{/* Footer */}
-				<div className="text-center border-t border-gray-200 pt-6 pb-8">
+				<div className="text-center border-t border-gray-200 pt-6 pb-4">
 					<p className="text-xs text-gray-500 mb-2">© 2025 DriveSphere Rides. All rights reserved.</p>
 					<div className="flex justify-center items-center space-x-4 text-xs">
-						<a href="#" className="text-blue-500 hover:text-gray-700 transition-colors">
+						<Link to="/privacy-policy" className="text-blue-500 hover:text-gray-700 transition-colors">
 							Privacy Policy
-						</a>
+						</Link>
 						<span className="text-gray-300">•</span>
-						<a href="#" className="text-blue-500 hover:text-gray-700 transition-colors">
+						<Link to="/terms-of-service" className="text-blue-500 hover:text-gray-700 transition-colors">
 							Terms of Service
-						</a>
+						</Link>
 					</div>
 				</div>
 			</div>

@@ -81,32 +81,42 @@ function UserProfile() {
 
       <div className="max-w-3xl mx-auto p-4 space-y-4">
         {/* Profile Card */}
-        <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
-          <div className="bg-gradient-to-r from-blue-600 to-blue-400 px-4 py-6 sm:px-6 sm:py-8">
-            <div className="flex flex-col items-center text-center">
-              <div className="relative mb-4">
-                <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-full ring-4 ring-white/30 overflow-hidden">
-                  <img
-                    className="w-full h-full object-cover"
-                    src="http://res.cloudinary.com/divxsdt9u/image/upload/v1738732448/uber/hbebclcy8zjlhzb3ilak.jpg"
-                    alt="Profile"
-                  />
-                </div>
-                <button 
-                  className="absolute -bottom-1 -right-1 p-2 bg-white rounded-full shadow-lg hover:shadow-xl transition-shadow"
-                  aria-label="Edit profile picture"
-                >
-                  <Edit2 size={16} className="text-blue-600" />
-                </button>
-              </div>
-              <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">
-                {`${user?.fullname.firstname} ${user?.fullname.lastname}`}
-              </h1>
-              <div className="inline-flex items-center px-3 py-1 rounded-full bg-white/20 backdrop-blur-sm">
-                <Shield size={14} className="text-white mr-1.5" />
-                <span className="text-sm font-medium text-white">Verified Account</span>
+        <div className=" rounded-2xl shadow-sm overflow-hidden bg-gray-50">
+          <div className="relative">
+            <img
+              src="https://images.unsplash.com/photo-1465146344425-f00d5f5c8f07?q=80&w=1476&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+              alt="Background"
+              className="w-full h-32 object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-gray-900 to-transparent opacity-50"></div>
+          </div>
+          <div className="relative px-4 pb-6">
+            <div className="absolute -top-12 left-0 right-0 flex justify-center">
+              <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-full ring-4 ring-white overflow-hidden">
+                <img
+                  className="w-full h-full object-cover"
+                  src="http://res.cloudinary.com/divxsdt9u/image/upload/v1738732448/uber/hbebclcy8zjlhzb3ilak.jpg"
+                  alt="Profile"
+                />
               </div>
             </div>
+            <div className="pt-16 text-center">
+              <h1 className="text-2xl font-bold text-gray-900">
+                {`${user?.fullname.firstname} ${user?.fullname.lastname}`}
+              </h1>
+              <div className="inline-flex items-center justify-center mt-2 px-3 py-1 rounded-full bg-gray-100">
+                <Shield size={14} className="text-gray-500 mr-1.5" />
+                <span className="text-sm font-medium text-gray-700">Verified Account</span>
+              </div>
+            </div>
+          </div>
+          <div className="absolute top-2 right-2">
+            <button
+              className="p-2 bg-white rounded-full shadow-md hover:bg-gray-100 transition-colors"
+              aria-label="Edit profile picture"
+            >
+              <Edit2 size={16} className="text-blue-600" />
+            </button>
           </div>
         </div>
 
@@ -115,7 +125,7 @@ function UserProfile() {
           <div className="p-4 sm:p-6">
             <h2 className="text-lg font-semibold text-gray-900 mb-4">Personal Information</h2>
             <div className="space-y-3">
-              <div className="flex items-center space-x-4 p-3 rounded-xl transition-colors hover:bg-gray-50">
+              <div className="flex bg-blue-50 items-center space-x-4 p-3 rounded-xl transition-colors hover:bg-gray-50">
                 <div className="flex-shrink-0 p-3 bg-blue-50 rounded-xl">
                   <Mail size={20} className="text-blue-600" />
                 </div>
@@ -125,7 +135,7 @@ function UserProfile() {
                 </div>
               </div>
 
-              <div className="flex items-center space-x-4 p-3 rounded-xl transition-colors hover:bg-gray-50">
+              <div className="flex bg-purple-50 items-center space-x-4 p-3 rounded-xl transition-colors hover:bg-gray-50">
                 <div className="flex-shrink-0 p-3 bg-purple-50 rounded-xl">
                   <Phone size={20} className="text-purple-600" />
                 </div>
@@ -135,7 +145,7 @@ function UserProfile() {
                 </div>
               </div>
 
-              <div className="flex items-center space-x-4 p-3 rounded-xl transition-colors hover:bg-gray-50">
+              <div className="flex bg-green-50 items-center space-x-4 p-3 rounded-xl transition-colors hover:bg-gray-50">
                 <div className="flex-shrink-0 p-3 bg-green-50 rounded-xl">
                   <Calendar size={20} className="text-green-600" />
                 </div>
@@ -155,11 +165,11 @@ function UserProfile() {
             <div className="space-y-3">
               <button
                 onClick={handleEditProfile}
-                className="w-full flex items-center justify-between p-4 bg-gray-50 hover:bg-gray-100 rounded-xl transition-all duration-200 group"
+                className="w-full flex items-center justify-between p-4 bg-blue-50 hover:bg-blue-100 rounded-xl transition-all duration-200 group"
               >
                 <div className="flex items-center space-x-3">
                   <div className="p-2 bg-white rounded-lg shadow-sm">
-                    <Edit2 size={20} className="text-gray-600" />
+                    <Edit2 size={20} className="text-blue-600" />
                   </div>
                   <span className="font-medium text-gray-700">Edit Profile</span>
                 </div>
@@ -168,11 +178,11 @@ function UserProfile() {
 
               <button
                 onClick={handleForgotPassword}
-                className="w-full flex items-center justify-between p-4 bg-gray-50 hover:bg-gray-100 rounded-xl transition-all duration-200 group"
+                className="w-full flex items-center justify-between p-4 bg-purple-50 hover:bg-purple-100 rounded-xl transition-all duration-200 group"
               >
                 <div className="flex items-center space-x-3">
                   <div className="p-2 bg-white rounded-lg shadow-sm">
-                    <Lock size={20} className="text-gray-600" />
+                    <Lock size={20} className="text-purple-600" />
                   </div>
                   <span className="font-medium text-gray-700">Change Password</span>
                 </div>
@@ -196,19 +206,18 @@ function UserProfile() {
         </div>
 
         {/* Footer */}
-        <footer className="py-6 text-sm text-gray-500 text-center">
-          <p className="max-w-md mx-auto leading-relaxed">
-            This site is protected by reCAPTCHA and the{" "}
-            <a href="#" className="text-blue-600 hover:underline">
-              Google Privacy Policy
-            </a>{" "}
-            and{" "}
-            <a href="#" className="text-blue-600 hover:underline">
+        <div className="text-center border-t border-gray-200 pt-6 pb-8">
+          <p className="text-xs text-gray-500 mb-2">© 2025 DriveSphere Rides. All rights reserved.</p>
+          <div className="flex justify-center items-center space-x-4 text-xs">
+            <a href="#" className="text-blue-500 hover:text-gray-700 transition-colors">
+              Privacy Policy
+            </a>
+            <span className="text-gray-300">•</span>
+            <a href="#" className="text-blue-500 hover:text-gray-700 transition-colors">
               Terms of Service
-            </a>{" "}
-            apply.
-          </p>
-        </footer>
+            </a>
+          </div>
+        </div>
       </div>
     </div>
   );

@@ -95,13 +95,13 @@ module.exports.getDistanceTime = async (origin, destination) => {
 			}
 		);
 		const duration = response.data.durations[0][1]; // duration between origin and destination
-		const durationInHours = (duration / 60).toFixed(2);
+		const durationInMin = (duration / 60).toFixed(2);
 
 		const distance = response.data.distances[0][1].toFixed(2); // distance between origin and destination
 
 		// Return the extracted duration and distance
 		return {
-			duration: durationInHours,
+			duration: durationInMin,
 			distance,
 		};
 	} catch (error) {

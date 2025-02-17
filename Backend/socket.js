@@ -26,10 +26,10 @@ function initializeSocket(server) {
 				await captainModel.findByIdAndUpdate(userId, { socketId: socket.id });
 			}
 			socket.on("send_message", async (messageData) => {
-				console.log("Received message:", messageData);
+				// console.log("Received message:", messageData);
 				try {
 					const { rideId, recipientId, content, timestamp } = messageData;
-					console.log("rr".recipientId);
+					// console.log("rr".recipientId);
 					
 					// Save message to database
 					const newMessage = await messageModel.create({
@@ -46,10 +46,10 @@ function initializeSocket(server) {
 					const captainRecipient = await captainModel.findById(recipientId);
 	
 					recipientSocketId = userRecipient?.socketId || captainRecipient?.socketId;
-					console.log("New Message:", newMessage);
+					// console.log("New Message:", newMessage);
 	
 					if (recipientSocketId) {
-						console.log(`Sending to socket: ${recipientSocketId}`);
+						// console.log(`Sending to socket: ${recipientSocketId}`);
 						io.to(recipientSocketId).emit("receive_message", {
 							...messageData,
 							senderId: userId,
