@@ -123,7 +123,7 @@ module.exports.rideHistory = asyncHandler(async (req, res, next) => {
 		}
 
 		const user = req.user;
-		const rides = await rideModel.find({ user: user._id, status: "completed" }).populate("user").populate("captain").lean();
+		const rides = await rideModel.find({ user: user._id, status: "completed" }).populate("user").populate("captain").populate("feedback").lean();
 
         console.log('rideHistory',rides);
 

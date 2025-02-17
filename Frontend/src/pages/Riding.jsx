@@ -9,7 +9,7 @@ const Riding = () => {
     const { socket } = useContext(SocketContext)
     const navigate = useNavigate()
     socket.on("ride-ended", () => {
-        navigate('/home')
+        navigate('/user-feedback', { state: { rideId: ride._id,captainId:ride.captain._id,type:true } })
     })
 
 	return (

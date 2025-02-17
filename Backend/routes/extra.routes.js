@@ -5,5 +5,6 @@ const { body } = require('express-validator');
 
 
  router.post('/send-message', extraController.sendSupportMessage);
+ router.post('/feedback', extraController.sendFeedback);
 
 module.exports = router;

@@ -9,6 +9,12 @@ const rideSchema = new mongoose.Schema(
 		captain: {
 			type: mongoose.Schema.Types.ObjectId,
 			ref: "captain",
+			default: null,
+		},
+		feedback: {
+			type: mongoose.Schema.Types.ObjectId,
+			ref: "Feedback",
+			default: null,
 		},
 		origin: {
 			type: [Number], // [longitude, latitude]
