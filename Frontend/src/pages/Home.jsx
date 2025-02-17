@@ -10,10 +10,10 @@ import toast from "react-hot-toast";
 import { SocketContext } from "../context/SocketContext";
 import { UserDataContext } from "../context/UserContext";
 import { useNavigate } from "react-router-dom";
-import MapBackground from "../components/MapBackground";
 import { Menu } from "lucide-react";
 import logo from "../assets/logo.png";
 import UserMenuPanel from "../components/UserMenu/UserMenuPanel";
+import MapComponent from "../components/MapComponent";
 
 const Home = () => {
 	const [pickup, setPickup] = useState("");
@@ -285,7 +285,7 @@ const Home = () => {
 		
 		setOpenMenu(prevState => !prevState);
 	};
-
+	
 	return (
 		<div className="h-screen relative overflow-hidden">
 			<div className="absolute top-5 left-3 right-3 z-10  flex flex-row justify-between items-center">
@@ -307,7 +307,8 @@ const Home = () => {
 
 			{/* Background map */}
 			<div className="h-3/5 w-screen  ">
-				<MapBackground panelOpen={panelOpen} />
+				{/* <MapBackground panelOpen={panelOpen} /> */}
+				<MapComponent  vehiclePanel={vehiclePanel}  pickup={originCoordinates} drop={destinationCoordinates} />
 			</div>
 
 			<div
