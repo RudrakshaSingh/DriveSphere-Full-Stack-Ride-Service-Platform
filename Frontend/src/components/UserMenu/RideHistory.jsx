@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useContext, useEffect, useState } from 'react';
 import { Clock, MapPin, Car, Star, Calendar, Navigation, Receipt, IndianRupee, ArrowDownUp, MapPin as MapPinHouse, Phone, ArrowLeft, ChevronDown, ChevronUp } from 'lucide-react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import { UserDataContext } from '../../context/UserContext';
@@ -10,7 +10,6 @@ const RideHistory = () => {
   const [expandedRide, setExpandedRide] = useState(null);
   const [rideHistoryData, setRideHistoryData] = useState(null);
   const { user } = useContext(UserDataContext);
-  const navigate = useNavigate();
   const token = localStorage.getItem("token");
 
   const fetchUserDataRideHistory = async () => {
@@ -109,7 +108,7 @@ const RideHistory = () => {
       <div className="sticky top-0 bg-white shadow-sm z-10">
         <div className="max-w-2xl mx-auto px-4 py-4 flex items-center gap-4">
           <button
-            onClick={() => navigate("/home")}
+            onClick={() => window.history.back()}
             className="p-2 hover:bg-gray-100 rounded-full transition-colors"
             aria-label="Go back"
           >

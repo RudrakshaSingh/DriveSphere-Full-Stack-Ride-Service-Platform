@@ -15,6 +15,7 @@ import UserLogin from "./pages/UserLogin";
 import ChatComponent from "./components/Chat/ChatComponent";
 import UserProfile from "./components/UserMenu/UserProfile";
 import RideHistory from "./components/UserMenu/RideHistory";
+import Support from "./components/UserMenu/Support";
 
 export default function App() {
   return (
@@ -56,6 +57,14 @@ export default function App() {
           element={
             <UserProtectWrapper>
               <RideHistory />
+            </UserProtectWrapper>
+          }
+        />
+        <Route
+          path="/user-support"
+          element={
+            <UserProtectWrapper>
+              <Support />
             </UserProtectWrapper>
           }
         />

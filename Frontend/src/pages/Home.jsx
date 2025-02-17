@@ -307,7 +307,6 @@ const Home = () => {
 
 			{/* Background map */}
 			<div className="h-3/5 w-screen  ">
-				{/* <MapBackground panelOpen={panelOpen} /> */}
 				<MapComponent  vehiclePanel={vehiclePanel}  pickup={originCoordinates} drop={destinationCoordinates} />
 			</div>
 

@@ -10,6 +10,7 @@ const captionRoutes = require('./routes/captain.routes');
 const mapsRoutes = require('./routes/maps.routes');
 const errorHandler = require('./middlewares/errorHandler');
 const rideRoutes = require('./routes/ride.routes');
+const extraRoutes = require('./routes/extra.routes');
 
 connectToDb();
 
@@ -27,6 +28,7 @@ app.use('/users', userRoutes);
 app.use('/captains', captionRoutes);
 app.use('/maps', mapsRoutes);
 app.use('/rides', rideRoutes);
+app.use('/extra',extraRoutes);
 
 // Use the error handling middleware
 app.use(errorHandler);

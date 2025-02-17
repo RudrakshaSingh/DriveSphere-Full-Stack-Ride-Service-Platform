@@ -8,9 +8,9 @@ import { SocketContext } from "../context/SocketContext";
 import { useContext, useEffect } from "react";
 import { CaptainDataContext } from "../context/CapatainContext";
 import axios from "axios";
-import MapBackground from "../components/MapBackground";
 import logo from "../assets/logo.png";
 import { Menu } from "lucide-react";
+import MapComponent from "../components/MapComponent";
 
 const CaptainHome = () => {
 	const [ridePopupPanel, setRidePopupPanel] = useState(false);
@@ -105,7 +105,7 @@ const CaptainHome = () => {
 			</div>
 
 			<div className="h-3/5">
-				<MapBackground />
+				<MapComponent />
 			</div>
 			<div className="h-2/5 p-6">
 				<CaptainDetails />

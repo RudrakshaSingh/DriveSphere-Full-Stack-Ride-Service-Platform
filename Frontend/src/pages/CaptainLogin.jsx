@@ -47,7 +47,7 @@ function CaptainLogin() {
 	};
 
 	return (
-		<div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
+		<div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8 items-center justify-center flex">
 			<div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-8">
 				<div className="flex flex-col items-center mb-8">
 					<Car className="w-20 h-20 text-blue-600 " />

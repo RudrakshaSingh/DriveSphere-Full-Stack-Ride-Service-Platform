@@ -1,5 +1,4 @@
 /* eslint-disable react/prop-types */
-//MapBackground.jsx
 import { useEffect, useRef, useState } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
@@ -21,9 +20,7 @@ const MapComponent = ({  pickup, drop, vehiclePanel }) => {
 	const currentLocationMarkerRef = useRef(null);
 	const [currentLocation, setCurrentLocation] = useState(null);
 
-	const Dpickup = [pickup[1], pickup[0]];
-	const Ddrop = [drop[1], drop[0]];
-	console.log(Dpickup, Ddrop);
+	
 
 	// Initialize map and get current location
 	useEffect(() => {
@@ -86,10 +83,14 @@ const MapComponent = ({  pickup, drop, vehiclePanel }) => {
 
 	// Handle routing when vehiclePanel becomes true
 	useEffect(() => {
+		
 		const createRoute = async () => {
 			if (!pickup || !drop || !vehiclePanel || !mapRef.current) {
 				return;
 			}
+			const Dpickup = [pickup[1], pickup[0]];
+	const Ddrop = [drop[1], drop[0]];
+	console.log(Dpickup, Ddrop);
 
 			try {
 				if (routingRef.current) {
