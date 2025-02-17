@@ -18,6 +18,7 @@ import RideHistory from "./components/UserMenu/RideHistory";
 import Support from "./components/UserMenu/Support";
 import TermsofService from "./pages/Policy/TermsofService";
 import PrivacyPolicy from "./pages/Policy/PrivacyPolicy";
+import Error from "./pages/Error";
 
 export default function App() {
   return (
@@ -86,7 +87,7 @@ export default function App() {
         <Route path="/chat" element={<ChatComponent />} />
 
         {/* 404 page */}
-        <Route path="*" element={<Start />} />
+        <Route path="*" element={<Error />} />
         {/* policies */}
         <Route path="/terms-of-service" element={<TermsofService />} />
         <Route path="/privacy-policy" element={<PrivacyPolicy />} />
