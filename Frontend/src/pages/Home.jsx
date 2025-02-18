@@ -24,6 +24,8 @@ const Home = () => {
 	const [confirmRidePanel, setConfirmRidePanel] = useState(false);
 	const [vehicleFound, setVehicleFound] = useState(false);
 	const [waitingForDriver, setWaitingForDriver] = useState(false);
+	const [couponResponse, setCouponResponse] = useState("");
+
 
 	const [pickupSuggestions, setPickupSuggestions] = useState([]);
 	const [destinationSuggestions, setDestinationSuggestions] = useState([]);
@@ -60,7 +62,7 @@ const Home = () => {
 	socket.on("ride-started", (ride) => {
 		console.log("ride-started", ride);
 		setWaitingForDriver(false);
-		navigate("/riding", { state: { ride } }); // Updated navigate to include ride data)
+		navigate("/riding", { state: { ride,couponResponse } }); // Updated navigate to include ride data)
 	});
 
 	// Animation variants for the search panel (expanding/collapsing)
@@ -462,6 +464,8 @@ const Home = () => {
 						variants={slideUpVariants}
 						className="fixed w-full z-20 bottom-0 bg-white ">
 						<ConfirmRide
+						couponResponse={couponResponse}
+						setCouponResponse={setCouponResponse}
 							createRide={createRide}
 							setConfirmRidePanel={setConfirmRidePanel}
 							pickup={pickup}
@@ -483,6 +487,8 @@ const Home = () => {
 						variants={slideUpVariants}
 						className="fixed w-full z-20 bottom-0 bg-white ">
 						<LookingForDriver
+						couponResponse={couponResponse}
+						setCouponResponse={setCouponResponse}
 							createRide={createRide}
 							pickup={pickup}
 							destination={destination}
@@ -502,8 +508,10 @@ const Home = () => {
 						animate="visible"
 						exit="hidden"
 						variants={slideUpVariants}
-						className="fixed w-full z-20 bottom-0 bg-white px-3 py-6 pt-12">
+						className="fixed w-full z-20 bottom-0 bg-white">
 						<WaitingForDriver
+						couponResponse={couponResponse}
+						setCouponResponse={setCouponResponse}
 							ride={ride}
 							setVehicleFound={setVehicleFound}
 							waitingForDriver={waitingForDriver}

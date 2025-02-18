@@ -1,67 +1,130 @@
-import { useContext } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { SocketContext } from "../context/SocketContext";
+import { MapPin, IndianRupee } from "lucide-react";
+import { useContext, useEffect, useState } from "react";
+import UserHistoryMap from "../components/UserMenu/UserHistoryMap";
+
 const Riding = () => {
+  const location = useLocation();
+  const { ride,couponResponse } = location.state || {}; // Retrieve ride data
+  console.log("gg",ride.captain.vehicle.vehicleType);
+  
+  const [pickup, setPickup] = useState("");
 
-	const location = useLocation()
-    const { ride } = location.state || {} // Retrieve ride data
+  // Update pickup with the browser's current location every 10 seconds
+  useEffect(() => {
+    const updatePickup = () => {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          // Format the coordinates as desired.
+          // Here we simply join them as a string.
+        //   setPickup(`${latitude}, ${longitude}`);
+		  setPickup([longitude,latitude]);
+        },
+        (error) => {
+          console.error("Error getting current location:", error);
+        }
+      );
+    };
 
-    const { socket } = useContext(SocketContext)
-    const navigate = useNavigate()
+    // Get the location immediately on mount
+    updatePickup();
+
+    // Update location every 10 seconds
+    const intervalId = setInterval(updatePickup, 10000);
+
+    // Clear interval on component unmount
+    return () => clearInterval(intervalId);
+  }, []);
+
+  const { socket } = useContext(SocketContext);
+  const navigate = useNavigate();
+
+  // Listen for the "ride-ended" event
+  useEffect(() => {
     socket.on("ride-ended", () => {
-        navigate('/user-feedback', { state: { rideId: ride._id,captainId:ride.captain._id,type:true } })
-    })
+      navigate("/user-feedback", { state: { rideId: ride._id, captainId: ride.captain._id, type: true } });
+    });
 
-	return (
-		<div className="h-screen">
-			<Link
-				to="/home"
-				className="fixed right-2 top-2 h-10 w-10 bg-white flex items-center justify-center rounded-full">
-				<i className="text-lg font-medium ri-home-5-line"></i>
-			</Link>
-			<div className="h-1/2">
-				<img
-					className="h-full w-full object-cover"
-					src="https://miro.medium.com/v2/resize:fit:1400/0*gwMx05pqII5hbfmX.gif"
-					alt=""
-				/>
-			</div>
-			<div className="h-1/2 p-4">
-				<div className="flex items-center justify-between">
-					<img
-						className="h-12"
-						src="https://swyft.pl/wp-content/uploads/2023/05/how-many-people-can-a-uberx-take.jpg"
-						alt=""
-					/>
-					<div className="text-right">
-						<h2 className="text-lg font-medium capitalize">{ride?.captain.fullname.firstname + " " + ride?.captain.fullname.lastname}</h2>
-						<h4 className="text-xl font-semibold -mt-1 -mb-1">{ride?.captain.vehicle.plate}</h4>
-						<p className="text-sm text-gray-600">{ride?.captain.vehicle.model}</p>
+    // Clean up the socket listener when the component unmounts or dependencies change
+    return () => socket.off("ride-ended");
+  }, [socket, navigate, ride]);
+
+  return (
+    <div className="h-full w-full relative">
+      <Link
+        to="/home"
+        className="absolute top-3 right-3 p-2 bg-white/80 backdrop-blur-sm hover:bg-gray-100 rounded-full transition-colors shadow-md"
+      >
+        <i className="text-lg font-medium ri-home-5-line"></i>
+      </Link>
+      <div className="h-[40vh]">
+        <UserHistoryMap pickup={pickup} drop={ride?.destination} />
+      </div>
+      <div className="h-[60vh] p-4 relative bg-white rounded-lg shadow-xl w-full mx-auto">
+        <h3 className="text-xl font-semibold text-center mt-2 mb-4">Riding</h3>
+
+        <div className="flex items-center gap-2 mb-4">
+          <img
+            className="h-16 w-16 rounded-full object-cover"
+            src="https://swyft.pl/wp-content/uploads/2023/05/how-many-people-can-a-uberx-take.jpg"
+            alt="Driver"
+          />
+          <div>
+            <h2 className="text-lg font-semibold">
+              {ride?.captain.fullname.firstname + " " + ride?.captain.fullname.lastname}
+            </h2>
+            <h4 className="text-md font-medium text-gray-600">{ride?.captain.vehicle.model}</h4>
+            <p className="text-sm text-gray-500">{ride?.captain.vehicle.plate}</p>
+          </div>
+        </div>
+
+        <div className="space-y-2">
+          <div className="flex items-center gap-2 p-3 bg-gray-50 rounded-lg">
+            <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+              <MapPin size={16} className="text-green-600" />
+            </div>
+            <div>
+              <h3 className="text-md font-medium text-gray-900">Destination</h3>
+              <p className="text-sm text-gray-600">{ride?.destinationText}</p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg">
+					<div className="w-10 h-10 bg-yellow-100 rounded-full flex items-center justify-center">
+						<IndianRupee size={20} className="text-yellow-600" />
+					</div>
+					<div>
+						<h3 className="text-lg font-medium text-gray-900">Payment</h3>
+						{couponResponse !== "" ? (
+							<div className="flex items-center gap-2">
+								<p className="text-sm text-gray-600 line-through">₹{ride.fare}</p>
+								<p className="text-sm font-bold text-green-600">
+									₹
+									{Math.max(
+										ride.fare -
+											(couponResponse.type === "fixed"
+												? couponResponse.discount
+												: (ride.fare* couponResponse.discount) /
+												  100),
+										0
+									)}
+								</p>
+							</div>
+						) : (
+							<p className="text-sm text-gray-600">₹{ride.fare}</p>
+						)}
 					</div>
 				</div>
-				<div className="flex gap-2 justify-between flex-col items-center">
-					<div className="w-full mt-5">
-						<div className="flex items-center gap-5 p-3 border-b-2">
-							<i className="text-lg ri-map-pin-2-fill"></i>
-							<div>
-								<h3 className="text-lg font-medium">Drop ponit:</h3>
-								<p className="text-sm -mt-1 text-gray-600">{ride?.destinationText}</p>
-							</div>
-						</div>
-						<div className="flex items-center gap-5 p-3">
-							<i className="ri-currency-line"></i>
-							<div>
-								<h3 className="text-lg font-medium">Cash </h3>
-								<p className="text-sm -mt-1 text-gray-600">₹{ride?.fare}</p>
-							</div>
-						</div>
-					</div>
-				</div>
-				<button className="w-full mt-5 bg-green-600 text-white font-semibold p-2 rounded-lg">
-					Make a Payment
-				</button>
-			</div>
-		</div>
-	);
+        </div>
+
+        <button className="w-full mt-2 p-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors">
+          Make a Payment
+        </button>
+      </div>
+    </div>
+  );
 };
+
 export default Riding;

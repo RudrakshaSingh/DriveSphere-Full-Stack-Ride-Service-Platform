@@ -3,7 +3,7 @@ import  { useContext, useEffect, useState, useRef, useCallback } from "react";
 import { SocketContext } from "../../context/SocketContext"
 import { ArrowLeft, SendHorizontal, X } from "lucide-react";
 
-const ChatComponent = ({ isOpen, onClose, Name, Image, rideId, recipientId }) => {
+const ChatComponent = ({ isOpen, onClose, Name, Image, rideId, recipientId,setIsChatOpen }) => {
 	const [messages, setMessages] = useState([]);
 	const [newMessage, setNewMessage] = useState("");
 	const { socket } = useContext(SocketContext);
@@ -18,10 +18,12 @@ const ChatComponent = ({ isOpen, onClose, Name, Image, rideId, recipientId }) =>
 			if (messageExists) {
 				return prev;
 			}
+		setIsChatOpen(true);
+
 
 			return [...prev, message];
 		});
-	}, []);
+	}, [ setIsChatOpen]);
 
 	// Set up socket listener
 	useEffect(() => {
@@ -57,7 +59,6 @@ const ChatComponent = ({ isOpen, onClose, Name, Image, rideId, recipientId }) =>
 			...messageData,
 			isSender: true,
 		};
-
 		setMessages((prev) => [...prev, localMessage]);
 		setNewMessage("");
 

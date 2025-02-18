@@ -114,3 +114,29 @@ exports.makeCoupon = asyncHandler(async (req, res) => {
         throw new ApiError(500, "Error in makeCoupon controller", error.message);
     }
 });
+
+exports.useCoupon = asyncHandler(async (req, res) => {
+	try {
+		const user = req.user;
+		const { couponCode } = req.body;
+
+		const isUser= await userModel.findById(user._id);
+		if(!isUser){
+			return res.status(201).json(new ApiResponse(201, "User not found"));
+		}
+
+		// Find the coupon with the provided code
+		const coupon = await couponModel.findOne({ code: couponCode });
+
+		// Check if the coupon exists in user model also
+		const isCoupon = isUser.coupons.includes(coupon._id);
+		if (!isCoupon) {
+			return res.status(201).json(new ApiResponse(201, "This Coupon not available for you"));
+		}
+
+
+		return res.status(200).json(new ApiResponse(200, "Coupon used successfully",  coupon ));
+	} catch (error) {
+		throw new ApiError(500, "Error in useCoupon controller", error.message);
+	}
+});
