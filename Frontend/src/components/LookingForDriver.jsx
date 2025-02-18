@@ -17,13 +17,13 @@ const LookingForDriver = (props) => {
   return (
     <div className="relative bg-white rounded-lg shadow-xl p-6 max-w-md w-full mx-auto">
       <button
-        className="absolute top-2 left-1/2 -translate-x-1/2 p-2 hover:bg-gray-100 rounded-full transition-colors"
+        className="absolute top-3 left-1/2 -translate-x-1/2 p-2 bg-white/80 backdrop-blur-sm hover:bg-gray-100 rounded-full transition-colors shadow-md"
         onClick={() => props.setVehicleFound(false)}
       >
         <ChevronDown size={28} className="text-gray-600" />
       </button>
 
-      <h3 className="text-2xl font-semibold text-center mt-8 mb-6">
+      <h3 className="text-2xl font-semibold text-center mt-10 mb-6">
         Looking for a Driver
       </h3>
 

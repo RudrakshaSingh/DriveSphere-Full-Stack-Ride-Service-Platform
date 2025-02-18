@@ -37,4 +37,9 @@ router.post(
 	mapController.getDistanceTime
 );
 
+router.get(
+	"/reverse-geocoding",authMiddleware.authUser,
+	mapController.reverseGeocoding
+);
+
 module.exports = router;

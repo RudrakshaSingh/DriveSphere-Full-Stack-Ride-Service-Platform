@@ -1,4 +1,4 @@
-import { useState, useContext, useEffect } from "react";
+import { useState, useContext, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import LocationSearchPanel from "../components/LocationSearchPanel";
 import VehiclePanel from "../components/VehiclePanel";
@@ -39,6 +39,8 @@ const Home = () => {
 	const { user } = useContext(UserDataContext);
 
 	const [ride, setRide] = useState(null);
+
+	const pickupInputRef = useRef(null);
 
 	const navigate = useNavigate();
 
@@ -276,6 +278,63 @@ const Home = () => {
 		}
 	}
 
+	// Function to get current location
+	const getCurrentLocation = async () => {
+		// Notify user that location fetching has started
+		const loadingToastId = toast.loading('Fetching your current location...');
+	  
+		navigator.geolocation.getCurrentPosition(
+		  async (position) => {
+			const { latitude, longitude } = position.coords;
+			console.log('Latitude:', latitude);
+			console.log('Longitude:', longitude);
+			setOriginCoordinates([longitude, latitude]);
+	  
+			try {
+			  const response = await axios.get(
+				`${import.meta.env.VITE_BASE_URL}/maps/reverse-geocoding`,
+				{
+				  params: { latitude, longitude },
+				  headers: {
+					Authorization: `Bearer ${localStorage.getItem('token')}`,
+				  },
+				}
+			  );
+	  
+			  if (response.status === 200) {
+				setPickupSuggestions(response.data.message);
+				setPanelOpen(true);
+				if (pickupInputRef.current) {
+				  pickupInputRef.current.focus();
+				}
+				setPickup(response.data.message[0]);
+	  
+				// Update the loading toast to success
+				toast.success('Location fetched successfully', {
+				  id: loadingToastId,
+				});
+			  } else {
+				// Update the loading toast to error
+				toast.error(response.data.message || 'Failed to fetch location', {
+				  id: loadingToastId,
+				});
+			  }
+			} catch (error) {
+			  // Update the loading toast to error
+			  toast.error('An error occurred while fetching location', {
+				id: loadingToastId,
+			  });
+			  console.error(error);
+			}
+		  },
+		  (error) => {
+			// Handle geolocation errors
+			toast.error(`Geolocation error: ${error.message}`, {
+			  id: loadingToastId,
+			});
+		  }
+		);
+	  };
 	// Prevent form submission from reloading the page.
 	const submitHandler = (e) => {
 		e.preventDefault();
@@ -314,13 +373,14 @@ const Home = () => {
 				className={`flex flex-col justify-end  absolute  w-full  ${
 					panelOpen ? "h-screen top-0 z-20" : "h-auto "
 				}`}>
-				<div className="min-h-[180px] p-6 bg-white relative flex flex-col  h-2/5  ">
+				<div className="min-h-[180px] pb-6 pl-6 pr-6 pt-2 bg-white relative flex flex-col  h-2/5  ">
 					<h4 className="text-2xl font-semibold">Find a trip</h4>
 					<div className="flex-1">
 						<form className="relative py-3" onSubmit={submitHandler}>
 							<div className="line absolute h-16 w-1 top-[50%] -translate-y-1/2 left-5 bg-gray-700 rounded-full"></div>
 							<input
 								onFocus={handlePickupFocus}
+								ref={pickupInputRef}
 								onClick={() => setPanelOpen(true)}
 								value={pickup}
 								onChange={handlePickupChange}
@@ -339,9 +399,13 @@ const Home = () => {
 							/>
 						</form>
 					</div>
-					<button onClick={findTrip} className="bg-black text-white px-4 py-2 rounded-lg mt-3 w-full">
+					<button onClick={getCurrentLocation}  className="bg-gradient-to-r from-gray-400 to-gray-500 text-white px-4 py-2 rounded-lg mt-1 mb-2 w-full">
+						Get Current Location
+					</button>
+					<button onClick={findTrip} className="bg-gradient-to-r from-gray-500 to-gray-400 text-white px-4 py-2 rounded-lg w-full">
 						Find Trip
 					</button>
+					
 				</div>
 				{/* Animate and render the LocationSearchPanel */}
 				<AnimatePresence>
@@ -377,7 +441,7 @@ const Home = () => {
 						animate="visible"
 						exit="hidden"
 						variants={slideUpVariants}
-						className="fixed w-full z-20 bottom-0 bg-white px-3 py-10 pt-12">
+						className="fixed w-full z-20 bottom-0 bg-white">
 						<VehiclePanel
 							setVehicleType={setVehicleType}
 							fare={fare}
@@ -396,7 +460,7 @@ const Home = () => {
 						animate="visible"
 						exit="hidden"
 						variants={slideUpVariants}
-						className="fixed w-full z-20 bottom-0 bg-white px-3 py-6 pt-12">
+						className="fixed w-full z-20 bottom-0 bg-white ">
 						<ConfirmRide
 							createRide={createRide}
 							setConfirmRidePanel={setConfirmRidePanel}

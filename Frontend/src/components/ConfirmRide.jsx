@@ -1,66 +1,80 @@
 /* eslint-disable react/prop-types */
-
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, MapPin, IndianRupee } from "lucide-react";
+import car from "../assets/car.png";
+import moto from "../assets/moto.png";
+import auto from "../assets/auto.png";
 
 const ConfirmRide = (props) => {
-	// Determine the image based on vehicleType
-	let vehicleImg = "";
-	if (props.vehicleType === "car") {
-		vehicleImg = "https://swyft.pl/wp-content/uploads/2023/05/how-many-people-can-a-uberx-take.jpg";
-	} else if (props.vehicleType === "moto") {
-		vehicleImg =
-			"https://www.uber-assets.com/image/upload/f_auto,q_auto:eco,c_fill,h_638,w_956/v1649231091/assets/2c/7fa194-c954-49b2-9c6d-a3b8601370f5/original/Uber_Moto_Orange_312x208_pixels_Mobile.png";
-	} else if (props.vehicleType === "auto") {
-		vehicleImg =
-			"https://www.uber-assets.com/image/upload/f_auto,q_auto:eco,c_fill,h_368,w_552/v1648431773/assets/1d/db8c56-0204-4ce4-81ce-56a11a07fe98/original/Uber_Auto_558x372_pixels_Desktop.png";
-	}
+  // Determine the image based on vehicleType
+  let vehicleImg = "";
+  if (props.vehicleType === "car") {
+	vehicleImg = car;
+  } else if (props.vehicleType === "moto") {
+	vehicleImg = moto;
+  } else if (props.vehicleType === "auto") {
+	vehicleImg = auto;
+  }
 
-	return (
-		<div>
-			<h5
-				className="p-1 text-center w-[93%] absolute top-0 items-center flex justify-center"
-				onClick={() => {
-					props.setConfirmRidePanel(false);
-				}}>
-				<ChevronDown size={35} strokeWidth={2.1} />
-			</h5>
-			<h3 className="text-2xl font-semibold mb-5">Confirm your Ride</h3>
+  return (
+	<div className="flex flex-col h-full">
+	  <div className="bg-white rounded-t-2xl shadow-md p-4 relative">
+		<button
+		  className="absolute top-3 left-1/2 -translate-x-1/2 p-2 bg-white/80 backdrop-blur-sm hover:bg-gray-100 rounded-full transition-colors shadow-md"
+		  onClick={() => {
+			props.setConfirmRidePanel(false);
+		  }}
+		>
+		  <ChevronDown size={28} className="text-gray-600" />
+		</button>
+		<h3 className="text-xl font-semibold text-center py-2 mt-10">Confirm Your Ride</h3>
+	  </div>
 
-			<div className="flex gap-2 justify-between flex-col items-center">
-				<img className="h-20" src={vehicleImg} alt="" />
-				<div className="w-full mt-5">
-					<div className="flex items-center gap-5 p-3 border-b-2">
-						<i className="ri-map-pin-user-fill"></i>
-						<div>
-							<h3 className="text-lg font-medium">Pickup</h3>
-							<p className="text-sm -mt-1 text-gray-600">{props.pickup}</p>
-						</div>
-					</div>
-					<div className="flex items-center gap-5 p-3 border-b-2">
-						<i className="text-lg ri-map-pin-2-fill"></i>
-						<div>
-							<h3 className="text-lg font-medium">Destination</h3>
-							<p className="text-sm -mt-1 text-gray-600">{props.destination}</p>
-						</div>
-					</div>
-					<div className="flex items-center gap-5 p-3">
-						<i className="ri-currency-line"></i>
-						<div>
-							<h3 className="text-lg font-medium">₹{props.fare[props.vehicleType]} </h3>
-							<p className="text-sm -mt-1 text-gray-600">Cash Cash</p>
-						</div>
-					</div>
-				</div>
-				<button
-					onClick={() => {
-						props.createRide();
-					}}
-					className="w-full mt-5 bg-green-600 text-white font-semibold p-2 rounded-lg">
-					Confirm
-				</button>
+	  <div className="p-4 flex flex-col items-center flex-grow justify-between">
+		<img className="h-24 w-24 object-contain" src={vehicleImg} alt={props.vehicleType} />
+
+		<div className="w-full">
+		  <div className="flex items-center gap-3 py-3 border-b">
+			<div className="w-8 h-8 rounded-full flex items-center justify-center">
+			  <MapPin size={20} className="text-blue-600" />
 			</div>
+			<div>
+			  <h4 className="text-md font-semibold text-gray-800">Pickup</h4>
+			  <p className="text-sm text-gray-600">{props.pickup}</p>
+			</div>
+		  </div>
+
+		  <div className="flex items-center gap-3 py-3 border-b">
+			<div className="w-8 h-8  flex items-center justify-center">
+			  <MapPin size={20} className="text-green-600" />
+			</div>
+			<div>
+			  <h4 className="text-md font-semibold text-gray-800">Destination</h4>
+			  <p className="text-sm text-gray-600">{props.destination}</p>
+			</div>
+		  </div>
+
+		  <div className="flex items-center gap-3 py-3">
+			<div className="w-8 h-8 flex items-center justify-center">
+			  <IndianRupee size={20} className="text-yellow-600" />
+			</div>
+			<div>
+			  <h4 className="text-md font-semibold text-gray-800">Payment</h4>
+			  <p className="text-sm text-gray-600">₹{props.fare[props.vehicleType]} </p>
+			</div>
+		  </div>
 		</div>
-	);
+
+		<button
+		  onClick={() => {
+			props.createRide();
+		  }}
+		  className="w-full bg-green-600 text-white font-semibold py-3 rounded-xl hover:bg-green-700 transition-colors"
+		>
+		  Confirm Ride
+		</button>
+	  </div>
+	</div>
+  );
 };
 
 export default ConfirmRide;
