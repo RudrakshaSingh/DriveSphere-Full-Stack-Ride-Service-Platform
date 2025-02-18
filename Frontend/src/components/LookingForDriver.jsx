@@ -1,57 +1,90 @@
-import { ChevronDown } from "lucide-react";
-
 /* eslint-disable react/prop-types */
+import { ChevronDown, MapPin, IndianRupee } from "lucide-react";
+import car from "../assets/car.png";
+import moto from "../assets/moto.png";
+import auto from "../assets/auto.png";
+
 const LookingForDriver = (props) => {
+  let vehicleImg = "";
+  if (props.vehicleType === "car") {
+    vehicleImg = car;
+  } else if (props.vehicleType === "moto") {
+    vehicleImg = moto;
+  } else if (props.vehicleType === "auto") {
+    vehicleImg = auto;
+  }
 
-	// Determine the image based on vehicleType
-	let vehicleImg = "";
-	if (props.vehicleType === "car") {
-		vehicleImg = "https://swyft.pl/wp-content/uploads/2023/05/how-many-people-can-a-uberx-take.jpg";
-	} else if (props.vehicleType === "moto") {
-		vehicleImg =
-			"https://www.uber-assets.com/image/upload/f_auto,q_auto:eco,c_fill,h_638,w_956/v1649231091/assets/2c/7fa194-c954-49b2-9c6d-a3b8601370f5/original/Uber_Moto_Orange_312x208_pixels_Mobile.png";
-	} else if (props.vehicleType === "auto") {
-		vehicleImg =
-			"https://www.uber-assets.com/image/upload/f_auto,q_auto:eco,c_fill,h_368,w_552/v1648431773/assets/1d/db8c56-0204-4ce4-81ce-56a11a07fe98/original/Uber_Auto_558x372_pixels_Desktop.png";
-	}
+  return (
+    <div className="relative bg-white rounded-lg shadow-xl p-6 max-w-md w-full mx-auto">
+      <button
+        className="absolute top-2 left-1/2 -translate-x-1/2 p-2 hover:bg-gray-100 rounded-full transition-colors"
+        onClick={() => props.setVehicleFound(false)}
+      >
+        <ChevronDown size={28} className="text-gray-600" />
+      </button>
 
-	return (
-		<div >
-			<h5
-				className="p-1 text-center w-[93%] absolute top-0 items-center flex justify-center"
-				onClick={() => {
-					props.setVehicleFound(false);
-				}}>
-				<ChevronDown size={35} strokeWidth={2.1} />
-			</h5>
-			<h3 className="text-2xl font-semibold mb-5">Looking for a Driver</h3>
-			<div className="flex gap-2 justify-between flex-col items-center">
-			<img className="h-20" src={vehicleImg} alt="" />
-				<div className="w-full mt-5">
-					<div className="flex items-center gap-5 p-3 border-b-2">
-						<i className="ri-map-pin-user-fill"></i>
-						<div>
-							<h3 className="text-lg font-medium">Pickup</h3>
-							<p className="text-sm -mt-1 text-gray-600">{props.pickup}</p>
-						</div>
-					</div>
-					<div className="flex items-center gap-5 p-3 border-b-2">
-						<i className="text-lg ri-map-pin-2-fill"></i>
-						<div>
-							<h3 className="text-lg font-medium">Destination</h3>
-							<p className="text-sm -mt-1 text-gray-600">{props.destination}</p>
-						</div>
-					</div>
-					<div className="flex items-center gap-5 p-3">
-						<i className="ri-currency-line"></i>
-						<div>
-							<h3 className="text-lg font-medium">₹{props.fare[props.vehicleType]} </h3>
-							<p className="text-sm -mt-1 text-gray-600">Cash Cash</p>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	);
+      <h3 className="text-2xl font-semibold text-center mt-8 mb-6">
+        Looking for a Driver
+      </h3>
+
+      <div className="relative h-32 mb-6 overflow-hidden rounded-lg bg-gradient-to-b from-gray-800 to-gray-600">
+        {/* Road markings */}
+        <div className="absolute inset-0 w-full h-1/10 bg-gray-700">
+          <div className="absolute bottom-1/2 w-full h-2 flex justify-between">
+            <div className="w-1/4 h-full  bg-yellow-400 mx-2"></div>
+            <div className="w-1/4 h-full  bg-yellow-400 mx-2"></div>
+            <div className="w-1/4 h-full  bg-yellow-400 mx-2"></div>
+            <div className="w-1/4 h-full  bg-yellow-400 mx-2"></div>
+            <div className="w-1/4 h-full  bg-yellow-400 mx-2"></div>
+          </div>
+        </div>
+        
+        {/* Vehicle with animation */}
+        <div className="absolute bottom-8 drive-animation">
+          <img 
+            src={vehicleImg} 
+            alt="Vehicle" 
+            className="h-16 object-contain"
+          />
+        </div>
+      </div>
+
+      <div className="space-y-4">
+        <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg">
+          <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+            <MapPin size={20} className="text-blue-600" />
+          </div>
+          <div>
+            <h3 className="text-lg font-medium text-gray-900">Pickup</h3>
+            <p className="text-sm text-gray-600">{props.pickup}</p>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg">
+          <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+            <MapPin size={20} className="text-green-600" />
+          </div>
+          <div>
+            <h3 className="text-lg font-medium text-gray-900">Destination</h3>
+            <p className="text-sm text-gray-600">{props.destination}</p>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg">
+          <div className="w-10 h-10 bg-yellow-100 rounded-full flex items-center justify-center">
+            <IndianRupee size={20} className="text-yellow-600" />
+          </div>
+          <div>
+            <h3 className="text-lg font-medium text-gray-900">
+            Payment
+              
+            </h3>
+            <p className="text-sm text-gray-600">₹{props.fare[props.vehicleType]} </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 };
+
 export default LookingForDriver;

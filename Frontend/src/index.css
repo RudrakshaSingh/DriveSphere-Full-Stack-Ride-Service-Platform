@@ -66,3 +66,22 @@
       opacity: 1;
     }
   }
+
+  /*  Drive Animation */
+  @keyframes driveAnimation {
+    0% {
+      transform: translateX(-100%);
+    }
+    100% {
+      transform: translateX(100%);
+    }
+  }
+
+  .drive-animation {
+    animation: driveAnimation 5s  infinite ease-in-out;
+    position: absolute;
+    left: 0;
+    right: 0;
+    width: 100%;
+    overflow: hidden;
+  }

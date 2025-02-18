@@ -417,7 +417,7 @@ const Home = () => {
 						animate="visible"
 						exit="hidden"
 						variants={slideUpVariants}
-						className="fixed w-full z-20 bottom-0 bg-white px-3 py-6 pt-12">
+						className="fixed w-full z-20 bottom-0 bg-white ">
 						<LookingForDriver
 							createRide={createRide}
 							pickup={pickup}

@@ -1,4 +1,3 @@
-import React from "react";
 import { Car, Shield, MapPin, Users, Target, Clock, CreditCard, Leaf, Phone, Mail, ArrowLeft } from "lucide-react";
 
 function AboutUs() {

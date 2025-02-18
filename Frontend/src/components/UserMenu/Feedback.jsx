@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import { useState } from "react";
 import { Star, Angry, Frown, Meh, Smile, Laugh, Car, Shield, User, Gauge, Hand, ArrowLeft } from "lucide-react";
 import toast from "react-hot-toast";
