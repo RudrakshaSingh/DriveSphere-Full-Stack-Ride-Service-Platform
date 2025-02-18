@@ -63,7 +63,7 @@ import {
 		icon: <HeadphonesIcon size={20} color="#10B981" />, // Green
 		label: "Support",
 		action: () => {
-		  navigate("/user-support");
+		  navigate("/support");
 		  toggleMenu();
 		},
 		bgColor: "bg-green-100",

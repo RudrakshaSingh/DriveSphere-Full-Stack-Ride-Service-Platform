@@ -289,7 +289,7 @@ const Home = () => {
 	return (
 		<div className="h-screen relative overflow-hidden">
 			<div className="absolute top-5 left-3 right-3 z-10  flex flex-row justify-between items-center">
-				<img height={80} width={150} src={logo} alt="Uber Logo" />
+				<img height={80} width={150} src={logo} alt="DriveSphere Logo" />
 				<button className="text-3xl font-semibold  rounded-full " onClick={() => toggleMenu()}>
 					{user.profileImage ? (
 						<img

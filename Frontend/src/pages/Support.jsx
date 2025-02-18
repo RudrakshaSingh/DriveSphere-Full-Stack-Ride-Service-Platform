@@ -1,8 +1,8 @@
-import  { useState } from "react";
+import { useState } from "react";
 import { Phone, Mail, MapPin, ArrowRight, ArrowLeft } from "lucide-react";
 import axios from "axios";
 import { toast } from "react-hot-toast";
-import {Link} from "react-router-dom";
+import { Link } from "react-router-dom";
 
 function Support() {
 	const [name, setname] = useState("");
@@ -12,6 +12,12 @@ function Support() {
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
+		// Mobile number validation
+		const mobileRegex = /^[6-9]\d{9}$/;
+		if (!mobileRegex.test(mobileNumber)) {
+			toast.error("Mobile number must be 10 digits and start with 6, 7, 8, or 9.");
+			return;
+		}
 		const userData = {
 			name: name,
 			email: email,
@@ -22,18 +28,17 @@ function Support() {
 			const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/extra/send-message`, userData);
 			if (response.status === 200) {
 				toast.success("Support Message sent successfully");
-                setname("");
-                setemail("");
-                setmessage("");
-                setmobileNumber("");
-			}else if(response.status === 201){
-                toast.error(response.data.error);
-            }
+				setname("");
+				setemail("");
+				setmessage("");
+				setmobileNumber("");
+			} else if (response.status === 201) {
+				toast.error(response.data.error);
+			}
 		} catch (error) {
 			console.error("Error sending message:", error);
 			toast.error("Failed to send message. Please try again.");
 		}
-		
 	};
 
 	return (
@@ -160,9 +165,15 @@ function Support() {
 							<input
 								type="tel"
 								value={mobileNumber}
-								onChange={(e) => setmobileNumber(e.target.value)}
+								onChange={(e) => {
+									// Remove non-digit characters
+									const value = e.target.value.replace(/\D/g, "");
+									setmobileNumber(value);
+								}}
 								className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors text-sm"
 								required
+								maxLength="10"
+								placeholder="Enter 10-digit mobile number"
 							/>
 						</div>
 						<div>

@@ -13,13 +13,6 @@ module.exports.sendSupportMessage = asyncHandler(async (req, res) => {
             return res.status(400).json({ error: "Missing required fields" });
         }
         const emailIndb= await userModel.findOne({email});
-        if(!emailIndb){
-            return res.status(201).json({ error: "Email not registered in drivo rides" });
-        }
-        const mobileNumberIndb= await userModel.findOne({mobileNumber});
-        if(!mobileNumberIndb){
-            return res.status(201).json({ error: "Mobile number not registered in drivo rides" });
-        }
         const support= await supportModel.create({
             name,
             email,
