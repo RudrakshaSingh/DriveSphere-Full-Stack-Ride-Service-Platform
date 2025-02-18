@@ -55,6 +55,12 @@ const userSchema = new mongoose.Schema(
 			type:Number,
 			default:0
 		},
+		coupons: [
+			{
+				type: mongoose.Schema.Types.ObjectId,
+				ref: "coupon",
+			},
+		],
 	},
 	{
 		timestamps: true,

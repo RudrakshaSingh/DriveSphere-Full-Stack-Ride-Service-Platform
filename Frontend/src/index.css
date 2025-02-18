@@ -1,6 +1,6 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
 
 @keyframes float {
     0%, 100% {
@@ -78,7 +78,7 @@
   }
 
   .drive-animation {
-    animation: driveAnimation 5s  infinite ease-in-out;
+    animation: driveAnimation 5s  infinite linear;
     position: absolute;
     left: 0;
     right: 0;

@@ -10,9 +10,6 @@ const couponSchema = new mongoose.Schema(
   { timestamps: true } // Automatically adds createdAt and updatedAt fields
 );
 
-// Automatically delete coupon 3 days (259200 seconds) after its creation
-couponSchema.index({ createdAt: 1 }, { expireAfterSeconds: 60 });
 
-const couponModel = mongoose.model("Coupon", couponSchema);
+const couponModel = mongoose.model("coupon", couponSchema);
 module.exports = couponModel;
-// 
