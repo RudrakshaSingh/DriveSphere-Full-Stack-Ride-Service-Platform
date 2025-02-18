@@ -18,6 +18,7 @@ import TermsofService from "./pages/Policy/TermsofService";
 import PrivacyPolicy from "./pages/Policy/PrivacyPolicy";
 import Error from "./pages/Error";
 import Feedback from "./components/UserMenu/Feedback";
+import AboutUs from "./pages/AboutUs";
 
 export default function App() {
 	return (
@@ -25,6 +26,8 @@ export default function App() {
 			<Routes>
 				<Route path="/" element={<Start />} />
 				<Route path="/support"element={<Support />}/>
+				<Route path="/chat" element={<ChatComponent />} />
+				<Route path="/aboutus" element={<AboutUs />} />
 
 				{/* User Routes */}
 				<Route path="/login" element={<UserLogin />} />
@@ -41,8 +44,6 @@ export default function App() {
 				<Route path="/captain-login" element={<CaptainLogin />} />
 				<Route path="/captain-signup" element={<CaptainSignup />} />
 				<Route path="/captain-home"element={<CaptainProtectWrapper><CaptainHome /></CaptainProtectWrapper>}/>
-
-				<Route path="/chat" element={<ChatComponent />} />
 
 				{/* policies */}
 				<Route path="/terms-of-service" element={<TermsofService />} />
