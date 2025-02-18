@@ -95,7 +95,8 @@ module.exports.loginUser = asyncHandler(async (req, res, next) => {
 
 module.exports.getUserProfile = asyncHandler(async (req, res, next) => {
 	try {
-		return res.status(200).json(new ApiResponse(200, "User profile fetched successfully", req.user));
+		const User=await userModel.findById(req.user._id).populate("coupons").lean();
+		return res.status(200).json(new ApiResponse(200, "User profile fetched successfully", User));
 	} catch (error) {
 		throw new ApiError(400, "error in getuserprofile controller", error.message);
 	}

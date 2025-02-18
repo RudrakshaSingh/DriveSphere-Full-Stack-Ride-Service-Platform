@@ -6,7 +6,10 @@ import toast from "react-hot-toast";
 
 function UserProfile() {
   const [user, setUser] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 4;
   const token = localStorage.getItem("token");
+
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString("en-US", {
       month: "long",
@@ -52,6 +55,20 @@ function UserProfile() {
     console.log("Forgot password clicked");
   };
 
+  // Filter only active coupons
+  const activeCoupons = user?.coupons ? user.coupons.filter(coupon => coupon.isActive) : [];
+
+  // Calculate the indices for pagination
+  const indexOfLastCoupon = currentPage * itemsPerPage;
+  const indexOfFirstCoupon = indexOfLastCoupon - itemsPerPage;
+  const currentCoupons = activeCoupons.slice(indexOfFirstCoupon, indexOfLastCoupon);
+
+  const totalPages = Math.ceil(activeCoupons.length / itemsPerPage);
+
+  const handlePageChange = (pageNumber) => {
+    setCurrentPage(pageNumber);
+  };
+
   if (!user) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -62,6 +79,8 @@ function UserProfile() {
       </div>
     );
   }
+
+  const couponColors = ["bg-yellow-50", "bg-green-50", "bg-red-50", "bg-purple-50", "bg-blue-50"];
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -81,7 +100,7 @@ function UserProfile() {
 
       <div className="max-w-3xl mx-auto p-4 space-y-4">
         {/* Profile Card */}
-        <div className=" rounded-2xl shadow-sm overflow-hidden bg-gray-50">
+        <div className="rounded-2xl shadow-sm overflow-hidden bg-gray-50">
           <div className="relative">
             <img
               src="https://images.unsplash.com/photo-1465146344425-f00d5f5c8f07?q=80&w=1476&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
@@ -202,6 +221,55 @@ function UserProfile() {
                 <ChevronRight size={20} className="text-red-400 transform group-hover:translate-x-1 transition-transform duration-200" />
               </button>
             </div>
+          </div>
+        </div>
+
+        {/* Coupons Section with Grid Layout and Pagination */}
+        <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
+          <div className="p-4 sm:p-6">
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">Your Available Coupons: {activeCoupons.length}</h2>
+            {activeCoupons && activeCoupons.length > 0 ? (
+              <>
+                <div className="grid grid-cols-2 gap-4">
+                  {currentCoupons.map((coupon, index) => {
+                    const couponColor = couponColors[index % couponColors.length];
+                    return (
+                      <div
+                        key={coupon._id}
+                        className={`flex flex-col items-center p-3 rounded-xl ${couponColor} transition-colors hover:bg-gray-100`}
+                      >
+                        <div className="p-3 bg-white rounded-xl">
+                          <span className={`text-xl font-bold text-gray-600 ${couponColor}`}>{coupon.code}</span>
+                        </div>
+                        <p className="mt-2 text-sm font-medium text-gray-500">
+                          Discount: {coupon.discount}
+                          {coupon.type === "fixed" ? " Rs off" : "% off"}
+                        </p>
+                      </div>
+                    );
+                  })}
+                </div>
+                {/* Pagination */}
+                {activeCoupons.length > itemsPerPage && (
+                  <div className="flex justify-center items-center space-x-2 py-4">
+                    {Array.from({ length: totalPages }).map((_, i) => (
+                      <button
+                        key={i}
+                        className={`px-4 py-2 rounded-full ${currentPage === i + 1
+                          ? "bg-blue-600 text-white"
+                          : "bg-gray-100 text-gray-700 hover:bg-blue-500 hover:text-white"
+                          } transition-colors`}
+                        onClick={() => handlePageChange(i + 1)}
+                      >
+                        {i + 1}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </>
+            ) : (
+              <p className="text-gray-500">No active coupons available.</p>
+            )}
           </div>
         </div>
 
