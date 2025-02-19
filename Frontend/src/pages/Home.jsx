@@ -60,7 +60,6 @@ const Home = () => {
 	}, [ride, socket]);
 
 	socket.on("ride-started", (ride) => {
-		console.log("ride-started", ride);
 		setWaitingForDriver(false);
 		navigate("/riding", { state: { ride,couponResponse } }); // Updated navigate to include ride data)
 	});
@@ -288,8 +287,6 @@ const Home = () => {
 		navigator.geolocation.getCurrentPosition(
 		  async (position) => {
 			const { latitude, longitude } = position.coords;
-			console.log('Latitude:', latitude);
-			console.log('Longitude:', longitude);
 			setOriginCoordinates([longitude, latitude]);
 	  
 			try {

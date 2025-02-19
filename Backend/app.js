@@ -11,6 +11,7 @@ const mapsRoutes = require('./routes/maps.routes');
 const errorHandler = require('./middlewares/errorHandler');
 const rideRoutes = require('./routes/ride.routes');
 const extraRoutes = require('./routes/extra.routes');
+const paymentRoutes = require('./routes/payment.routes');
 
 connectToDb();
 
@@ -29,6 +30,7 @@ app.use('/captains', captionRoutes);
 app.use('/maps', mapsRoutes);
 app.use('/rides', rideRoutes);
 app.use('/extra',extraRoutes);
+app.use("/payment",paymentRoutes)
 
 // Use the error handling middleware
 app.use(errorHandler);

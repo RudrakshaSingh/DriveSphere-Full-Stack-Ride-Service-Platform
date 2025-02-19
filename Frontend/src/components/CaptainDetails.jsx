@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import  { useContext } from 'react';
 import { Clock, Gauge, Route } from 'lucide-react';
 import { CaptainDataContext } from '../context/CapatainContext';
 
@@ -43,7 +43,7 @@ function CaptainDetails() {
                 </div>
                 <div className="text-center bg-green-50 px-4 py-2 rounded-lg">
                     <h4 className="text-lg font-bold text-green-700">₹ {captain?.TotalEarnings}</h4>
-                    <p className="text-xs text-green-600">Today's Earning</p>
+                    <p className="text-xs text-green-600">Today&apos;s Earning</p>
                 </div>
             </div>
 
@@ -53,7 +53,7 @@ function CaptainDetails() {
                     {/* Hours Online */}
                     <div className="flex-1 text-center bg-white p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow">
                         <Clock className="w-6 h-6 text-red-600 mb-2 mx-auto" />
-                        <h4 className="text-lg font-bold">{captain?.hoursWorked}</h4>
+                        <h4 className="text-lg font-bold">{((captain?.minutesWorked)/60).toFixed(2)}</h4>
                         <p className="text-sm text-gray-600">Hours Online</p>
                     </div>
 

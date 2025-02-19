@@ -56,15 +56,33 @@ const rideSchema = new mongoose.Schema(
 		},
 		duration: {
 			type: String,
-			required: true
+			required: true,
 		}, // in min
 		distance: {
 			type: String,
-			required: true
+			required: true,
 		}, // in km
-		paymentID: {
-			type: String,
-			default: "notyetpaid",
+		payment: {
+			orderId: {
+				default: null,
+				type: String,
+			},
+			transactionId: {
+				default: null,
+				type: String,
+			},
+			date: {
+				default: null,
+				type: Date,
+			},
+			amount: {
+				type: Number,
+				default: 0,
+			},
+			paymentMethod: {
+				type: String,
+				default: "cash",
+			},
 		},
 		orderId: {
 			type: String,

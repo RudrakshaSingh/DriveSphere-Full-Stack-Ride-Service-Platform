@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import "leaflet-routing-machine";
@@ -18,7 +18,6 @@ const MapComponent = ({  pickup, drop, vehiclePanel }) => {
 	const routingRef = useRef(null);
 	const containerRef = useRef(null);
 	const currentLocationMarkerRef = useRef(null);
-	const [currentLocation, setCurrentLocation] = useState(null);
 
 	
 
@@ -40,7 +39,6 @@ const MapComponent = ({  pickup, drop, vehiclePanel }) => {
 				navigator.geolocation.getCurrentPosition(
 					(position) => {
 						const { latitude, longitude } = position.coords;
-						setCurrentLocation([latitude, longitude]);
 
 						mapRef.current.setView([latitude, longitude], 15);
 
@@ -90,7 +88,6 @@ const MapComponent = ({  pickup, drop, vehiclePanel }) => {
 			}
 			const Dpickup = [pickup[1], pickup[0]];
 			const Ddrop = [drop[1], drop[0]];
-			console.log(Dpickup, Ddrop);
 
 			try {
 				if (routingRef.current) {

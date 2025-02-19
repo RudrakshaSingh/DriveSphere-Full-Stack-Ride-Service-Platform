@@ -2,8 +2,11 @@
 import { ChevronDown } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { useContext } from "react";
+import { SocketContext } from "../context/SocketContext";
 const FinishRide = (props) => {
     const navigate = useNavigate()
+	const{socket} = useContext(SocketContext);
     async function endRide() {
         const response = await axios.post(`${import.meta.env.VITE_BASE_URL}/rides/end-ride`, {
             rideId: props.ride._id
@@ -13,8 +16,13 @@ const FinishRide = (props) => {
             }
         })
         if (response.status === 200) {
+			
             navigate('/captain-home')
         }
+
+		socket.emit("clear-chat-message",{
+				rideId:props.ride._id
+			 })
     }
 	return (
 		<div>

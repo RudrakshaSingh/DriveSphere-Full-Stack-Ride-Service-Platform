@@ -48,7 +48,6 @@ const UserHistoryMap = ({ pickup, drop }) => {
 			}
 			const Dpickup = [pickup[1], pickup[0]];
 			const Ddrop = [drop[1], drop[0]];
-			console.log(Dpickup, Ddrop);
 
 			try {
 				if (routingRef.current) {

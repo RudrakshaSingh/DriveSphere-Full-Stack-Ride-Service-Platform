@@ -84,7 +84,7 @@ const captainSchema = new mongoose.Schema(
 			type: String,
 			required: true,
 		},
-		hoursWorked: {
+		minutesWorked: {
 			type:Number,
 			default:0,
 		},

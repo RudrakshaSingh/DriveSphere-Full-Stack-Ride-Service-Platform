@@ -17,7 +17,6 @@ const UserMenuPanel = ({ openMenu, toggleMenu }) => {
 			});
 
 			if (response.status === 200) {
-				console.log(response.data.message); // "Logout successful"
 
 				// Clear local storage or user state if used
 				localStorage.removeItem("token");
@@ -70,7 +69,6 @@ const UserMenuPanel = ({ openMenu, toggleMenu }) => {
 			icon: <LogOut size={20} color="#F59E0B" />, // Yellow
 			label: "Logout",
 			action: () => {
-				console.log("Logout clicked");
 				toggleMenu();
 				handleLogout();
 			},
