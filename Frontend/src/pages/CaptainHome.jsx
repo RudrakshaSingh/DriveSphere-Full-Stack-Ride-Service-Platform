@@ -11,11 +11,13 @@ import axios from "axios";
 import logo from "../assets/logo.png";
 import { Menu } from "lucide-react";
 import MapComponent from "../components/MapComponent";
+import CaptainMenuPanel from "../components/CaptainMenu/CaptainMenuPanel";
 
 const CaptainHome = () => {
 	const [ridePopupPanel, setRidePopupPanel] = useState(false);
 	const [confirmRidePopupPanel, setConfirmRidePopupPanel] = useState(false);
 	const [ride, setRide] = useState(null);
+	const [openCaptainMenu, setOpenCaptainMenu] = useState(false);
 
 	const { socket } = useContext(SocketContext);
 	const { captain } = useContext(CaptainDataContext);
@@ -74,7 +76,7 @@ const CaptainHome = () => {
 	};
 
 	async function confirmRide() {
-		const response = await axios.post(
+		await axios.post(
 			`${import.meta.env.VITE_BASE_URL}/rides/confirm`,
 			{
 				rideId: ride._id,
@@ -91,19 +93,34 @@ const CaptainHome = () => {
 		setConfirmRidePopupPanel(true);
 	}
 
+	const toggleCaptainMenu = () => {
+		
+		setOpenCaptainMenu(prevState => !prevState);
+	};
+
 	return (
 		<div className="h-screen">
 			<div className="absolute top-5 left-3 right-3 z-10  flex flex-row justify-between items-center">
-				<img height={80} width={150} src={logo} alt="Uber Logo" />
-				<button className="text-3xl font-semibold" >
-					<Menu size={35} strokeWidth={2} />
+				<img height={80} width={150} src={logo} alt="Drivesphere Logo" />
+				<button className="text-3xl font-semibold  rounded-full " onClick={() => toggleCaptainMenu()}>
+					{captain.profileImage ? (
+						<img
+							src={captain.profileImage}
+							alt="User Profile"
+							className="w-10 h-10 rounded-full object-cover border-solid border-2 border-black"
+						/>
+					) : (
+						<Menu size={35} strokeWidth={2} />
+					)}
 				</button>
 			</div>
 
-			<div className="h-3/5">
+			<CaptainMenuPanel openCaptainMenu={openCaptainMenu}  toggleCaptainMenu={toggleCaptainMenu}  />
+
+			<div className="h-[57vh]">
 				<MapComponent />
 			</div>
-			<div className="h-2/5 p-6">
+			<div className="h-[43vh] p-6">
 				<CaptainDetails />
 			</div>
 			{/* Animate and render the RidePopUp panel */}
