@@ -115,7 +115,7 @@ module.exports.startRide = async ({ rideId, otp, captain }) => {
         throw new Error('Ride not accepted');
     }
     if (ride.otp !== otp) {
-        throw new Error('Invalid OTP');
+        return "Invalid OTP";
     }
     await rideModel.findOneAndUpdate({
         _id: rideId

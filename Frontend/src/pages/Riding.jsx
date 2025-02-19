@@ -1,12 +1,12 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { SocketContext } from "../context/SocketContext";
-import { MapPin, IndianRupee } from "lucide-react";
+import { MapPin, IndianRupee, House } from "lucide-react";
 import { useContext, useEffect, useState } from "react";
 import UserHistoryMap from "../components/UserMenu/UserHistoryMap";
 import { load } from "@cashfreepayments/cashfree-js";
 import axios from "axios";
 import toast from "react-hot-toast";
-
+import logo from "../assets/logo.png";
 const Riding = () => {
 	const location = useLocation();
 	const { ride, couponResponse } = location.state || {}; // Retrieve ride data
@@ -41,7 +41,7 @@ const Riding = () => {
 			const customer_name =
 				ride?.user?.fullname.firstname +
 				(ride?.user?.fullname.lastname ? " " + ride.user.fullname.lastname : "");
-	
+
 			const res = await axios.post(
 				`${import.meta.env.VITE_BASE_URL}/payment/initiate-payment`,
 				{
@@ -68,19 +68,19 @@ const Riding = () => {
 			toast.error("Error initiating payment.");
 		}
 	};
-	
+
 	const handlePayment = async (e) => {
 		e.preventDefault();
 		try {
 			const sessionData = await getSessionId();
 			// If sessionData is not available, abort further processing
 			if (!sessionData) return;
-	
+
 			const checkoutOptions = {
 				paymentSessionId: sessionData.paymentSessionId,
 				redirectTarget: "_modal",
 			};
-	
+
 			await cashfree.checkout(checkoutOptions).then(() => {
 				// Pass the order_id directly to verifyPayment
 				verifyPayment(sessionData.order_id);
@@ -90,7 +90,7 @@ const Riding = () => {
 			toast.error("Payment initiation failed.");
 		}
 	};
-	
+
 	const verifyPayment = async (order_idParam) => {
 		try {
 			console.log("Order ID:", order_idParam);
@@ -99,7 +99,7 @@ const Riding = () => {
 				{
 					orderId: order_idParam,
 					rideId: ride._id,
-					couponResponse
+					couponResponse,
 				},
 				{
 					headers: {
@@ -118,7 +118,6 @@ const Riding = () => {
 			toast.error("Error verifying payment.");
 		}
 	};
-	
 
 	// socket.on("ride-ended", () => {
 	// 	navigate("/home");
@@ -166,11 +165,14 @@ const Riding = () => {
 
 	return (
 		<div className="h-full w-full relative">
-			<Link
-				to="/home"
-				className="absolute top-3 right-3 p-2 bg-white/80 backdrop-blur-sm hover:bg-gray-100 rounded-full transition-colors shadow-md">
-				<i className="text-lg font-medium ri-home-5-line"></i>
-			</Link>
+			<div className="fixed p-2 top-0 flex items-center justify-between w-screen z-50">
+				<img height={80} width={150} src={logo} alt="DriveSphere Logo" />
+				<Link
+					to="/home"
+					className="absolute top-3 right-3 p-2 bg-white/80 backdrop-blur-sm hover:bg-gray-100 rounded-full transition-colors shadow-md">
+					<House />
+				</Link>
+			</div>
 			<div className="h-[40vh]">
 				<UserHistoryMap pickup={pickup} drop={ride?.destination} />
 			</div>

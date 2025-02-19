@@ -4,6 +4,7 @@ import { MessageCircleMore } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ChatComponent from "./Chat/ChatComponent";
+import toast from "react-hot-toast";
 const ConfirmRidePopUp = (props) => {
 	const [isChatOpen, setIsChatOpen] = useState(false);
 	const [otp, setOtp] = useState("");
@@ -26,6 +27,8 @@ const ConfirmRidePopUp = (props) => {
 			props.setConfirmRidePopupPanel(false);
 			props.setRidePopupPanel(false);
 			navigate("/captain-riding", { state: { ride: response.data } });
+		}else if(response.status===201){
+			toast.error(response.data.message);
 		}
 	}
 	return (
@@ -98,7 +101,7 @@ const ConfirmRidePopUp = (props) => {
 						className="p-2 border-2 w-auto  text-bold rounded-lg flex flex-row items-center mx-auto justify-center mt-2"
 						onClick={() => setIsChatOpen(true)}>
 						<MessageCircleMore className="w-6 h-6 mr-2 text-blue-700" />
-						<p>Message To Driver</p>
+						<p>Message User</p>
 					</div>
 				</div>
 			</div>

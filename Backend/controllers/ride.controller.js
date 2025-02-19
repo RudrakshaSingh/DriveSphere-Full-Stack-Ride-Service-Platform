@@ -104,7 +104,9 @@ module.exports.startRide = asyncHandler(async (req, res) => {
     const { rideId, otp } = req.query;
     try {
         const ride = await rideService.startRide({ rideId, otp, captain: req.captain });
-        console.log(ride);
+		if (ride=="Invalid OTP") {
+			return res.status(201).json({ message: "Invalid OTP" });
+		}
         sendMessageToSocketId(ride.user.socketId, {
             event: 'ride-started',
             data: ride
