@@ -122,3 +122,12 @@ module.exports.logoutCaptain = asyncHandler(async (req, res, next) => {
 		throw new ApiError(500, "Server error,Error logging out captain", error.message);
 	}
 });
+
+module.exports.getTodaysDetails = asyncHandler(async (req, res, next) => {
+	try {
+		const captainDetails = await captainService.getTodaysDetails(req.captain._id);
+		return res.status(200).json(new ApiResponse(200, "Todays details fetched successfully", captainDetails));
+	} catch (error) {
+		throw new ApiError(500, "Server error,Error getting todays details", error.message);
+	}
+});
