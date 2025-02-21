@@ -47,7 +47,9 @@ const ConfirmRide = (props) => {
 		setCouponCode("");
 	  } else if (response.status === 201) {
 		// Update loading toast to error with provided message
-		toast.error(response.data.error, { id: loadingToastId });
+		console.log("hi",response.data.data);
+		
+		toast.error(response.data.data, { id: loadingToastId });
 	  }
 	} catch (error) {
 	  // Update loading toast to error for exceptions

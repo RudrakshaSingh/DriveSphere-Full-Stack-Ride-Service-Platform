@@ -32,9 +32,8 @@ router.post(
 );
 
 router.get("/profile", authMiddleware.authCaptain, captainController.getCaptainProfile);
-
 router.get("/logout", authMiddleware.authCaptain, captainController.logoutCaptain);
-
 router.get("/todaysDetails", authMiddleware.authCaptain, captainController.getTodaysDetails);
+router.get("/captain-ridehistory", authMiddleware.authCaptain, captainController.captainRideHistory);
 
 module.exports = router;

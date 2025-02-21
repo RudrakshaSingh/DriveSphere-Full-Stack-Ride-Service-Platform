@@ -6,6 +6,7 @@ const asyncHandler = require("../utils/AsyncHandler");
 const ApiError = require("../utils/ApiError");
 const { ApiResponse } = require("../utils/ApiResponse");
 const uploadOnCloudinary = require("../utils/Cloudinary");
+const rideModel = require("../models/ride.model");
 
 module.exports.registerCaptain = asyncHandler(async (req, res, next) => {
 	try {
@@ -129,5 +130,19 @@ module.exports.getTodaysDetails = asyncHandler(async (req, res, next) => {
 		return res.status(200).json(new ApiResponse(200, "Todays details fetched successfully", captainDetails));
 	} catch (error) {
 		throw new ApiError(500, "Server error,Error getting todays details", error.message);
+	}
+});
+
+module.exports.captainRideHistory = asyncHandler(async (req, res, next) => {
+	try {
+		const errors = validationResult(req);
+		if (!errors.isEmpty()) {
+			throw new ApiError(400, "error in login controller", errors.array());
+		}
+
+		const rides = await rideModel.find({ captain: req.captain._id, status: "completed" }).populate("user").populate("captain").lean();
+		return res.status(200).json(new ApiResponse(200, "Captain ride history fetched successfully", rides));
+	} catch (error) {
+		throw new ApiError(500, "Server error,Error getting captain ride history", error.message);
 	}
 });

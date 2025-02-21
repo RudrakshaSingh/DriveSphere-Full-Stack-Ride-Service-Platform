@@ -1,12 +1,22 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import axios from "axios";
-import { Mail, Phone, Calendar, Edit2, Trash2, ChevronRight, Shield, Lock, ArrowLeft } from "lucide-react";
+import {
+  Mail,
+  Phone,
+  Calendar,
+  Edit2,
+  Trash2,
+  ChevronRight,
+  Shield,
+  Lock,
+  ArrowLeft,
+} from "lucide-react";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
 function UserProfile() {
   const [user, setUser] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [couponToDelete, setCouponToDelete] = useState(null); // state for delete modal
   const itemsPerPage = 4;
   const token = localStorage.getItem("token");
 
@@ -55,18 +65,39 @@ function UserProfile() {
     console.log("Forgot password clicked");
   };
 
-  // Filter only active coupons
-  const activeCoupons = user?.coupons ? user.coupons.filter(coupon => coupon.isActive) : [];
+  // Filter all coupons
+  const allCoupons = user?.coupons || [];
 
   // Calculate the indices for pagination
   const indexOfLastCoupon = currentPage * itemsPerPage;
   const indexOfFirstCoupon = indexOfLastCoupon - itemsPerPage;
-  const currentCoupons = activeCoupons.slice(indexOfFirstCoupon, indexOfLastCoupon);
+  const currentCoupons = allCoupons.slice(indexOfFirstCoupon, indexOfLastCoupon);
 
-  const totalPages = Math.ceil(activeCoupons.length / itemsPerPage);
+  const totalPages = Math.ceil(allCoupons.length / itemsPerPage);
 
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
+  };
+
+  const calculateExpiresIn = (expiryDate) => {
+    const now = new Date();
+    const expiry = new Date(expiryDate);
+    const diff = expiry - now;
+
+    if (diff < 0) {
+      return "Expired";
+    }
+
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+
+    const parts = [];
+    if (days > 0) parts.push(`${days} days`);
+    if (hours > 0) parts.push(`${hours} hours`);
+    if (minutes > 0) parts.push(`${minutes} min`);
+
+    return parts.length > 0 ? `Expires in ${parts.join(" ")}` : "Expired";
   };
 
   if (!user) {
@@ -80,7 +111,13 @@ function UserProfile() {
     );
   }
 
-  const couponColors = ["bg-yellow-50", "bg-green-50", "bg-red-50", "bg-purple-50", "bg-blue-50"];
+  const couponColors = [
+    "bg-yellow-50",
+    "bg-green-50",
+    "bg-red-50",
+    "bg-purple-50",
+    "bg-blue-50",
+  ];
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -170,7 +207,9 @@ function UserProfile() {
                 </div>
                 <div className="min-w-0 flex-1">
                   <p className="text-sm font-medium text-gray-500">Member Since</p>
-                  <p className="text-gray-900 font-medium truncate">{formatDate(user?.createdAt)}</p>
+                  <p className="text-gray-900 font-medium truncate">
+                    {formatDate(user?.createdAt)}
+                  </p>
                 </div>
               </div>
             </div>
@@ -192,7 +231,10 @@ function UserProfile() {
                   </div>
                   <span className="font-medium text-gray-700">Edit Profile</span>
                 </div>
-                <ChevronRight size={20} className="text-gray-400 transform group-hover:translate-x-1 transition-transform duration-200" />
+                <ChevronRight
+                  size={20}
+                  className="text-gray-400 transform group-hover:translate-x-1 transition-transform duration-200"
+                />
               </button>
 
               <button
@@ -205,7 +247,10 @@ function UserProfile() {
                   </div>
                   <span className="font-medium text-gray-700">Change Password</span>
                 </div>
-                <ChevronRight size={20} className="text-gray-400 transform group-hover:translate-x-1 transition-transform duration-200" />
+                <ChevronRight
+                  size={20}
+                  className="text-gray-400 transform group-hover:translate-x-1 transition-transform duration-200"
+                />
               </button>
 
               <button
@@ -218,7 +263,10 @@ function UserProfile() {
                   </div>
                   <span className="font-medium text-red-600">Delete Account</span>
                 </div>
-                <ChevronRight size={20} className="text-red-400 transform group-hover:translate-x-1 transition-transform duration-200" />
+                <ChevronRight
+                  size={20}
+                  className="text-red-400 transform group-hover:translate-x-1 transition-transform duration-200"
+                />
               </button>
             </div>
           </div>
@@ -227,8 +275,10 @@ function UserProfile() {
         {/* Coupons Section with Grid Layout and Pagination */}
         <div className="bg-white rounded-2xl shadow-sm overflow-hidden">
           <div className="p-4 sm:p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Your Available Coupons: {activeCoupons.length}</h2>
-            {activeCoupons && activeCoupons.length > 0 ? (
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">
+              Your Coupons: {user?.coupons?.length || 0}
+            </h2>
+            {user?.coupons && user.coupons.length > 0 ? (
               <>
                 <div className="grid grid-cols-2 gap-4">
                   {currentCoupons.map((coupon, index) => {
@@ -236,29 +286,58 @@ function UserProfile() {
                     return (
                       <div
                         key={coupon._id}
-                        className={`flex flex-col items-center p-3 rounded-xl ${couponColor} transition-colors hover:bg-gray-100`}
+                        className={`relative flex flex-col items-center p-3 rounded-xl ${couponColor} transition-colors hover:bg-gray-100`}
                       >
+                        {/* Delete Icon: shows if clicked and qualifies (expired or used) */}
+                        {(!coupon.isActive ||
+                          new Date(coupon.expiryDate) < new Date()) && (
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setCouponToDelete(coupon._id);
+                            }}
+                            className="absolute top-2 right-2 p-1 bg-white rounded-full shadow hover:bg-gray-200"
+                            aria-label="Delete coupon"
+                          >
+                            <Trash2 size={16} className="text-red-600" />
+                          </button>
+                        )}
                         <div className="p-3 bg-white rounded-xl">
-                          <span className={`text-xl font-bold text-gray-600 ${couponColor}`}>{coupon.code}</span>
+                          <span className={`text-xl font-bold text-gray-600 ${couponColor}`}>
+                            {coupon.code}
+                          </span>
                         </div>
                         <p className="mt-2 text-sm font-medium text-gray-500">
                           Discount: {coupon.discount}
                           {coupon.type === "fixed" ? " Rs off" : "% off"}
+                        </p>
+                        <div
+                          className={`mt-1 text-xs px-2 py-1 rounded-full ${
+                            coupon.isActive
+                              ? "bg-green-100 text-green-800"
+                              : "bg-red-100 text-red-800"
+                          }`}
+                        >
+                          {coupon.isActive ? "Unused" : "Used"}
+                        </div>
+                        <p className="text-sm text-black mt-1 rounded-md p-2">
+                          {calculateExpiresIn(coupon.expiryDate)}
                         </p>
                       </div>
                     );
                   })}
                 </div>
                 {/* Pagination */}
-                {activeCoupons.length > itemsPerPage && (
+                {user.coupons.length > itemsPerPage && (
                   <div className="flex justify-center items-center space-x-2 py-4">
                     {Array.from({ length: totalPages }).map((_, i) => (
                       <button
                         key={i}
-                        className={`px-4 py-2 rounded-full ${currentPage === i + 1
-                          ? "bg-blue-600 text-white"
-                          : "bg-gray-100 text-gray-700 hover:bg-blue-500 hover:text-white"
-                          } transition-colors`}
+                        className={`px-4 py-2 rounded-full ${
+                          currentPage === i + 1
+                            ? "bg-blue-600 text-white"
+                            : "bg-gray-100 text-gray-700 hover:bg-blue-500 hover:text-white"
+                        } transition-colors`}
                         onClick={() => handlePageChange(i + 1)}
                       >
                         {i + 1}
@@ -268,7 +347,7 @@ function UserProfile() {
                 )}
               </>
             ) : (
-              <p className="text-gray-500">No active coupons available.</p>
+              <p className="text-gray-500">No coupons available.</p>
             )}
           </div>
         </div>
@@ -287,6 +366,36 @@ function UserProfile() {
           </div>
         </div>
       </div>
+
+      {/* Delete Confirmation Modal */}
+      {couponToDelete && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg">
+            <h3 className="text-lg font-bold mb-4">
+              Are you sure you want to delete this coupon?
+            </h3>
+            <div className="flex justify-end space-x-4">
+              <button
+                onClick={() => {
+                  console.log("Deleting coupon:", couponToDelete);
+                  // Here you can call your delete logic, for example:
+                  // deleteCoupon(couponToDelete);
+                  setCouponToDelete(null);
+                }}
+                className="bg-red-600 text-white px-4 py-2 rounded"
+              >
+                Yes
+              </button>
+              <button
+                onClick={() => setCouponToDelete(null)}
+                className="bg-gray-300 px-4 py-2 rounded"
+              >
+                No
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

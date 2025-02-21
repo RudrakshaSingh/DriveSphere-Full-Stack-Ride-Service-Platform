@@ -91,16 +91,29 @@ exports.makeCoupon = asyncHandler(async (req, res) => {
                 isUnique = true;
             }
         }
-        
-        
+
+        // Randomly decide between 'fixed' and 'percentage'
+        const isFixed = Math.random() < 0.5; // 50% probability for each
+
+        let discount;
+        let type;
+
+        if (isFixed) {
+            type = 'fixed';
+            discount = Math.floor(Math.random() * (300 - 20 + 1)) + 20; // Random value between 20 and 300
+        } else {
+            type = 'percentage';
+            discount = Math.floor(Math.random() * (25 - 10 + 1)) + 10; // Random value between 10 and 25
+        }
+
         const newCoupon = new couponModel({
             code: couponCode,
-            discount: 100, // Example discount value
-            type: 'fixed', // or 'percentage'
-            // Add other fields as necessary
+            discount,
+            type,
+            expiryDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days from now
         });
+
         await newCoupon.save();
-        
 
         // Add the coupon's ObjectId to the user's coupons array
         await userModel.findByIdAndUpdate(
@@ -132,6 +145,11 @@ exports.useCoupon = asyncHandler(async (req, res) => {
 		const isCoupon = isUser.coupons.includes(coupon._id);
 		if (!isCoupon) {
 			return res.status(201).json(new ApiResponse(201, "This Coupon not available for you"));
+		}
+
+		// Check if the coupon has expired
+		if (coupon.expiryDate < Date.now()) {
+			return res.status(201).json(new ApiResponse(201, "This Coupon has expired"));
 		}
 
 
