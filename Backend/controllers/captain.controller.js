@@ -140,7 +140,9 @@ module.exports.captainRideHistory = asyncHandler(async (req, res, next) => {
 			throw new ApiError(400, "error in login controller", errors.array());
 		}
 
-		const rides = await rideModel.find({ captain: req.captain._id, status: "completed" }).populate("user").populate("captain").lean();
+		const rides = await rideModel.find({ captain: req.captain._id, status: "completed" }).populate("user").populate("captain").populate("feedback").lean();
+		
+
 		return res.status(200).json(new ApiResponse(200, "Captain ride history fetched successfully", rides));
 	} catch (error) {
 		throw new ApiError(500, "Server error,Error getting captain ride history", error.message);
