@@ -26,7 +26,6 @@ const Home = () => {
 	const [waitingForDriver, setWaitingForDriver] = useState(false);
 	const [couponResponse, setCouponResponse] = useState("");
 
-
 	const [pickupSuggestions, setPickupSuggestions] = useState([]);
 	const [destinationSuggestions, setDestinationSuggestions] = useState([]);
 	const [activeField, setActiveField] = useState(null);
@@ -61,7 +60,7 @@ const Home = () => {
 
 	socket.on("ride-started", (ride) => {
 		setWaitingForDriver(false);
-		navigate("/riding", { state: { ride,couponResponse } }); // Updated navigate to include ride data)
+		navigate("/riding", { state: { ride, couponResponse } }); // Updated navigate to include ride data)
 	});
 
 	// Animation variants for the search panel (expanding/collapsing)
@@ -282,82 +281,72 @@ const Home = () => {
 	// Function to get current location
 	const getCurrentLocation = async () => {
 		// Notify user that location fetching has started
-		const loadingToastId = toast.loading('Fetching your current location...');
-	  
+		const loadingToastId = toast.loading("Fetching your current location...");
+
 		navigator.geolocation.getCurrentPosition(
-		  async (position) => {
-			const { latitude, longitude } = position.coords;
-			setOriginCoordinates([longitude, latitude]);
-	  
-			try {
-			  const response = await axios.get(
-				`${import.meta.env.VITE_BASE_URL}/maps/reverse-geocoding`,
-				{
-				  params: { latitude, longitude },
-				  headers: {
-					Authorization: `Bearer ${localStorage.getItem('token')}`,
-				  },
+			async (position) => {
+				const { latitude, longitude } = position.coords;
+				setOriginCoordinates([longitude, latitude]);
+
+				try {
+					const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/maps/reverse-geocoding`, {
+						params: { latitude, longitude },
+						headers: {
+							Authorization: `Bearer ${localStorage.getItem("token")}`,
+						},
+					});
+
+					if (response.status === 200) {
+						setPickupSuggestions(response.data.message);
+						setPanelOpen(true);
+						if (pickupInputRef.current) {
+							pickupInputRef.current.focus();
+						}
+						setPickup(response.data.message[0]);
+
+						// Update the loading toast to success
+						toast.success("Location fetched successfully", {
+							id: loadingToastId,
+						});
+					} else {
+						// Update the loading toast to error
+						toast.error(response.data.message || "Failed to fetch location", {
+							id: loadingToastId,
+						});
+					}
+				} catch (error) {
+					// Update the loading toast to error
+					toast.error("An error occurred while fetching location", {
+						id: loadingToastId,
+					});
+					console.error(error);
 				}
-			  );
-	  
-			  if (response.status === 200) {
-				setPickupSuggestions(response.data.message);
-				setPanelOpen(true);
-				if (pickupInputRef.current) {
-				  pickupInputRef.current.focus();
-				}
-				setPickup(response.data.message[0]);
-	  
-				// Update the loading toast to success
-				toast.success('Location fetched successfully', {
-				  id: loadingToastId,
+			},
+			(error) => {
+				// Handle geolocation errors
+				toast.error(`Geolocation error: ${error.message}`, {
+					id: loadingToastId,
 				});
-			  } else {
-				// Update the loading toast to error
-				toast.error(response.data.message || 'Failed to fetch location', {
-				  id: loadingToastId,
-				});
-			  }
-			} catch (error) {
-			  // Update the loading toast to error
-			  toast.error('An error occurred while fetching location', {
-				id: loadingToastId,
-			  });
-			  console.error(error);
 			}
-		  },
-		  (error) => {
-			// Handle geolocation errors
-			toast.error(`Geolocation error: ${error.message}`, {
-			  id: loadingToastId,
-			});
-		  }
 		);
-	  };
+	};
 	// Prevent form submission from reloading the page.
 	const submitHandler = (e) => {
 		e.preventDefault();
 	};
 
 	const toggleMenu = () => {
-		
-		setOpenMenu(prevState => !prevState);
+		setOpenMenu((prevState) => !prevState);
 	};
-	
+
 	return (
 		<div className="h-screen relative overflow-hidden">
 			<div className="absolute top-5 left-3 right-3 z-10  flex flex-row justify-between items-center">
 				<img height={80} width={150} src={logo} alt="DriveSphere Logo" />
-				<button className="text-3xl font-semibold  rounded-full " onClick={() => toggleMenu()}>
-					{user.profileImage ? (
-						<img
-							src={user.profileImage}
-							alt="User Profile"
-							className="w-10 h-10 rounded-full object-cover border-solid border-1 border-black"
-						/>
-					) : (
-						<Menu size={35} strokeWidth={2} />
-					)}
+				<button
+					onClick={toggleMenu}
+					className="flex items-center justify-center p-2 bg-white rounded-full shadow-md transition transform duration-200 hover:bg-gray-100 hover:scale-105 focus:outline-none">
+					<Menu size={30} strokeWidth={2} className="text-gray-700" />
 				</button>
 			</div>
 
@@ -365,7 +354,7 @@ const Home = () => {
 
 			{/* Background map */}
 			<div className="h-3/5 w-screen  ">
-				<MapComponent  vehiclePanel={vehiclePanel}  pickup={originCoordinates} drop={destinationCoordinates} />
+				<MapComponent vehiclePanel={vehiclePanel} pickup={originCoordinates} drop={destinationCoordinates} />
 			</div>
 
 			<div
@@ -398,13 +387,16 @@ const Home = () => {
 							/>
 						</form>
 					</div>
-					<button onClick={getCurrentLocation}  className="bg-gradient-to-r from-gray-400 to-gray-500 text-white px-4 py-2 rounded-lg mt-1 mb-2 w-full">
+					<button
+						onClick={getCurrentLocation}
+						className="bg-gradient-to-r from-gray-400 to-gray-500 text-white px-4 py-2 rounded-lg mt-1 mb-2 w-full">
 						Get Current Location
 					</button>
-					<button onClick={findTrip} className="bg-gradient-to-r from-gray-500 to-gray-400 text-white px-4 py-2 rounded-lg w-full">
+					<button
+						onClick={findTrip}
+						className="bg-gradient-to-r from-gray-500 to-gray-400 text-white px-4 py-2 rounded-lg w-full">
 						Find Trip
 					</button>
-					
 				</div>
 				{/* Animate and render the LocationSearchPanel */}
 				<AnimatePresence>
@@ -461,8 +453,8 @@ const Home = () => {
 						variants={slideUpVariants}
 						className="fixed w-full z-20 bottom-0 bg-white ">
 						<ConfirmRide
-						couponResponse={couponResponse}
-						setCouponResponse={setCouponResponse}
+							couponResponse={couponResponse}
+							setCouponResponse={setCouponResponse}
 							createRide={createRide}
 							setConfirmRidePanel={setConfirmRidePanel}
 							pickup={pickup}
@@ -484,8 +476,8 @@ const Home = () => {
 						variants={slideUpVariants}
 						className="fixed w-full z-20 bottom-0 bg-white ">
 						<LookingForDriver
-						couponResponse={couponResponse}
-						setCouponResponse={setCouponResponse}
+							couponResponse={couponResponse}
+							setCouponResponse={setCouponResponse}
 							createRide={createRide}
 							pickup={pickup}
 							destination={destination}
@@ -507,8 +499,8 @@ const Home = () => {
 						variants={slideUpVariants}
 						className="fixed w-full z-20 bottom-0 bg-white">
 						<WaitingForDriver
-						couponResponse={couponResponse}
-						setCouponResponse={setCouponResponse}
+							couponResponse={couponResponse}
+							setCouponResponse={setCouponResponse}
 							ride={ride}
 							setVehicleFound={setVehicleFound}
 							waitingForDriver={waitingForDriver}
