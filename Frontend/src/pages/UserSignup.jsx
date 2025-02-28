@@ -1,4 +1,4 @@
-import { useState, useContext, useRef } from "react";
+import { useState, useContext, useRef, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { UserDataContext } from "../context/UserContext";
@@ -7,6 +7,9 @@ import { FilePlus, Camera, RefreshCw, Eye, EyeOff, User } from "lucide-react";
 import { toast } from "react-hot-toast";
 
 function UserSignup() {
+	useEffect(() => {
+		window.scrollTo(0, 0);
+	}, []);
 	// User and image states
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
@@ -191,11 +194,13 @@ function UserSignup() {
 	return (
 		<div className="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8">
 			<div className="max-w-md mx-auto bg-white rounded-2xl shadow-lg p-8">
-				<div className="flex justify-center mb-8">
-				<User className="w-20 h-20 text-blue-500" />
+				<div className="flex flex-col items-center justify-center mb-8">
+					<User className="w-20 h-20 text-blue-500" />
+					<h1 className="text-3xl font-bold text-gray-900">User SingUp</h1>
+					<p className="text-gray-600 mt-2">Welcome To DriveSphere </p>
 				</div>
 
-				<form onSubmit={submitHandler} className="space-y-6">
+				<form onSubmit={submitHandler} className="space-y-6 mb-6">
 					{/* Profile Image Section */}
 					<div className="space-y-2">
 						<label className="block text-sm font-medium text-gray-700">Profile Image</label>
@@ -349,18 +354,19 @@ function UserSignup() {
 					</p>
 				</form>
 
-				{/* Terms Text */}
-				<p className="mt-8 text-xs text-gray-500 text-center leading-relaxed">
-					This site is protected by reCAPTCHA and the{" "}
-					<a href="#" className="text-blue-600 hover:text-blue-700">
-						Google Privacy Policy
-					</a>{" "}
-					and{" "}
-					<a href="#" className="text-blue-600 hover:text-blue-700">
-						Terms of Service
-					</a>{" "}
-					apply.
-				</p>
+				{/* Footer */}
+				<div className="text-center border-t border-gray-200 pt-6 pb-4">
+					<p className="text-xs text-gray-500 mb-2">© 2025 DriveSphere Rides. All rights reserved.</p>
+					<div className="flex justify-center items-center space-x-4 text-xs">
+						<Link to="/privacy-policy" className="text-blue-500 hover:text-gray-700 transition-colors">
+							Privacy Policy
+						</Link>
+						<span className="text-gray-300">•</span>
+						<Link to="/terms-of-service" className="text-blue-500 hover:text-gray-700 transition-colors">
+							Terms of Service
+						</Link>
+					</div>
+				</div>
 			</div>
 
 			{/* Webcam Modal */}

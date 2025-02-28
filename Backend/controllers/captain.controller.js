@@ -148,3 +148,16 @@ module.exports.captainRideHistory = asyncHandler(async (req, res, next) => {
 		throw new ApiError(500, "Server error,Error getting captain ride history", error.message);
 	}
 });
+
+module.exports.deleteCaptainAccount = asyncHandler(async (req, res) => {
+	try {
+		const id = req.captain._id;
+		if (!id) {
+			throw new ApiError(400, "Captain id is required");
+		}
+		await captainModel.findByIdAndDelete(id);
+		return res.status(200).json(new ApiResponse(200, "Captain account deleted successfully"));
+	} catch (error) {
+		throw new ApiError(500, "Server error,Error deleting captain account", error.message);
+	}
+});

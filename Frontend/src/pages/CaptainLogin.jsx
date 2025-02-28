@@ -117,7 +117,7 @@ function CaptainLogin() {
 					</p>
 				</div>
 
-				<div className="mt-8 border-t border-gray-200 pt-6">
+				<div className="mt-4  border-gray-200 pt-4">
 					<Link
 						to="/login"
 						className="w-full bg-gradient-to-r from-green-500 to-green-600 text-white py-3 px-4 rounded-lg font-semibold hover:from-green-600 hover:to-green-700 transition-all shadow-md hover:shadow-lg flex items-center justify-center">
@@ -125,18 +125,19 @@ function CaptainLogin() {
 					</Link>
 				</div>
 
-				{/* Terms Text */}
-				<p className="mt-8 text-xs text-gray-500 text-center leading-relaxed">
-					This site is protected by reCAPTCHA and the{" "}
-					<a href="#" className="text-blue-600 hover:text-blue-700">
-						Google Privacy Policy
-					</a>{" "}
-					and{" "}
-					<a href="#" className="text-blue-600 hover:text-blue-700">
-						Terms of Service
-					</a>{" "}
-					apply.
-				</p>
+				{/* Footer */}
+				<div className="text-center border-t border-gray-200 pt-6 pb-4">
+					<p className="text-xs text-gray-500 mb-2">© 2025 DriveSphere Rides. All rights reserved.</p>
+					<div className="flex justify-center items-center space-x-4 text-xs">
+						<Link to="/privacy-policy" className="text-blue-500 hover:text-gray-700 transition-colors">
+							Privacy Policy
+						</Link>
+						<span className="text-gray-300">•</span>
+						<Link to="/terms-of-service" className="text-blue-500 hover:text-gray-700 transition-colors">
+							Terms of Service
+						</Link>
+					</div>
+				</div>
 			</div>
 		</div>
 	);

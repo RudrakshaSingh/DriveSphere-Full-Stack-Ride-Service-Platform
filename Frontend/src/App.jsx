@@ -21,6 +21,7 @@ import Feedback from "./components/UserMenu/Feedback";
 import AboutUs from "./pages/AboutUs";
 import CaptainProfile from "./components/CaptainMenu/CaptainProfile";
 import CaptainRideHistory from "./components/CaptainMenu/CaptainRideHistory";
+import CaptainDashboard from "./components/CaptainMenu/CaptainDashboard";
 
 export default function App() {
 	return (
@@ -48,6 +49,7 @@ export default function App() {
 				<Route path="/captain-home"element={<CaptainProtectWrapper><CaptainHome /></CaptainProtectWrapper>}/>
 				<Route path="/captain-profile" element={<CaptainProtectWrapper><CaptainProfile /></CaptainProtectWrapper>}/>
 				<Route path="/captain-ride-history"element={<CaptainProtectWrapper><CaptainRideHistory /></CaptainProtectWrapper>}/>
+				<Route path="/captain-dashboard"element={<CaptainProtectWrapper><CaptainDashboard /></CaptainProtectWrapper>}/>
 
 				{/* policies */}
 				<Route path="/terms-of-service" element={<TermsofService />} />

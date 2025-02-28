@@ -57,7 +57,7 @@ module.exports.registerUser = asyncHandler(async (req, res) => {
 	}
 });
 
-module.exports.loginUser = asyncHandler(async (req, res, next) => {
+module.exports.loginUser = asyncHandler(async (req, res) => {
 	try {
 		const errors = validationResult(req);
 		if (!errors.isEmpty()) {
@@ -93,7 +93,7 @@ module.exports.loginUser = asyncHandler(async (req, res, next) => {
 	}
 });
 
-module.exports.getUserProfile = asyncHandler(async (req, res, next) => {
+module.exports.getUserProfile = asyncHandler(async (req, res) => {
 	try {
 		const User=await userModel.findById(req.user._id).populate("coupons").lean();
 		return res.status(200).json(new ApiResponse(200, "User profile fetched successfully", User));
@@ -103,7 +103,7 @@ module.exports.getUserProfile = asyncHandler(async (req, res, next) => {
 });
 
 //logout user
-module.exports.logoutUser = asyncHandler(async (req, res, next) => {
+module.exports.logoutUser = asyncHandler(async (req, res) => {
 	try {
 		res.clearCookie("token");
 		const token = req.cookies.token || req.headers.authorization.split(" ")[1];
@@ -116,7 +116,7 @@ module.exports.logoutUser = asyncHandler(async (req, res, next) => {
 	}
 });
 
-module.exports.rideHistory = asyncHandler(async (req, res, next) => {
+module.exports.rideHistory = asyncHandler(async (req, res) => {
 	try {
 		const errors = validationResult(req);
 		if (!errors.isEmpty()) {
@@ -134,3 +134,17 @@ module.exports.rideHistory = asyncHandler(async (req, res, next) => {
 		throw new ApiError(400, "error in ridehistory controller", error.message);
 	}
 });
+
+module.exports.deleteUserAccount= asyncHandler(async(req,res)=>{
+	try {
+		const id=req.user._id;
+		if (!id) {
+			throw new ApiError(400, "User id is required");
+		}
+
+		await userModel.findByIdAndDelete(id);
+		return res.status(200).json(new ApiResponse(200, "User account deleted successfully"));
+	} catch (error) {
+		throw new ApiError(400, "error in deleteuseraccount controller", error.message);
+	}
+})

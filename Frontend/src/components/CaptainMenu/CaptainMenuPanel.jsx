@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import { User, History, HeadphonesIcon, LogOut, Share2, X, Info } from "lucide-react";
+import { User, History, HeadphonesIcon, LogOut, Share2, X, Info,LayoutDashboard } from "lucide-react";
 import logo from "../../assets/logo.png";
 import axios from "axios";
 import toast from "react-hot-toast";
@@ -58,7 +58,15 @@ function CaptainMenuPanel({ openCaptainMenu, toggleCaptainMenu }) {
 		toggleCaptainMenu();
 	  },
 	  bgColor: "bg-green-100",
+	},{
+	icon: <LayoutDashboard size={20} color="#10B981" />, // Green
+	label: "Dashboard",
+	action: () => {
+	  navigate("/captain-dashboard");
+	  toggleCaptainMenu();
 	},
+	bgColor: "bg-purple-100",
+  },
 	{
 	  icon: <Share2 size={20} color="#A855F7" />, // Purple
 	  label: "Refer & Earn",
