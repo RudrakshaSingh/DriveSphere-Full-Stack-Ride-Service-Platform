@@ -15,7 +15,7 @@ module.exports.createRide = asyncHandler(async (req, res) => {
 		throw new ApiError(400, "error in register controller", errors.array());
 	}
 
-	const { origin, destination, vehicleType, originText, destinationText } = req.body;
+	const { origin, destination, vehicleType, originText, destinationText,couponResponse } = req.body;
 	try {
 		const ride = await rideService.createRide({
 			user: req.user._id,
@@ -36,8 +36,8 @@ module.exports.createRide = asyncHandler(async (req, res) => {
 		}
 		ride.otp = "";
 		
-		const rideWithUser = await rideModel.findById(ride._id).populate("user");
-		
+		let rideWithUser = await rideModel.findById(ride._id).populate("user").lean();;
+		rideWithUser.couponResponse = couponResponse;
 		captainsInRadius.map((captain) => {
 			console.log("fk",captain.socketId);
 			
