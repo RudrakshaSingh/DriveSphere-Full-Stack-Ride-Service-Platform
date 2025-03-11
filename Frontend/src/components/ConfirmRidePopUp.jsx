@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 import axios from "axios";
 import { MessageCircleMore } from "lucide-react";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import ChatComponent from "./Chat/ChatComponent";
 import toast from "react-hot-toast";
@@ -31,7 +31,7 @@ const ConfirmRidePopUp = (props) => {
     if (response.status === 200) {
       props.setConfirmRidePopupPanel(false);
       props.setRidePopupPanel(false);
-      navigate("/captain-riding", { state: { ride: response.data } });
+      navigate("/captain-riding", { state: { ride: response.data,couponResponse:coupon } });
     } else if (response.status === 201) {
       toast.error(response.data.message);
     }

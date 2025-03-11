@@ -122,44 +122,51 @@ module.exports.endRide = async (req, res) => {
     if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
     }
-    const { rideId } = req.body;
+    const { rideId, discountAmount } = req.body;
+
     try {
         const ride = await rideService.endRide({ rideId, captain: req.captain });
+        
+        // Determine the amount to update (whichever is lesser)
+        const finalAmount = Math.min(ride.fare, discountAmount || ride.fare);
+        
+        // Update payment amount in ride object
+        ride.payment.amount = finalAmount;
+		ride.save();
+
         sendMessageToSocketId(ride.user.socketId, {
             event: 'ride-ended',
             data: ride
-        })
+        });
 
-		const updatedUser = await userModel.findByIdAndUpdate(
-			ride.user._id,
-			{
-			  // Increment the fields by the appropriate amounts.
-			  $inc: {
-				ridesCompleted: 1,
-				totalMoneySpend: ride.fare,    // ride.fare should contain the cost of the ride.
-				totalDistance: ride.distance,   // ride.distance should contain the ride distance.
-				totalTime: ride.duration            // ride.time should contain the ride duration.
-			  }
-			},
-			{ new: true } // Return the updated user document.
-		  );
+        const updatedUser = await userModel.findByIdAndUpdate(
+            ride.user._id,
+            {
+                $inc: {
+                    ridesCompleted: 1,
+                    totalMoneySpend: finalAmount,  // Use the lesser amount
+                    totalDistance: ride.distance,
+                    totalTime: ride.duration
+                }
+            },
+            { new: true } // Return the updated user document
+        );
 
-		  const updatedCaptain = await captainModel.findByIdAndUpdate(
-			ride.captain._id,
-			{
-			  // Increment the fields by the appropriate amounts.
-			  $inc: {
-				RideDone: 1,
-				TotalEarnings: ride.fare,    // ride.fare should contain the cost of the ride.
-				distanceTravelled: ride.distance,   // ride.distance should contain the ride distance.
-				minutesWorked: ride.duration            // ride.time should contain the ride duration.
-			  }
-			},
-			{ new: true } // Return the updated user document.
-		  );
-		
+        const updatedCaptain = await captainModel.findByIdAndUpdate(
+            ride.captain._id,
+            {
+                $inc: {
+                    RideDone: 1,
+                    TotalEarnings: ride.fare,  
+                    distanceTravelled: ride.distance,
+                    minutesWorked: ride.duration
+                }
+            },
+            { new: true } // Return the updated captain document
+        );
+
         return res.status(200).json(ride);
     } catch (err) {
         return res.status(500).json({ message: err.message });
-    } 
-}
+    }
+};
