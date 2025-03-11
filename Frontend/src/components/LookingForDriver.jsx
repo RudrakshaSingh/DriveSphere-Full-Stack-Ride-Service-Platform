@@ -78,11 +78,13 @@ const LookingForDriver = (props) => {
 								<p className="text-sm font-bold text-green-600">
 									₹
 									{Math.max(
+										parseFloat((
 										props.fare[props.vehicleType] -
 											(props.couponResponse.type === "fixed"
 												? props.couponResponse.discount
 												: (props.fare[props.vehicleType] * props.couponResponse.discount) /
-												  100),
+												  100)).toFixed(2)
+												),
 										0
 									)}
 								</p>

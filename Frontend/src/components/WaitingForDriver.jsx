@@ -67,11 +67,12 @@ const WaitingForDriver = (props) => {
                   ₹{props.ride?.fare}
                 </p>
                 <p className="text-sm font-bold text-green-600">
-                  ₹{Math.max(
+                  ₹{Math.max(parseFloat((
                     props.ride?.fare -
                       (props.couponResponse.type === "fixed"
                         ? props.couponResponse.discount
-                        : (props.ride?.fare * props.couponResponse.discount) / 100),
+                        : (props.ride?.fare * props.couponResponse.discount) / 100)).toFixed(2)
+											),
                     0
                   )}
                 </p>

@@ -217,10 +217,14 @@ const Riding = () => {
 									<p className="text-sm font-bold text-green-600">
 										₹
 										{Math.max(
-											ride.fare -
-												(couponResponse.type === "fixed"
-													? couponResponse.discount
-													: (ride.fare * couponResponse.discount) / 100),
+											parseFloat(
+												(
+													ride.fare -
+													(couponResponse.type === "fixed"
+														? couponResponse.discount
+														: (ride.fare * couponResponse.discount) / 100)
+												).toFixed(2)
+											),
 											0
 										)}
 									</p>

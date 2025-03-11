@@ -134,9 +134,9 @@ const MapComponent = ({ pickup, drop, vehiclePanel, nearbyCaptainsNeeded }) => {
 				console.log("Adding marker for captain:", captain);
 				const marker = L.marker([captain.latitude, captain.longitude], {
 					icon: L.icon({
-						iconUrl: "https://cdn4.iconfinder.com/data/icons/map-pins-2/256/13-1024.png",
-						iconSize: [30, 40],
-						iconAnchor: [15, 40],
+						iconUrl: "https://cdn4.iconfinder.com/data/icons/car-and-service-2/64/gps_car_map_placeholder_map_location_placeholder-1024.png",
+						iconSize: [45, 45],
+						iconAnchor: [15, 20],
 					}),
 				})
 					.addTo(mapRef.current)
