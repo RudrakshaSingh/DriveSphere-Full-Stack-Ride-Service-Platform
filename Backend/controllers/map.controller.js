@@ -77,33 +77,51 @@ module.exports.getDistanceTime = asyncHandler(async (req, res) => {
 });
 
 module.exports.reverseGeocoding = asyncHandler(async (req, res) => {
-  const { longitude, latitude } = req.query;
+	const { longitude, latitude } = req.query;
 
-  try {
-    const apiKey = process.env.OPEN_ROUTE_SERVICE_API_KEY;
-    console.log("hi", apiKey);
+	try {
+		const apiKey = process.env.OPEN_ROUTE_SERVICE_API_KEY;
+		console.log("hi", apiKey);
 
-    const response = await axios.get("https://api.openrouteservice.org/geocode/reverse", {
-      params: {
-        "point.lon": longitude,
-        "point.lat": latitude,
-        api_key: apiKey,
-      },
-    });
+		const response = await axios.get("https://api.openrouteservice.org/geocode/reverse", {
+			params: {
+				"point.lon": longitude,
+				"point.lat": latitude,
+				api_key: apiKey,
+			},
+		});
 
-    // Map through all features and extract their labels
-    const locationLabels = response.data.features
-      .map(feature => feature?.properties?.label)
-      .filter(label => label !== undefined);
+		// Map through all features and extract their labels
+		const locationLabels = response.data.features
+			.map((feature) => feature?.properties?.label)
+			.filter((label) => label !== undefined);
 
-    if (locationLabels.length === 0) {
-      throw new ApiError(404, "Location not found for the given coordinates");
-    }
-    
+		if (locationLabels.length === 0) {
+			throw new ApiError(404, "Location not found for the given coordinates");
+		}
 
-    return res.status(200).json(new ApiResponse(200, "Location fetched successfully", locationLabels));
-  } catch (error) {
-    throw new ApiError(500, "Unable to fetch location", error.message);
-  }
+		return res.status(200).json(new ApiResponse(200, "Location fetched successfully", locationLabels));
+	} catch (error) {
+		throw new ApiError(500, "Unable to fetch location", error.message);
+	}
 });
 
+module.exports.getNearbyCaptains = async (req, res) => {
+	const errors = validationResult(req);
+	if (!errors.isEmpty()) {
+		throw new ApiError(400, "error in getNearbyCaptains controller", errors.array());
+	}
+	try {
+		const { longitude, latitude, radius } = req.body;
+		console.log("Longitude:", longitude, "Latitude:", latitude, "Radius:", radius);
+
+		const nearestCaptains = await mapsService.getCaptainsInRadius(longitude, latitude, radius);
+		const locations = nearestCaptains.map((captain) => captain.location);
+		console.log("Nearest Captainsrrr:", locations);
+
+		return res.status(200).json(new ApiResponse(200, "Nearest captains fetched successfully", locations));
+	} catch (error) {
+		console.error("Error fetching nearest captains:", error.message);
+		throw new ApiError(500, "Unable to get nearest captains", error.message);
+	}
+};

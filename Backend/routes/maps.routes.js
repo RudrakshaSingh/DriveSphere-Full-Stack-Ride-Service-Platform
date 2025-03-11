@@ -42,4 +42,6 @@ router.get(
 	mapController.reverseGeocoding
 );
 
+router.post('/nearby-captains',mapController.getNearbyCaptains);
+
 module.exports = router;
