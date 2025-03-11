@@ -22,6 +22,7 @@ import AboutUs from "./pages/AboutUs";
 import CaptainProfile from "./components/CaptainMenu/CaptainProfile";
 import CaptainRideHistory from "./components/CaptainMenu/CaptainRideHistory";
 import CaptainDashboard from "./components/CaptainMenu/CaptainDashboard";
+import ScratchCard from "./components/ScratchCard";
 
 export default function App() {
 	return (
@@ -40,6 +41,8 @@ export default function App() {
 				<Route path="/user-profile" element={<UserProtectWrapper><UserProfile /></UserProtectWrapper>}/>
 				<Route path="/user-rideHistory" element={<UserProtectWrapper><RideHistory /></UserProtectWrapper>}/>
 				<Route path="/user-feedback"element={<UserProtectWrapper><Feedback /></UserProtectWrapper>}/>
+				<Route path="/user-scratch-card"element={<UserProtectWrapper><ScratchCard /></UserProtectWrapper>}/>
+
 
 
 				{/* Captain Routes */}
