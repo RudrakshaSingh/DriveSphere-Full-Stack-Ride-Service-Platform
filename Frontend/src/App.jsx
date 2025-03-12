@@ -22,8 +22,7 @@ import AboutUs from "./pages/AboutUs";
 import CaptainProfile from "./components/CaptainMenu/CaptainProfile";
 import CaptainRideHistory from "./components/CaptainMenu/CaptainRideHistory";
 import CaptainDashboard from "./components/CaptainMenu/CaptainDashboard";
-import ScratchCard from "./components/ScratchCard";
-
+import ScratchCard from "./components/UserMenu/ScratchCard";
 export default function App() {
 	return (
 		<div>

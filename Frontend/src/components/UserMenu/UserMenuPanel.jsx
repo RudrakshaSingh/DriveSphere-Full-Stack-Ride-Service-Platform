@@ -1,5 +1,5 @@
 /* eslint-disable react/prop-types */
-import { User, History, HeadphonesIcon, LogOut, Share2, X, Info } from "lucide-react";
+import { User, History, HeadphonesIcon, LogOut, Share2, X, Info, Gift } from "lucide-react";
 import logo from "../../assets/logo.png";
 import axios from "axios";
 import toast from "react-hot-toast";
@@ -60,6 +60,15 @@ const UserMenuPanel = ({ openMenu, toggleMenu }) => {
 	  bgColor: "bg-green-100",
 	},
 	{
+		icon: <Gift size={20} color="#EC4899" />, // Pink color
+		label: "Try your Luck",
+		action: () => {
+		  navigate("/user-scratch-card");
+		  toggleMenu();
+		},
+		bgColor: "bg-pink-100",
+	  },
+	{
 	  icon: <Share2 size={20} color="#A855F7" />, // Purple
 	  label: "Refer & Earn",
 	  action: () => console.log("Refer clicked"),
@@ -95,7 +104,7 @@ const UserMenuPanel = ({ openMenu, toggleMenu }) => {
 		{/* Header with logo */}
 		<div className="bg-gradient-to-r from-indigo-500 to-purple-500 p-6">
 		  <div className="flex items-center justify-between mb-4">
-			<img src={logo} alt="Logo" className="h-8 w-auto" />
+			<img src={logo} alt="Logo" className="h-12 w-auto" />
 			<button onClick={toggleMenu} className="p-2 hover:bg-white/10 rounded-full transition-colors">
 			  <X size={24} className="text-white" />
 			</button>
