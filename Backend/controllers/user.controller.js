@@ -148,3 +148,82 @@ module.exports.deleteUserAccount= asyncHandler(async(req,res)=>{
 		throw new ApiError(400, "error in deleteuseraccount controller", error.message);
 	}
 })
+
+module.exports.updateUserProfile = asyncHandler(async (req, res) => {
+	try {
+		const errors = validationResult(req);
+		if (!errors.isEmpty()) {
+			throw new ApiError(400, "error in updateuserprofile controller", errors.array());
+		}
+		const userId = req.user._id;
+		const { firstname, lastname, email, mobileNumber } = req.body;
+		const user = await userModel.findById(userId);
+		if (!user) {
+			throw new ApiError(404, "User not found");
+		}
+
+		// Update basic info
+		user.firstname = firstname || user.firstname;
+		user.lastname = lastname || user.lastname;
+		user.email = email || user.email;
+		user.mobileNumber = mobileNumber || user.mobileNumber;
+
+		// Handle profile image update if file is provided
+		const ProfilePictureLocalPath = req.file?.path;
+		if (ProfilePictureLocalPath) {
+			// Upload to Cloudinary
+			const profileImage = await uploadOnCloudinary(ProfilePictureLocalPath);
+			if (!profileImage) {
+				throw new ApiError(400, "Error uploading profile picture");
+			}
+			user.profileImage = profileImage.url;
+		}
+
+		await user.save();
+		return res.status(200).json(new ApiResponse(200, "User profile updated successfully", user));
+	} catch (error) {
+		throw new ApiError(400, "error in updateuserprofile controller", error.message);
+	}
+});
+
+module.exports.changePassword = asyncHandler(async (req, res) => {
+	try {
+		const errors = validationResult(req);
+		if (!errors.isEmpty()) {
+			throw new ApiError(400, "error in changepassword controller", errors.array());
+		}
+
+		const userId = req.user._id;
+		const { currentPassword, newPassword } = req.body;
+
+		// Check if all required fields are provided
+		if (!currentPassword || !newPassword) {
+			throw new ApiError(400, "Current password and new password are required");
+		}
+
+		// Find user with password
+		const user = await userModel.findById(userId).select("+password");
+		if (!user) {
+			throw new ApiError(404, "User not found");
+		}
+
+		// Verify current password
+		const isPasswordValid = await user.comparePassword(currentPassword);
+		if (!isPasswordValid) {
+			throw new ApiError(401, "Current password is incorrect");
+		}
+
+		// Hash new password and update
+		const hashedPassword = await userModel.hashPassword(newPassword);
+		user.password = hashedPassword;
+
+		await user.save();
+
+		// Don't return password in response
+		user.password = undefined;
+
+		return res.status(200).json(new ApiResponse(200, "Password changed successfully", user));
+	} catch (error) {
+		throw new ApiError(400, "Error in change password controller", error.message);
+	}
+});

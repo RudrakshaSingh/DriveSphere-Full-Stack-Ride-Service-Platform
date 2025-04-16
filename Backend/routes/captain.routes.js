@@ -36,5 +36,5 @@ router.get("/logout", authMiddleware.authCaptain, captainController.logoutCaptai
 router.get("/todaysDetails", authMiddleware.authCaptain, captainController.getTodaysDetails);
 router.get("/captain-ridehistory", authMiddleware.authCaptain, captainController.captainRideHistory);
 router.delete("/delete", authMiddleware.authCaptain, captainController.deleteCaptainAccount);
-
+router.get('/dashboard', authMiddleware.authCaptain,captainController.getDashboard);
 module.exports = router;

@@ -31,7 +31,7 @@ const RidePopUp = (props) => {
           <div className="flex items-center gap-3">
             <img
               className="h-12 w-12 rounded-full object-cover ring-2 ring-amber-200"
-              src="https://i.pinimg.com/236x/af/26/28/af26280b0ca305be47df0b799ed1b12b.jpg"
+              src={props.ride?.user.profileImage || "default-profile.png"}
               alt="User profile"
             />
             <h2 className="text-lg font-semibold text-gray-800">

@@ -161,3 +161,42 @@ module.exports.deleteCaptainAccount = asyncHandler(async (req, res) => {
 		throw new ApiError(500, "Server error,Error deleting captain account", error.message);
 	}
 });
+
+module.exports.getDashboard = async (req, res) => {
+    try {
+        const { id } = req.captain;
+
+        if (!id) {
+            return res.status(400).json({ error: "Captain ID is required" });
+        }
+
+
+        const rides = await rideModel.find({ captain: id ,status: { $in: ["cancelled", "completed"]}}).lean();
+
+        let cancelledCount = 0;
+        let completedCount = 0;
+        let rideDetails = [];
+
+        rides.forEach(ride => {
+            if (ride.status === "cancelled") {
+                cancelledCount++;
+            } else if (ride.status === "completed") {
+                completedCount++;
+            }
+            rideDetails.push({
+               origin: ride.originText,
+               destination: ride.destinationText,
+               price: ride.fare,
+               status: ride.status,
+            date: ride.createdAt
+            })
+        });
+        res.status(200).json({ cancelledRides: cancelledCount, completedRides: completedCount, rideDetails });
+		console.log("Dashboard data fetched successfully",rideDetails);
+		
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "Internal Server Error" });
+    }
+};

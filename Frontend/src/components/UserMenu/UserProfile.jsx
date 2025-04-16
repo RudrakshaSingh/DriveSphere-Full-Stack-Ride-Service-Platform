@@ -9,10 +9,25 @@ function UserProfile() {
 	const [user, setUser] = useState(null);
 	const [currentPage, setCurrentPage] = useState(1);
 	const [couponToDelete, setCouponToDelete] = useState(null); // state for coupon delete modal
-	const [isDeleteAccountModalOpen, setIsDeleteAccountModalOpen] = useState(false); // New state for account delete modal
+	const [isDeleteAccountModalOpen, setIsDeleteAccountModalOpen] = useState(false); // state for account delete modal
+	const [isEditProfileModalOpen, setIsEditProfileModalOpen] = useState(false); // state for edit profile modal
+	const [isChangePasswordModalOpen, setIsChangePasswordModalOpen] = useState(false); // state for change password modal
+	const [profileFormData, setProfileFormData] = useState({
+		firstname: "",
+		lastname: "",
+		email: "",
+		mobileNumber: "",
+		profileImage: null
+	});
+	const [passwordFormData, setPasswordFormData] = useState({
+		currentPassword: "",
+		newPassword: "",
+		confirmPassword: ""
+	});
+	const [isSubmitting, setIsSubmitting] = useState(false);
 	const itemsPerPage = 4;
 	const token = localStorage.getItem("token");
-  const navigate = useNavigate();
+	const navigate = useNavigate();
 
 	const formatDate = (dateString) => {
 		return new Date(dateString).toLocaleDateString("en-US", {
@@ -39,6 +54,14 @@ function UserProfile() {
 				if (response.status === 200) {
 					const data = response.data.message;
 					setUser(data);
+					// Initialize form data with user data
+					setProfileFormData({
+						firstname: data.fullname.firstname,
+						lastname: data.fullname.lastname,
+						email: data.email,
+						mobileNumber: data.mobileNumber,
+						profileImage: null
+					});
 				}
 			});
 	};
@@ -48,15 +71,15 @@ function UserProfile() {
 	}, []);
 
 	const handleEditProfile = () => {
-		console.log("Edit profile clicked");
+		setIsEditProfileModalOpen(true);
 	};
 
 	const handleDeleteAccount = () => {
-		setIsDeleteAccountModalOpen(true); // Open delete account modal
+		setIsDeleteAccountModalOpen(true);
 	};
 
 	const confirmDeleteAccount = async () => {
-		setIsDeleteAccountModalOpen(false); // Close modal
+		setIsDeleteAccountModalOpen(false);
 		await toast
 			.promise(
 				axios.delete(`${import.meta.env.VITE_BASE_URL}/users/delete`, {
@@ -72,7 +95,6 @@ function UserProfile() {
 			)
 			.then((response) => {
 				if (response.status === 200) {
-					// Optional: Redirect to login or home page after deletion
 					localStorage.removeItem("token");
 					navigate("/");
 				}
@@ -80,7 +102,130 @@ function UserProfile() {
 	};
 
 	const handleForgotPassword = () => {
-		console.log("Forgot password clicked");
+		setIsChangePasswordModalOpen(true);
+	};
+
+	// Handle profile form input changes
+	const handleProfileInputChange = (e) => {
+		const { name, value } = e.target;
+		setProfileFormData({
+			...profileFormData,
+			[name]: value
+		});
+	};
+
+	// Handle profile image upload
+	const handleProfileImageChange = (e) => {
+		setProfileFormData({
+			...profileFormData,
+			profileImage: e.target.files[0]
+		});
+	};
+
+	// Handle password form input changes
+	const handlePasswordInputChange = (e) => {
+		const { name, value } = e.target;
+		setPasswordFormData({
+			...passwordFormData,
+			[name]: value
+		});
+	};
+
+	// Submit profile update
+	const handleProfileSubmit = async (e) => {
+		e.preventDefault();
+		
+		if (isSubmitting) return;
+		setIsSubmitting(true);
+		
+		try {
+			const formData = new FormData();
+			formData.append("firstname", profileFormData.firstname);
+			formData.append("lastname", profileFormData.lastname);
+			formData.append("email", profileFormData.email);
+			formData.append("mobileNumber", profileFormData.mobileNumber);
+			
+			if (profileFormData.profileImage) {
+				formData.append("profileImage", profileFormData.profileImage);
+			}
+			
+			const response = await toast.promise(
+				axios.put(
+					`${import.meta.env.VITE_BASE_URL}/users/update-profile`, 
+					formData,
+					{
+						headers: {
+							Authorization: `Bearer ${token}`,
+							"Content-Type": "multipart/form-data"
+						},
+					}
+				),
+				{
+					loading: "Updating profile...",
+					success: "Profile updated successfully!",
+					error: "Failed to update profile"
+				}
+			);
+			
+			if (response.status === 200) {
+				setIsEditProfileModalOpen(false);
+				fetchUserData(); // Refresh user data
+			}
+		} catch (error) {
+			console.error("Error updating profile:", error);
+		} finally {
+			setIsSubmitting(false);
+		}
+	};
+
+	// Submit password change
+	const handlePasswordSubmit = async (e) => {
+		e.preventDefault();
+		
+		if (isSubmitting) return;
+		
+		// Validate passwords match
+		if (passwordFormData.newPassword !== passwordFormData.confirmPassword) {
+			toast.error("New passwords don't match");
+			return;
+		}
+		
+		setIsSubmitting(true);
+		
+		try {
+			const response = await toast.promise(
+				axios.post(
+					`${import.meta.env.VITE_BASE_URL}/users/change-password`,
+					{
+						currentPassword: passwordFormData.currentPassword,
+						newPassword: passwordFormData.newPassword
+					},
+					{
+						headers: {
+							Authorization: `Bearer ${token}`
+						}
+					}
+				),
+				{
+					loading: "Changing password...",
+					success: "Password changed successfully!",
+					error: "Failed to change password"
+				}
+			);
+			
+			if (response.status === 200) {
+				setIsChangePasswordModalOpen(false);
+				setPasswordFormData({
+					currentPassword: "",
+					newPassword: "",
+					confirmPassword: ""
+				});
+			}
+		} catch (error) {
+			console.error("Error changing password:", error);
+		} finally {
+			setIsSubmitting(false);
+		}
 	};
 
 	// Filter all coupons
@@ -162,7 +307,7 @@ function UserProfile() {
 							<div className="w-24 h-24 sm:w-32 sm:h-32 rounded-full ring-4 ring-white overflow-hidden">
 								<img
 									className="w-full h-full object-cover"
-									src="http://res.cloudinary.com/divxsdt9u/image/upload/v1738732448/uber/hbebclcy8zjlhzb3ilak.jpg"
+									src={user?.profileImage || "http://res.cloudinary.com/divxsdt9u/image/upload/v1738732448/uber/hbebclcy8zjlhzb3ilak.jpg"}
 									alt="Profile"
 								/>
 							</div>
@@ -179,6 +324,7 @@ function UserProfile() {
 					</div>
 					<div className="absolute top-2 right-2">
 						<button
+							onClick={handleEditProfile}
 							className="p-2 bg-white rounded-full shadow-md hover:bg-gray-100 transition-colors"
 							aria-label="Edit profile picture">
 							<Edit2 size={16} className="text-blue-600" />
@@ -367,9 +513,9 @@ function UserProfile() {
 				</div>
 			</div>
 
-			{/* Delete Confirmation Modal */}
+			{/* Delete Coupon Confirmation Modal */}
 			{couponToDelete && (
-				<div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+				<div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
 					<div className="bg-white p-6 rounded-lg shadow-lg">
 						<h3 className="text-lg font-bold mb-4">Are you sure you want to delete this coupon?</h3>
 						<div className="flex justify-end space-x-4">
@@ -393,7 +539,7 @@ function UserProfile() {
 
 			{/* Delete Account Confirmation Modal */}
 			{isDeleteAccountModalOpen && (
-				<div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+				<div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
 					<div className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full">
 						<h3 className="text-lg font-bold mb-4 text-center">
 							Are you sure you want to delete your account?
@@ -413,6 +559,163 @@ function UserProfile() {
 								Cancel
 							</button>
 						</div>
+					</div>
+				</div>
+			)}
+
+			{/* Edit Profile Modal */}
+			{isEditProfileModalOpen && (
+				<div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+					<div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
+						<h3 className="text-lg font-bold mb-4">Edit Profile</h3>
+						<form onSubmit={handleProfileSubmit}>
+							<div className="space-y-4">
+								<div className="flex gap-4">
+									<div className="w-1/2">
+										<label className="block text-sm font-medium text-gray-700 mb-1">First Name</label>
+										<input
+											type="text"
+											name="firstname"
+											value={profileFormData.firstname}
+											onChange={handleProfileInputChange}
+											className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+											required
+										/>
+									</div>
+									<div className="w-1/2">
+										<label className="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
+										<input
+											type="text"
+											name="lastname"
+											value={profileFormData.lastname}
+											onChange={handleProfileInputChange}
+											className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+											required
+										/>
+									</div>
+								</div>
+								
+								<div>
+									<label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+									<input
+										type="email"
+										name="email"
+										value={profileFormData.email}
+										onChange={handleProfileInputChange}
+										className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+										required
+									/>
+								</div>
+								
+								<div>
+									<label className="block text-sm font-medium text-gray-700 mb-1">Mobile Number</label>
+									<input
+										type="tel"
+										name="mobileNumber"
+										value={profileFormData.mobileNumber}
+										onChange={handleProfileInputChange}
+										className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+										required
+									/>
+								</div>
+								
+								<div>
+									<label className="block text-sm font-medium text-gray-700 mb-1">Profile Picture</label>
+									<input
+										type="file"
+										name="profileImage"
+										onChange={handleProfileImageChange}
+										className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+										accept="image/*"
+									/>
+									<p className="text-xs text-gray-500 mt-1">Leave empty to keep current image</p>
+								</div>
+							</div>
+							
+							<div className="flex justify-end space-x-3 mt-6">
+								<button
+									type="button"
+									onClick={() => setIsEditProfileModalOpen(false)}
+									className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition-colors">
+									Cancel
+								</button>
+								<button
+									type="submit"
+									disabled={isSubmitting}
+									className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors disabled:bg-blue-300">
+									{isSubmitting ? "Updating..." : "Update Profile"}
+								</button>
+							</div>
+						</form>
+					</div>
+				</div>
+			)}
+
+			{/* Change Password Modal */}
+			{isChangePasswordModalOpen && (
+				<div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+					<div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
+						<h3 className="text-lg font-bold mb-4">Change Password</h3>
+						<form onSubmit={handlePasswordSubmit}>
+							<div className="space-y-4">
+								<div>
+									<label className="block text-sm font-medium text-gray-700 mb-1">Current Password</label>
+									<input
+										type="password"
+										name="currentPassword"
+										value={passwordFormData.currentPassword}
+										onChange={handlePasswordInputChange}
+										className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+										required
+									/>
+								</div>
+								
+								<div>
+									<label className="block text-sm font-medium text-gray-700 mb-1">New Password</label>
+									<input
+										type="password"
+										name="newPassword"
+										value={passwordFormData.newPassword}
+										onChange={handlePasswordInputChange}
+										className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+										required
+										minLength="6"
+									/>
+								</div>
+								
+								<div>
+									<label className="block text-sm font-medium text-gray-700 mb-1">Confirm New Password</label>
+									<input
+										type="password"
+										name="confirmPassword"
+										value={passwordFormData.confirmPassword}
+										onChange={handlePasswordInputChange}
+										className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+										required
+										minLength="6"
+									/>
+									{passwordFormData.newPassword !== passwordFormData.confirmPassword && 
+										passwordFormData.confirmPassword && (
+										<p className="text-xs text-red-500 mt-1">Passwords don't match</p>
+									)}
+								</div>
+							</div>
+							
+							<div className="flex justify-end space-x-3 mt-6">
+								<button
+									type="button"
+									onClick={() => setIsChangePasswordModalOpen(false)}
+									className="px-4 py-2 bg-gray-200 text-gray-700 rounded-md hover:bg-gray-300 transition-colors">
+									Cancel
+								</button>
+								<button
+									type="submit"
+									disabled={isSubmitting || (passwordFormData.newPassword !== passwordFormData.confirmPassword && passwordFormData.confirmPassword)}
+									className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors disabled:bg-blue-300">
+									{isSubmitting ? "Changing..." : "Change Password"}
+								</button>
+							</div>
+						</form>
 					</div>
 				</div>
 			)}

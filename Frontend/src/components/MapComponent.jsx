@@ -79,7 +79,7 @@ const MapComponent = ({ pickup, drop, vehiclePanel, nearbyCaptainsNeeded }) => {
 							icon: L.icon({
 								iconUrl:
 									"https://cdn0.iconfinder.com/data/icons/small-n-flat/24/678111-map-marker-512.png",
-								iconSize: [30, 30],
+								iconSize: [40, 40],
 								iconAnchor: [15, 20], // Adjusted anchor point
 								popupAnchor: [0, -20], // Added popup anchor
 							}),
