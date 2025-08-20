@@ -7,7 +7,7 @@ import Home from "./pages/Home";
 import UserProtectWrapper from "./pages/UserProtectWrapper";
 import CaptainHome from "./pages/CaptainHome";
 import CaptainProtectWrapper from "./pages/CaptainProtectWrapper";
-import Riding from "./pages/riding";
+import Riding from "./pages/Riding";
 import CaptainRiding from "./pages/CaptainRiding";
 import UserLogin from "./pages/UserLogin";
 import ChatComponent from "./components/Chat/ChatComponent";
