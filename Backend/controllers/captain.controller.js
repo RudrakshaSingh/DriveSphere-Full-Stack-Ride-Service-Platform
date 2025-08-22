@@ -91,8 +91,8 @@ module.exports.loginCaptain = asyncHandler(async (req, res) => {
 
 		res.cookie("token", token, {
 			httpOnly: true,
-			secure: false, // Set to true if using HTTPS
-			sameSite: "Lax", // Adjust as needed: 'Strict', 'Lax', or 'None'
+			secure: true, // Set to true if using HTTPS
+			sameSite: "None", // Adjust as needed: 'Strict', 'Lax', or 'None'
 		});
 		captain.password = undefined;
 

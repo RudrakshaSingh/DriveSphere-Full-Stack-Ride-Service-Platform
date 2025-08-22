@@ -80,9 +80,9 @@ module.exports.loginUser = asyncHandler(async (req, res) => {
 		const token = user.generateAuthToken();
 
 		res.cookie("token", token, {
+			sameSite: "None",
 			httpOnly: true,
-			secure: false, // Set to true if using HTTPS
-			sameSite: "Lax", // Adjust as needed: 'Strict', 'Lax', or 'None'
+			secure: true, // Set to true if using HTTPS
 		});
 
 		user.password = undefined;
